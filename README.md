@@ -6,7 +6,7 @@ Six small worlds on one shelf. Pull out a box, open its flap, slide the cartridg
 
 An independent portfolio concept by **Beibars Ileskhan**, built with AI assistance. MOSS SIGNAL is a short original playable demo. The other five worlds are illustrated concepts, clearly labelled in the interface.
 
-![The SAVE SLOT collection](evidence/desktop-shelf.png)
+![The forest world of MOSS SIGNAL](public/media/moss-world.webp)
 
 ## Pick a world
 
@@ -68,6 +68,6 @@ Artwork is supplied with this concept. `node scripts/prepare-art.mjs` prepares t
 
 `npm test` checks movement bounds, diagonal speed, unique activation, portal gating, reachability and invalid stored progress. `scripts/qa.mjs` runs the browser interaction matrix and axe checks at desktop, tablet and mobile widths. `scripts/record.mjs` records real keyboard/touch-control interaction; performance evidence states the browser, rendering environment and its limits.
 
-[QA and limitations](docs/QA.md) · [Browser evidence](evidence/)
+[QA and limitations](docs/QA.md). Actual desktop/mobile screenshots, uncut browser recordings and the editable source assets are included in the delivered archive.
 
 This is a portfolio experiment. No commercial release, sales, publisher, awards or user results are implied. The supplied world art and generated console are project-specific materials; this repository does not grant rights to unrelated brands or third-party artwork.

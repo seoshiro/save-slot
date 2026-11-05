@@ -59,7 +59,7 @@ export class SaveScene {
    if(this.dead){g.scene.traverse(o=>{if((o as THREE.Mesh).isMesh)(o as THREE.Mesh).geometry.dispose()});return;}
    this.console.add(g.scene);g.scene.traverse(o=>{if((o as THREE.Mesh).isMesh){const m=o as THREE.Mesh;m.castShadow=true;m.receiveShadow=true;for(const material of Array.isArray(m.material)?m.material:[m.material]){if(material instanceof THREE.MeshStandardMaterial){material.normalMap=null;material.roughnessMap=null;material.metalnessMap=null;material.roughness=.78;material.metalness=0;}}}});
    this.ready=true;this.callbacks.ready();this.request();
-  },undefined,()=>{this.callbacks.error('model');this.request()});
+  },undefined,()=>{if(!this.dead){this.callbacks.error('model');this.request()}});
  }
  private prepareConsole(){
   // Screen, indicator and slot are independent controllable surfaces, never baked game artwork.
@@ -68,7 +68,7 @@ export class SaveScene {
   this.screen=new THREE.Mesh(display,new THREE.MeshBasicMaterial({map:this.screenTexture,alphaMap:mask,transparent:true,toneMapped:false}));this.screen.position.set(-.2,.02,1.20);this.console.add(this.screen);
   this.led=new THREE.Mesh(new THREE.SphereGeometry(.035,8,8),new THREE.MeshBasicMaterial({color:0x8caf4e}));this.led.position.set(1.28,-.41,1.02);this.console.add(this.led);
  }
- private drawStandby(){const c=this.screenCanvas.getContext('2d')!;const w=worlds[this.selected];c.fillStyle=w.ink;c.fillRect(0,0,512,384);const im=new Image();im.onload=()=>{if(this.dead)return;c.drawImage(im,0,0,512,384);c.fillStyle='rgba(5,20,20,.25)';c.fillRect(0,0,512,384);c.fillStyle='#fff0bd';c.textAlign='center';c.font='bold 25px monospace';c.fillText('INSERT CARTRIDGE',256,345);c.fillStyle='#fff5d3';c.fillRect(182,360,148,2);this.screenTexture.needsUpdate=true;this.request()};im.src=A+w.cover+'-world.webp';this.screenTexture.needsUpdate=true;}
+ private drawStandby(){const c=this.screenCanvas.getContext('2d')!;const w=worlds[this.selected];c.fillStyle=w.ink;c.fillRect(0,0,512,384);const index=this.selected;const im=new Image();im.onload=()=>{if(this.dead||this.selected!==index)return;c.drawImage(im,0,0,512,384);c.fillStyle='rgba(5,20,20,.25)';c.fillRect(0,0,512,384);c.fillStyle='#fff0bd';c.textAlign='center';c.font='bold 25px monospace';c.fillText('INSERT CARTRIDGE',256,345);c.fillStyle='#fff5d3';c.fillRect(182,360,148,2);this.screenTexture.needsUpdate=true;this.request()};im.src=A+w.cover+'-world.webp';this.screenTexture.needsUpdate=true;}
  setSelected(i:number){this.selected=i;gsap.to(this.selection,{value:i,duration:this.reduced?.12:.6,ease:'power3.out',overwrite:true,onUpdate:()=>this.request()});this.drawStandby();this.request();}
  setStage(stage:number){this.target=stage;if(stage>0)this.loadConsole();const travel=Math.abs(stage-this.progress.value)/(stage===0&&this.progress.value>1?2:1);gsap.to(this.progress,{value:stage,duration:this.reduced?.12:Math.max(.12,(stage===0?1.45:stage===2?.68:1.55)*Math.min(1,travel)),ease:'power2.inOut',overwrite:true,onUpdate:()=>this.request(),onComplete:()=>{this.callbacks.settled(stage);this.request()}});this.request()}
  setGame(active:boolean){this.active=active;(this.screen.material as THREE.MeshBasicMaterial).map=active?this.gameTexture:this.screenTexture;(this.screen.material as THREE.MeshBasicMaterial).needsUpdate=true;this.request()}

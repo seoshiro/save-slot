@@ -10,3 +10,4 @@
 .opened .hero-copy{position:absolute;inset:0 auto auto 0}.opened .world-info{padding-top:32px}
 .app:not(.light-mode):not(.large-mode) .game-region{inset:auto;left:var(--screen-x,30%);top:var(--screen-y,35%);width:var(--screen-w,35%);height:var(--screen-h,35%)}.game-overlay{width:100%;padding:13px 9px}.game-overlay h3{font-size:clamp(9px,1vw,14px);margin-bottom:8px}.game-overlay p{font-size:11px;margin:8px 0}.game-overlay .primary{min-height:38px;font-size:10px;padding:10px 15px}.game-overlay>button:last-child{min-height:28px;margin-top:4px}
 .large-mode .scene-wrap{z-index:60;opacity:1;pointer-events:none}.large-mode .scene{opacity:.06;pointer-events:none}.large-mode .game-region{pointer-events:auto}
+.light-mode .scene{visibility:hidden;pointer-events:none}
