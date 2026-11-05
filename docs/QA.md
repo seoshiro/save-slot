@@ -14,6 +14,26 @@ Independent preview; existing portfolio, NOCT and SIDE A unchanged. All eight su
 
 Machine-readable results and actual screenshots are in `evidence/qa.json` and `evidence/`. Additional end-to-end recording and published-address checks are recorded after deployment.
 
+## Published-address check
+
+GitHub Pages preview: **https://seoshiro.github.io/save-slot/**. Workflow build and deployment succeeded. The complete three-size browser matrix was repeated on this public URL: EN/RU, shelf, insertion, pause, interrupted returns, concept view, Back, fallback and refresh. No page errors were captured; the three automatic shelf accessibility scans report no violations.
+
+The uncut desktop recording from the public URL includes actual keyboard play: signals 1/3, 2/3, 3/3, portal completion, confirmed restart and return to the shelf. Recorded game time at completion: **26.2998 seconds** on this known route. This is one automated play-through, not an estimate of typical player completion time.
+
+The additional local recovery test aborts the GLB request, plays in Canvas mode, retries the model and verifies that insertion/selection survive with one renderer. It also checks persisted movement, reload, orientation and all six worlds. The game's semantic group was corrected after an automatic scan; the repeated game scan has no violations.
+
+Production dependencies: `npm audit --omit=dev --json` reported zero known vulnerabilities at verification. This covers that dependency audit only.
+
+## Rendering evidence and limits
+
+Recordings and performance JSON identify installed **Chrome 156.0.8078.76**, Windows 11 build 26200, AMD Ryzen 5 7535HS, 15 GiB reported RAM and **AMD Radeon Graphics / ANGLE Direct3D11**. Desktop viewport 1440×1000, mobile viewport 390×844. Tests are headless installed Chrome on the laptop; the mobile viewport is not a physical phone. The public recordings include real resource timings. A browser test instance overlapped part of the desktop recording; it is not a controlled benchmark.
+
+RAF delivery intervals and long tasks are retained as diagnostics. They do not measure complete GPU presentation or prove smoothness on other devices. The actual uncut recordings are provided alongside them. Startup shader work produces measurable long tasks; a cached repeat visit and other hardware may behave differently.
+
+## Asset publication boundary
+
+The new local cleaned GLB is **1,003,836 bytes** and its inspected mesh has **22,640 triangles**. The earlier public console remains in the repository. A GitHub `create_blob` call for the replacement required a platform confirmation and did not finish; a subsequent read-only lookup of its deterministic Git blob SHA returned 404. No repeated blob submission was made. The optimised GLB, original Meshy GLB and Blender file are retained in the delivered source archive. This is the remaining upload step, not a new generation or expense.
+
 ## Visual fixes made during verification
 
 - Enlarged the shelf and chosen box after the first real-browser view exposed excessive camera distance.
@@ -21,6 +41,8 @@ Machine-readable results and actual screenshots are in `evidence/qa.json` and `e
 - Kept cartridge art proportional by composing its own wide label, instead of squeezing a tall cover into it.
 - Replaced the generated top tray with a real open cartridge slot; removed uneven baked lighting and a duplicate control.
 - Reduced motion uses short transitions. Video and sound never autoplay. Audio is a small original synthesized cue only after explicit sound activation.
+- The first model/GPU preparation finishes while the shelf remains intact, with an honest preparing status and Cancel. Opening uses warmed resources; repeated opening does not repeat loading. Hover/focus can start the same single cached preparation.
+- A horizontal drag captures the pointer and cancels the selection tween; its release selects a world without opening it. Static console shadows are cached during gameplay rather than recomputed for every screen-texture update.
 
 ## Known boundaries
 

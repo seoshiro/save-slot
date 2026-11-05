@@ -10,14 +10,14 @@ An independent portfolio concept by **Beibars Ileskhan**, built with AI assistan
 
 ## Pick a world
 
-| Slot | World | Inside |
-| --- | --- | --- |
-| 001 | DUSK DELIVERY | A courier's last run through a sunset city |
-| 002 | ORBIT ZERO | A small ship beneath a broken orbital ring |
-| 003 | MOSS SIGNAL | A playable forest, three beacons, one stone portal |
-| 004 | TIDEBOUND | A lighthouse, a boat, and the route back to shore |
-| 005 | EMBER VAULT | A key waiting behind ancient stone doors |
-| 006 | SNOWBYTE | A cable car crossing a quiet mountain pass |
+| Slot | World         | Inside                                             |
+| ---- | ------------- | -------------------------------------------------- |
+| 001  | DUSK DELIVERY | A courier's last run through a sunset city         |
+| 002  | ORBIT ZERO    | A small ship beneath a broken orbital ring         |
+| 003  | MOSS SIGNAL   | A playable forest, three beacons, one stone portal |
+| 004  | TIDEBOUND     | A lighthouse, a boat, and the route back to shore  |
+| 005  | EMBER VAULT   | A key waiting behind ancient stone doors           |
+| 006  | SNOWBYTE      | A cable car crossing a quiet mountain pass         |
 
 ## What you can do
 

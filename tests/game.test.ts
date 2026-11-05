@@ -1,9 +1,75 @@
-import {test} from 'node:test';
-import assert from 'node:assert/strict';
-import {freshGame,activate,advance,parseGame,walkable,beacons,portal,grid} from '../src/game.ts';
-test('solid terrain blocks the robot, even across a long frame',()=>{let s={...freshGame(),x:3.3,y:10.5};for(let i=0;i<100;i++)s=advance(s,-1,0,10);assert.ok(s.x>=3.23);assert.ok(walkable(s.x,s.y));});
-test('diagonal movement is normalized',()=>{const s=freshGame(),a=advance(s,1,0,.05),b=advance(s,1,-1,.05);assert.ok(Math.abs(Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))<1e-8)});
-test('remote activation fails and a beacon counts only once',()=>{assert.equal(activate(freshGame()).activated,-1);const s={...freshGame(),...beacons[0]};const first=activate(s);assert.equal(first.activated,0);assert.deepEqual(first.state.beacons,[true,false,false]);assert.equal(activate(first.state).activated,-1);assert.deepEqual(s.beacons,[false,false,false]);});
-test('the portal needs all three signals',()=>{const s={...freshGame(),...portal};assert.equal(advance(s,0,0,.01).won,false);const complete=advance({...s,beacons:[true,true,true]},0,0,.01);assert.equal(complete.won,true);assert.equal(advance(complete,1,0,.01),complete)});
-test('all objectives are reachable through actual collision terrain',()=>{const visited=new Set<string>();const queue=[[5,16]];while(queue.length){const[x,y]=queue.shift()!;const k=x+','+y;if(visited.has(k)||!walkable(x+.5,y+.5))continue;visited.add(k);queue.push([x+1,y],[x-1,y],[x,y+1],[x,y-1])}for(const b of [...beacons,portal])assert.ok(visited.has(Math.floor(b.x)+','+Math.floor(b.y)));assert.equal(grid.length,20);assert.ok(grid.every(r=>r.length===28));});
-test('session data is validated, copied, and bounded',()=>{const s=freshGame();assert.deepEqual(parseGame(s),s);assert.notEqual(parseGame(s).beacons,s.beacons);for(const raw of [null,{}, {...s,x:Infinity},{...s,y:0},{...s,beacons:[true]}, {...s,won:true}, {...s,elapsed:-1}])assert.deepEqual(parseGame(raw),s);assert.equal(parseGame({...s,elapsed:1e9}).elapsed,86400)});
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import {
+  freshGame,
+  activate,
+  advance,
+  parseGame,
+  walkable,
+  beacons,
+  portal,
+  grid,
+} from "../src/game.ts";
+test("solid terrain blocks the robot, even across a long frame", () => {
+  let s = { ...freshGame(), x: 3.3, y: 10.5 };
+  for (let i = 0; i < 100; i++) s = advance(s, -1, 0, 10);
+  assert.ok(s.x >= 3.23);
+  assert.ok(walkable(s.x, s.y));
+});
+test("diagonal movement is normalized", () => {
+  const s = freshGame(),
+    a = advance(s, 1, 0, 0.05),
+    b = advance(s, 1, -1, 0.05);
+  assert.ok(
+    Math.abs(
+      Math.hypot(a.x - s.x, a.y - s.y) - Math.hypot(b.x - s.x, b.y - s.y),
+    ) < 1e-8,
+  );
+});
+test("remote activation fails and a beacon counts only once", () => {
+  assert.equal(activate(freshGame()).activated, -1);
+  const s = { ...freshGame(), ...beacons[0] };
+  const first = activate(s);
+  assert.equal(first.activated, 0);
+  assert.deepEqual(first.state.beacons, [true, false, false]);
+  assert.equal(activate(first.state).activated, -1);
+  assert.deepEqual(s.beacons, [false, false, false]);
+});
+test("the portal needs all three signals", () => {
+  const s = { ...freshGame(), ...portal };
+  assert.equal(advance(s, 0, 0, 0.01).won, false);
+  const complete = advance({ ...s, beacons: [true, true, true] }, 0, 0, 0.01);
+  assert.equal(complete.won, true);
+  assert.equal(advance(complete, 1, 0, 0.01), complete);
+});
+test("all objectives are reachable through actual collision terrain", () => {
+  const visited = new Set<string>();
+  const queue = [[5, 16]];
+  while (queue.length) {
+    const [x, y] = queue.shift()!;
+    const k = x + "," + y;
+    if (visited.has(k) || !walkable(x + 0.5, y + 0.5)) continue;
+    visited.add(k);
+    queue.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+  for (const b of [...beacons, portal])
+    assert.ok(visited.has(Math.floor(b.x) + "," + Math.floor(b.y)));
+  assert.equal(grid.length, 20);
+  assert.ok(grid.every((r) => r.length === 28));
+});
+test("session data is validated, copied, and bounded", () => {
+  const s = freshGame();
+  assert.deepEqual(parseGame(s), s);
+  assert.notEqual(parseGame(s).beacons, s.beacons);
+  for (const raw of [
+    null,
+    {},
+    { ...s, x: Infinity },
+    { ...s, y: 0 },
+    { ...s, beacons: [true] },
+    { ...s, won: true },
+    { ...s, elapsed: -1 },
+  ])
+    assert.deepEqual(parseGame(raw), s);
+  assert.equal(parseGame({ ...s, elapsed: 1e9 }).elapsed, 86400);
+});

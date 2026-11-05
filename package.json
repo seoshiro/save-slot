@@ -1,1 +1,37 @@
-{"name":"save-slot","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"vite --host 127.0.0.1 --port 4196","build":"tsc && vite build","preview":"vite preview --host 127.0.0.1 --port 4196","test":"node --test tests/*.test.ts","test:e2e":"playwright test"},"dependencies":{"@fontsource-variable/golos-text":"^5.3.0","@fontsource/press-start-2p":"^5.3.0","gsap":"3.15.1","react":"19.3.1","react-dom":"19.3.1","three":"0.187.0"},"devDependencies":{"@axe-core/playwright":"4.11.1","@playwright/test":"1.64.1","@types/node":"24.10.0","@types/react":"19.3.0","@types/react-dom":"19.3.0","@types/three":"0.187.0","@vitejs/plugin-react":"6.2.1","sharp":"0.35.5","typescript":"7.0.2","vite":"8.3.6"}}
+{
+  "name": "save-slot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4197",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4197",
+    "test": "node --test tests/*.test.ts",
+    "test:e2e": "node scripts/qa.mjs",
+    "test:edge": "node scripts/edge-qa.mjs",
+    "record": "node scripts/record.mjs",
+    "format": "prettier --write src tests scripts docs README.md vite.config.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/golos-text": "^5.3.0",
+    "@fontsource/press-start-2p": "^5.3.0",
+    "gsap": "3.15.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.1",
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.10.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/three": "0.187.0",
+    "@vitejs/plugin-react": "6.2.1",
+    "prettier": "3.9.10",
+    "sharp": "0.35.5",
+    "typescript": "7.0.2",
+    "vite": "8.3.6"
+  }
+}
