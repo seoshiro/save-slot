@@ -41,11 +41,11 @@ React + TypeScript + Vite handle the interface and storage. Three.js renders one
 
 The console began as **one Meshy 7 Ultra generation through Higgsfield**. Blender cleanup corrected the generated top tray into an actual cartridge aperture, shortened the excessive body depth, separated the control, cleaned materials and reduced the mesh. The screen and indicator are independent runtime elements.
 
-- [Original Meshy GLB](art/source/meshy-console-original.glb)
-- [Editable Blender source](art/blender/save-slot-console.blend)
 - [Browser GLB](public/media/console.glb)
 - [Model inspection](art/source/console-report.json)
 - [Generation and expense ledger](docs/CREDITS.md)
+
+The original Meshy GLB and editable Blender source are retained in the delivered source-asset archive. They are not required to run the preview. The local cleaned browser model is 1,003,836 bytes; replacing the earlier public GLB is pending the connector's asset-upload confirmation.
 
 The main portfolio, NOCT and SIDE A are unchanged. No backend, tracking, payments, account system or external AI calls run in the published site.
 

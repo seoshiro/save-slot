@@ -18,7 +18,7 @@ export class SaveScene {
  private observer:ResizeObserver;private onPointerDown:(e:PointerEvent)=>void;private onPointerUp:(e:PointerEvent)=>void;private onMove:(e:PointerEvent)=>void;
  private start:{x:number;y:number;time:number}|null=null;private drag=false;private cachedMaterials:THREE.Material[]=[];private coverTextures:THREE.Texture[]=[];private disposer:(()=>void)[]=[];
  private screenCanvas=document.createElement('canvas');private screenTexture:THREE.CanvasTexture;private texLoader=new THREE.TextureLoader();private geometryCache=new Map<string,THREE.BufferGeometry>();
- constructor(public el:HTMLElement,public callbacks:{select:(i:number)=>void;settled:(stage:number)=>void;ready:()=>void;error:(s:string)=>void},gameCanvas:HTMLCanvasElement){
+ constructor(public el:HTMLElement,public callbacks:{select:(i:number)=>void;settled:(stage:number)=>void;ready:()=>void;error:(s:string)=>void;screenRect?:(x:number,y:number,w:number,h:number)=>void},gameCanvas:HTMLCanvasElement){
   this.gameCanvas=gameCanvas;this.gameTexture=new THREE.CanvasTexture(gameCanvas);this.gameTexture.colorSpace=THREE.SRGBColorSpace;this.gameTexture.magFilter=THREE.NearestFilter;this.gameTexture.minFilter=THREE.LinearFilter;
   this.screenCanvas.width=512;this.screenCanvas.height=384;this.screenTexture=new THREE.CanvasTexture(this.screenCanvas);this.screenTexture.colorSpace=THREE.SRGBColorSpace;
   this.renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.75));this.renderer.outputColorSpace=THREE.SRGBColorSpace;this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.0;this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFShadowMap;el.appendChild(this.renderer.domElement);
@@ -89,7 +89,9 @@ export class SaveScene {
   const cp=smooth(.22,.66,op);this.console.visible=cp>0;this.console.position.set(mobile?.33:.4,mix(-5,-.05,cp),-.1);this.console.rotation.y=mix(-.28,-.08,ins);this.console.scale.setScalar(mobile?.89:1.0);
   // Hide work-in-progress silhouette until actual model has loaded; fallback is handled by HTML.
   if(this.led)(this.led.material as THREE.MeshBasicMaterial).color.set(ins>.8?'#9fdb59':'#5a653f');
-  this.renderer.render(this.scene,this.camera);if(this.lastTime&&time-this.lastTime<200)this.rafTimes.push(time-this.lastTime);this.lastTime=time;if(this.rafTimes.length>300)this.rafTimes.shift();
+  this.renderer.render(this.scene,this.camera);
+  if(this.callbacks.screenRect&&p>1){const corners=[[-1.17,-.86],[1.17,-.86],[1.17,.86],[-1.17,.86]].map(([x,y])=>this.screen.localToWorld(new THREE.Vector3(x,y,.04)).project(this.camera));const xs=corners.map(v=>(v.x+1)/2*this.width),ys=corners.map(v=>(1-v.y)/2*this.height);this.callbacks.screenRect(Math.min(...xs),Math.min(...ys),Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys));}
+  if(this.lastTime&&time-this.lastTime<200)this.rafTimes.push(time-this.lastTime);this.lastTime=time;if(this.rafTimes.length>300)this.rafTimes.shift();
   if(this.inspect&&p>.95&&p<1.1)this.request();
  }
  dispose(){this.dead=true;cancelAnimationFrame(this.frame);gsap.killTweensOf(this.progress);gsap.killTweensOf(this.selection);this.observer.disconnect();this.el.removeEventListener('pointerdown',this.onPointerDown);this.el.removeEventListener('pointermove',this.onMove);this.el.removeEventListener('pointerup',this.onPointerUp);this.scene.traverse(o=>{if((o as THREE.Mesh).geometry)(o as THREE.Mesh).geometry.dispose()});this.cachedMaterials.forEach(m=>m.dispose());this.coverTextures.forEach(t=>t.dispose());this.screenTexture.dispose();this.gameTexture.dispose();this.disposer.forEach(d=>d());this.renderer.dispose();this.renderer.domElement.remove();}
