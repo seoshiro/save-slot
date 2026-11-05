@@ -1,2 +1,73 @@
-# save-slot
-Six original retro worlds. An interactive 3D shelf, physical unboxing, and a playable MOSS SIGNAL demo.
+# SAVE SLOT
+
+Six small worlds on one shelf. Pull out a box, open its flap, slide the cartridge into a small retro console — then find three lost signals in **MOSS SIGNAL**.
+
+[Open the preview](https://seoshiro.github.io/save-slot/) · [Beibars' portfolio](https://seoshiro.github.io/)
+
+An independent portfolio concept by **Beibars Ileskhan**, built with AI assistance. MOSS SIGNAL is a short original playable demo. The other five worlds are illustrated concepts, clearly labelled in the interface.
+
+![The SAVE SLOT collection](evidence/desktop-shelf.png)
+
+## Pick a world
+
+| Slot | World | Inside |
+| --- | --- | --- |
+| 001 | DUSK DELIVERY | A courier's last run through a sunset city |
+| 002 | ORBIT ZERO | A small ship beneath a broken orbital ring |
+| 003 | MOSS SIGNAL | A playable forest, three beacons, one stone portal |
+| 004 | TIDEBOUND | A lighthouse, a boat, and the route back to shore |
+| 005 | EMBER VAULT | A key waiting behind ancient stone doors |
+| 006 | SNOWBYTE | A cable car crossing a quiet mountain pass |
+
+## What you can do
+
+- Browse a physical 3D shelf by dragging, selecting a neighbouring box, using arrows, or using the six HTML selection buttons.
+- Open the selected box. Its real hinged flap opens before the matching cartridge clears the box and moves over the console slot.
+- Insert the cartridge, explore the concept, or play MOSS SIGNAL. The return runs the same physical sequence in reverse.
+- Keep the selected world when returning. Game position and signals survive a page refresh in the same browser session. EN/RU and collection selection are stored locally.
+- Use the light view if WebGL/model loading fails. MOSS SIGNAL also runs on a flat Canvas screen.
+
+## MOSS SIGNAL
+
+Walk through the forest, stand close to each of the three beacons, and activate it once. All three signals open the portal. Reach it to finish.
+
+**Keyboard:** arrows/WASD to move, E to activate, Escape to pause. **Touch:** directional pad, Activate, Pause. A larger game view is available.
+
+The game has actual movement, collision terrain, activation distance, a unique signal counter, pause, completion and a confirmed restart. It is drawn on a 448 × 320 Canvas and shared with the console's screen as a CanvasTexture. It is not a video of gameplay.
+
+## Built around one scene
+
+React + TypeScript + Vite handle the interface and storage. Three.js renders one persistent scene; shared box/cartridge geometry carries six distinct sets of supplied artwork. GSAP animates a continuous progress value for opening, insertion and reverse packing, without rebuilding the renderer. Canvas2D handles the small game; no game engine is installed.
+
+The console began as **one Meshy 7 Ultra generation through Higgsfield**. Blender cleanup corrected the generated top tray into an actual cartridge aperture, shortened the excessive body depth, separated the control, cleaned materials and reduced the mesh. The screen and indicator are independent runtime elements.
+
+- [Original Meshy GLB](art/source/meshy-console-original.glb)
+- [Editable Blender source](art/blender/save-slot-console.blend)
+- [Browser GLB](public/media/console.glb)
+- [Model inspection](art/source/console-report.json)
+- [Generation and expense ledger](docs/CREDITS.md)
+
+The main portfolio, NOCT and SIDE A are unchanged. No backend, tracking, payments, account system or external AI calls run in the published site.
+
+## Run locally
+
+Requires Node.js 24.
+
+```sh
+npm ci --ignore-scripts
+npm run dev
+npm test
+npm run build
+```
+
+The relative Vite base also works under a nested path. The Pages workflow sets `/save-slot/` explicitly. Hash links select a world directly, for example `#moss-signal`.
+
+Artwork is supplied with this concept. `node scripts/prepare-art.mjs` prepares the cover/world WebP assets from the retained reference sheet. `scripts/finish-console.py` rebuilds the cleaned console from the raw generation in Blender. Interface fonts are self-hosted and distributed under their upstream OFL licences.
+
+## Verification
+
+`npm test` checks movement bounds, diagonal speed, unique activation, portal gating, reachability and invalid stored progress. `scripts/qa.mjs` runs the browser interaction matrix and axe checks at desktop, tablet and mobile widths. `scripts/record.mjs` records real keyboard/touch-control interaction; performance evidence states the browser, rendering environment and its limits.
+
+[QA and limitations](docs/QA.md) · [Browser evidence](evidence/)
+
+This is a portfolio experiment. No commercial release, sales, publisher, awards or user results are implied. The supplied world art and generated console are project-specific materials; this repository does not grant rights to unrelated brands or third-party artwork.

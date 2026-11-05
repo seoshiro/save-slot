@@ -1,0 +1,20 @@
+{
+  "provenance": "Meshy 7 Ultra job e830acd6-277b-48ef-8b36-6302bdddd1cf; local Blender cleanup",
+  "mesh_objects": 8,
+  "triangles": 22640,
+  "slot_opening": [
+    1.1,
+    0.23
+  ],
+  "dimensions_blender": [
+    3.35,
+    2.39,
+    2.7
+  ],
+  "corrections": [
+    "Depth proportional to reference front; original shell and UVs retained",
+    "Replaced broad generated tray with real open slot and lining",
+    "Separate power button; game screen and indicator supplied by runtime",
+    "2048px texture ceiling and conservative decimation"
+  ]
+}

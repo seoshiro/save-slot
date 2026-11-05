@@ -1,0 +1,8 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+*.blend1
+art/blender/raw-console.blend
+.env*
+!\.env.example
