@@ -459,6 +459,7 @@ export class SaveScene {
           this.console.position.copy(position);
           this.console.visible = visible;
           warm.dispose();
+          this.shadowPose.p = NaN;
         }
         this.ready = true;
         if (this.target > 0) this.setStage(this.target);
