@@ -166,6 +166,7 @@ try {
   await page
     .getByRole("button", { name: "INSERT & START", exact: true })
     .click();
+  await page.locator(".game-region canvas").waitFor({ state: "visible" });
   ok(
     await page.locator(".game-region canvas").isVisible(),
     "Canvas demo works without WebGL",

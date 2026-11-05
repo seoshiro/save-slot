@@ -146,12 +146,10 @@ try {
           transferBytes: e.transferSize,
           durationMs: e.duration,
         })),
-      navigation: performance
-        .getEntriesByType("navigation")
-        .map((e) => ({
-          domContentLoaded: e.domContentLoadedEventEnd,
-          load: e.loadEventEnd,
-        })),
+      navigation: performance.getEntriesByType("navigation").map((e) => ({
+        domContentLoaded: e.domContentLoadedEventEnd,
+        load: e.loadEventEnd,
+      })),
     };
   });
   const report = {

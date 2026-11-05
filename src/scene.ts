@@ -36,6 +36,7 @@ export class SaveScene {
   width = 0;
   height = 0;
   consoleRequested = false;
+  cartridgeInserted = false;
   private shadowPose = { p: NaN, selection: NaN, width: 0, height: 0 };
   gameCanvas: HTMLCanvasElement;
   gameTexture: THREE.CanvasTexture;
@@ -46,7 +47,7 @@ export class SaveScene {
   private onPointerDown: (e: PointerEvent) => void;
   private onPointerUp: (e: PointerEvent) => void;
   private onMove: (e: PointerEvent) => void;
-  private start: { x: number; y: number; time: number } | null = null;
+  private start: { x: number; y: number; selection: number } | null = null;
   private drag = false;
   private cachedMaterials: THREE.Material[] = [];
   private coverTextures: THREE.Texture[] = [];
@@ -128,7 +129,11 @@ export class SaveScene {
     this.resize();
     this.onPointerDown = (e) => {
       if (e.button !== 0 || this.target !== 0) return;
-      this.start = { x: e.clientX, y: e.clientY, time: performance.now() };
+      this.start = {
+        x: e.clientX,
+        y: e.clientY,
+        selection: this.selection.value,
+      };
       this.drag = false;
     };
     this.onMove = (e) => {
@@ -137,12 +142,13 @@ export class SaveScene {
         dy = e.clientY - this.start.y;
       if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.2) {
         if (!this.drag) {
+          this.start.selection = this.selection.value;
           gsap.killTweensOf(this.selection);
           this.el.setPointerCapture(e.pointerId);
         }
         this.drag = true;
         this.selection.value = clamp(
-          this.selected - dx / (this.width < 700 ? 95 : 150),
+          this.start.selection - dx / (this.width < 700 ? 95 : 150),
           -0.15,
           5.15,
         );
@@ -153,14 +159,13 @@ export class SaveScene {
       if (!this.start) return;
       const dx = e.clientX - this.start.x;
       const wasDrag = this.drag;
+      const origin = this.start.selection;
       this.start = null;
       if (this.el.hasPointerCapture(e.pointerId))
         this.el.releasePointerCapture(e.pointerId);
       if (wasDrag) {
         this.callbacks.select(
-          Math.round(
-            clamp(this.selected - dx / (this.width < 700 ? 120 : 180), 0, 5),
-          ),
+          Math.round(clamp(origin - dx / (this.width < 700 ? 120 : 180), 0, 5)),
         );
         return;
       }
@@ -529,7 +534,13 @@ export class SaveScene {
       c.textAlign = "center";
       c.font = "bold 25px monospace";
       c.fillText(
-        language === "en" ? "INSERT CARTRIDGE" : "ВСТАВЬТЕ КАРТРИДЖ",
+        this.cartridgeInserted
+          ? language === "en"
+            ? "CONCEPT VIEW"
+            : "КОНЦЕПТ МИРА"
+          : language === "en"
+            ? "INSERT CARTRIDGE"
+            : "ВСТАВЬТЕ КАРТРИДЖ",
         256,
         345,
       );
@@ -584,8 +595,12 @@ export class SaveScene {
   warmConsole() {
     this.loadConsole();
   }
-  setGame(active: boolean) {
+  setGame(active: boolean, inserted = false) {
     this.active = active;
+    if (this.cartridgeInserted !== inserted) {
+      this.cartridgeInserted = inserted;
+      this.drawStandby();
+    }
     (this.screen.material as THREE.MeshBasicMaterial).map = active
       ? this.gameTexture
       : this.screenTexture;

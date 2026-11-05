@@ -64,6 +64,7 @@ try {
   ok(saved.y < 16.2, "actual movement is persisted");
   await p.reload();
   await p.getByRole("button", { name: "INSERT & START", exact: true }).click();
+  await p.locator(".game-region").waitFor({ state: "visible" });
   await p.keyboard.press("Escape");
   const restored = await p.evaluate(() =>
     JSON.parse(sessionStorage.getItem("save-slot:moss:v1")),

@@ -45,6 +45,7 @@ The new local cleaned GLB is **1,003,836 bytes** and its inspected mesh has **22
 - A horizontal drag captures the pointer and cancels the selection tween; its release selects a world without opening it. Static console shadows are cached during gameplay rather than recomputed for every screen-texture update.
 - Frame inspection exposed an actual empty-canvas interval during the animated layout resize. `renderer.setSize` cleared the drawing buffer after the previous RAF. Resize now draws synchronously before paint. Nine sampled real-browser screenshots retained visible object pixels; `evidence/motion-qa.json` records their timing and the limited scope of this check. The continuous recording remains the main motion evidence.
 - Console standby text and field notes follow EN/RU, including the initial saved language and model recovery. Physical WASD/E uses keyboard codes so a different keyboard layout does not break the controls. A real-browser RU movement/pause check passed. Gameplay instructions are shown only for MOSS SIGNAL; the five concept worlds do not imply playable games.
+- Game input/screen activation waits for the actual insertion endpoint. Concept cartridges show their concept view after insertion. Escape pauses when leaving the enlarged screen, Back dismisses restart/about dialogs, and the portfolio/concept credit remains visible on mobile. These targeted browser checks passed. Dragging interrupts from the current interpolated selection.
 
 ## Known boundaries
 

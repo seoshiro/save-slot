@@ -157,7 +157,7 @@ function App() {
   const restartRef = useRef<HTMLDialogElement>(null);
   const gameRegion = useRef<HTMLDivElement>(null);
   const audioEnabled = useRef(false);
-  const isGame = open && inserted && selected === 2;
+  const isGame = open && inserted && selected === 2 && settled === 2;
   const light = forceLight || !!error;
   const closing = useRef(false);
   const [openingWait, setOpeningWait] = useState(false);
@@ -255,8 +255,14 @@ function App() {
       s.setSelected(selected);
       s.setReduced(reduced);
       s.setLanguage(lang);
-      if (open) s.setStage(inserted ? 2 : 1);
-      s.setGame(open && inserted && selected === 2);
+      if (open) {
+        s.progress.value = inserted ? 2 : 1;
+        s.setStage(inserted ? 2 : 1);
+      }
+      s.setGame(
+        open && inserted && selected === 2 && settled === 2,
+        open && inserted && settled === 2,
+      );
     } catch {
       setError("webgl");
       return;
@@ -284,8 +290,9 @@ function App() {
     scene.current?.setInspect(inspect);
   }, [inspect]);
   useEffect(() => {
-    scene.current?.setGame(isGame);
-  }, [isGame]);
+    scene.current?.setGame(isGame, open && inserted && settled === 2);
+    if (isGame) gameRegion.current?.focus({ preventScroll: true });
+  }, [isGame, open, inserted, settled]);
   function select(i: number) {
     if (open) return;
     openIntent.current = false;
@@ -317,6 +324,7 @@ function App() {
     queuedSelection.current = null;
     previousFocus.current = document.activeElement as HTMLElement;
     setOpen(true);
+    setSettled(-1);
     setInserted(false);
     setPaused(false);
     setDetail(0);
@@ -332,6 +340,9 @@ function App() {
   }
   openRef.current = openBox;
   function closeBox(fromPop = false) {
+    setSettled(-1);
+    setAbout(false);
+    setRestart(false);
     closing.current = true;
     setPaused(true);
     keys.current.clear();
@@ -363,6 +374,7 @@ function App() {
   }, []);
   function insert() {
     if (inserted || (!modelReady && !light)) return;
+    setSettled(-1);
     setInserted(true);
     setPaused(false);
     keys.current.clear();
@@ -400,6 +412,8 @@ function App() {
         e.preventDefault();
         if (large) {
           setLarge(false);
+          setPaused(true);
+          keys.current.clear();
           return;
         }
         if (isGame) {
@@ -982,7 +996,7 @@ function App() {
                   </div>
                   <button
                     className="primary activate"
-                    disabled={paused || gameUI.won}
+                    disabled={!isGame || paused || gameUI.won}
                     onClick={act}
                   >
                     {t.activate}
@@ -1002,6 +1016,7 @@ function App() {
                   <button
                     className="secondary"
                     onClick={() => setLarge((v) => !v)}
+                    disabled={!isGame}
                   >
                     {large ? t.shrink : t.fullscreen}
                   </button>
