@@ -604,7 +604,11 @@ export class SaveScene {
     this.renderer.setSize(this.width, this.height);
     this.camera.aspect = this.width / this.height;
     this.camera.updateProjectionMatrix();
-    this.request();
+    // setSize clears the drawing buffer. Draw before ResizeObserver's paint,
+    // otherwise an animated container resize produces transparent frames.
+    cancelAnimationFrame(this.frame);
+    this.frame = 0;
+    this.render(performance.now());
   }
   request() {
     if (!this.frame && !this.dead)
