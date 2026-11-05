@@ -517,16 +517,22 @@ export class SaveScene {
     c.fillStyle = w.ink;
     c.fillRect(0, 0, 512, 384);
     const index = this.selected;
+    const language = this.lang;
     const im = new Image();
     im.onload = () => {
-      if (this.dead || this.selected !== index) return;
+      if (this.dead || this.selected !== index || this.lang !== language)
+        return;
       c.drawImage(im, 0, 0, 512, 384);
       c.fillStyle = "rgba(5,20,20,.25)";
       c.fillRect(0, 0, 512, 384);
       c.fillStyle = "#fff0bd";
       c.textAlign = "center";
       c.font = "bold 25px monospace";
-      c.fillText("INSERT CARTRIDGE", 256, 345);
+      c.fillText(
+        language === "en" ? "INSERT CARTRIDGE" : "ВСТАВЬТЕ КАРТРИДЖ",
+        256,
+        345,
+      );
       c.fillStyle = "#fff5d3";
       c.fillRect(182, 360, 148, 2);
       this.screenTexture.needsUpdate = true;
@@ -593,6 +599,13 @@ export class SaveScene {
   setReduced(v: boolean) {
     this.reduced = v;
     this.request();
+  }
+  setLanguage(v: Lang) {
+    if (this.lang !== v) {
+      this.lang = v;
+      this.drawStandby();
+      this.request();
+    }
   }
   setInspect(v: boolean) {
     this.inspect = v;

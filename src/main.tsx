@@ -57,6 +57,10 @@ const sessionAvailable = () => {
     return false;
   }
 };
+const gameKey = (e: KeyboardEvent) =>
+  ["KeyW", "KeyA", "KeyS", "KeyD", "KeyE"].includes(e.code)
+    ? e.code.slice(3).toLowerCase()
+    : e.key.toLowerCase();
 const chooseInitial = () => {
   const i = worlds.findIndex((w) => w.id === location.hash.slice(1));
   if (i >= 0) return i;
@@ -250,6 +254,7 @@ function App() {
       scene.current = s;
       s.setSelected(selected);
       s.setReduced(reduced);
+      s.setLanguage(lang);
       if (open) s.setStage(inserted ? 2 : 1);
       s.setGame(open && inserted && selected === 2);
     } catch {
@@ -264,6 +269,9 @@ function App() {
   useEffect(() => {
     scene.current?.setReduced(reduced);
   }, [reduced]);
+  useEffect(() => {
+    scene.current?.setLanguage(lang);
+  }, [lang]);
   useEffect(() => {
     scene.current?.setSelected(selected);
     write("save-slot:selected", String(selected));
@@ -387,7 +395,7 @@ function App() {
         )
       )
         return;
-      const k = e.key.toLowerCase();
+      const k = gameKey(e);
       if (k === "escape") {
         e.preventDefault();
         if (large) {
@@ -432,7 +440,7 @@ function App() {
         if (k === "enter" && e.target === document.body) openBox();
       }
     };
-    const up = (e: KeyboardEvent) => keys.current.delete(e.key.toLowerCase());
+    const up = (e: KeyboardEvent) => keys.current.delete(gameKey(e));
     const blur = () => {
       keys.current.clear();
       if (isGame) setPaused(true);
@@ -880,26 +888,28 @@ function App() {
                     {t.light}
                   </button>
                 )}
-                <div className="instructions">
-                  <div>
-                    <span className="robot-icon" aria-hidden="true">
-                      ▣
-                    </span>
-                    <b>{t.move}</b>
+                {selected === 2 && (
+                  <div className="instructions">
+                    <div>
+                      <span className="robot-icon" aria-hidden="true">
+                        ▣
+                      </span>
+                      <b>{t.move}</b>
+                    </div>
+                    <div>
+                      <span className="signal-icon" aria-hidden="true">
+                        ✦
+                      </span>
+                      <b>{t.activate}</b>
+                    </div>
+                    <div>
+                      <span className="portal-icon" aria-hidden="true">
+                        ∩
+                      </span>
+                      <b>{t.portal}</b>
+                    </div>
                   </div>
-                  <div>
-                    <span className="signal-icon" aria-hidden="true">
-                      ✦
-                    </span>
-                    <b>{t.activate}</b>
-                  </div>
-                  <div>
-                    <span className="portal-icon" aria-hidden="true">
-                      ∩
-                    </span>
-                    <b>{t.portal}</b>
-                  </div>
-                </div>
+                )}
                 <button
                   className="world-detail-preview"
                   onClick={() => setDetail((detail + 1) % 3)}
@@ -1082,7 +1092,9 @@ function App() {
         >
           <Icon name="close" />
         </button>
-        <span className="eyebrow">SAVE SLOT / FIELD NOTES</span>
+        <span className="eyebrow">
+          {lang === "en" ? "SAVE SLOT / FIELD NOTES" : "SAVE SLOT / ЗАМЕТКИ"}
+        </span>
         <h2>{t.aboutTitle}</h2>
         <p>{t.aboutCopy}</p>
         <p className="small-copy">

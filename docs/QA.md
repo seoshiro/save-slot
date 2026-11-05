@@ -44,6 +44,7 @@ The new local cleaned GLB is **1,003,836 bytes** and its inspected mesh has **22
 - The first model/GPU preparation finishes while the shelf remains intact, with an honest preparing status and Cancel. Opening uses warmed resources; repeated opening does not repeat loading. Hover/focus can start the same single cached preparation.
 - A horizontal drag captures the pointer and cancels the selection tween; its release selects a world without opening it. Static console shadows are cached during gameplay rather than recomputed for every screen-texture update.
 - Frame inspection exposed an actual empty-canvas interval during the animated layout resize. `renderer.setSize` cleared the drawing buffer after the previous RAF. Resize now draws synchronously before paint. Nine sampled real-browser screenshots retained visible object pixels; `evidence/motion-qa.json` records their timing and the limited scope of this check. The continuous recording remains the main motion evidence.
+- Console standby text and field notes follow EN/RU, including the initial saved language and model recovery. Physical WASD/E uses keyboard codes so a different keyboard layout does not break the controls. A real-browser RU movement/pause check passed. Gameplay instructions are shown only for MOSS SIGNAL; the five concept worlds do not imply playable games.
 
 ## Known boundaries
 
