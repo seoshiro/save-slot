@@ -164,6 +164,7 @@ function App() {
   const openIntent = useRef(false);
   const openRef = useRef<(prepared?: boolean) => void>(() => {});
   const queuedSelection = useRef<number | null>(null);
+  const openAfterReturn = useRef(false);
   const [hasSessionStorage] = useState(sessionAvailable);
   const progressNotice = hasSessionStorage
     ? t.saved
@@ -219,6 +220,10 @@ function App() {
               if (queuedSelection.current !== null) {
                 setSelected(queuedSelection.current);
                 queuedSelection.current = null;
+                if (openAfterReturn.current) {
+                  openAfterReturn.current = false;
+                  requestAnimationFrame(() => openRef.current(true));
+                }
               }
             }
           },
@@ -314,6 +319,11 @@ function App() {
   };
   function openBox(prepared = false) {
     if (open) return;
+    if (closing.current && queuedSelection.current !== null) {
+      openAfterReturn.current = true;
+      return;
+    }
+    openAfterReturn.current = false;
     if (!prepared && !scene.current?.ready && !light) {
       openIntent.current = true;
       setOpeningWait(true);
