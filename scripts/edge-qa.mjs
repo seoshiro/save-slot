@@ -11,6 +11,11 @@ const ok = (v, n) => {
 };
 try {
   const c = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  let abortedModels = 0;
+  await c.route("**/console.glb", (r) => {
+    abortedModels++;
+    return r.abort();
+  });
   const p = await c.newPage();
   p.on("pageerror", (e) => errors.push(e.message));
   await p.goto(url);
@@ -23,11 +28,12 @@ try {
       .evaluate((e) => e === document.activeElement),
     "Escape restores dialog focus",
   );
-  await c.route("**/console.glb", (r) => r.abort());
   await p.getByRole("button", { name: "MOSS SIGNAL", exact: true }).click();
   await p.getByRole("button", { name: /OPEN BOX/ }).click();
   await p.locator(".light-mode").waitFor();
+  ok(abortedModels > 0, "model failure injected before prefetch");
   await p.getByRole("button", { name: "INSERT & START", exact: true }).click();
+  await p.locator(".game-region canvas").waitFor({ state: "visible" });
   ok(
     await p.locator(".game-region canvas").isVisible(),
     "failed model still allows Canvas game",

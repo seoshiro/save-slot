@@ -39,7 +39,7 @@ try {
   await p.waitForTimeout(800);
   await p.screenshot({
     path: "evidence/" + stem + "-shelf.png",
-    fullPage: true,
+    fullPage: !mobile,
   });
   const gpu = light
     ? "Canvas2D fallback; no WebGL"
@@ -55,7 +55,7 @@ try {
   await p.waitForTimeout(1900);
   await p.screenshot({
     path: "evidence/" + stem + "-open.png",
-    fullPage: true,
+    fullPage: !mobile,
   });
   await p.getByRole("button", { name: "INSERT & START", exact: true }).click();
   await p.waitForTimeout(900);
@@ -122,7 +122,8 @@ try {
     await p.mouse.up();
     await p.getByRole("button", { name: "Pause", exact: true }).click();
     await p.waitForTimeout(1000);
-    await p.screenshot({ path: "evidence/mobile-play.png", fullPage: true });
+    // A full-page capture temporarily resizes Chrome and pollutes its video with grey padding.
+    await p.screenshot({ path: "evidence/mobile-play.png", fullPage: false });
     await p
       .getByRole("button", { name: "Resume", exact: true })
       .first()

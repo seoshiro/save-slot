@@ -13,3 +13,5 @@ Submitted one job: **e830acd6-277b-48ef-8b36-6302bdddd1cf**. Status confirmed CO
 Post-generation account check: **516.5**, a debit of `560.5 - 516.5 = 44`. Confirmed cumulative `49.5 + 44 = 93.5 / 300`; authorised remainder **206.5**. Account credit balance is not treated as project authorisation. No new pending generation. No Kling teaser was ordered because the working game and supplied world art already explain the scene.
 
 No purchases, top-ups, subscriptions, paid assets or paid hosting were used for SAVE SLOT. One Meshy operation is the entire new generation spend.
+
+6 November refinement pass: **0 additional credits**. Existing geometry, images and local scene/game changes only. Cumulative **93.5**, reserve **206.5** unchanged.
