@@ -148,7 +148,7 @@ try {
       longTasks: window.__qa.tasks,
       resources: performance
         .getEntriesByType("resource")
-        .filter((e) => e.name.endsWith(".glb"))
+        .filter((e) => new URL(e.name).pathname.endsWith(".glb"))
         .map((e) => ({
           url: e.name,
           transferBytes: e.transferSize,

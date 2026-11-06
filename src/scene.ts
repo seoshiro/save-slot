@@ -420,7 +420,7 @@ export class SaveScene {
     this.consoleRequested = true;
     const loader = new GLTFLoader();
     loader.load(
-      A + "console.glb",
+      A + "console.glb?v=9d3abce",
       (g) => {
         if (this.dead) {
           g.scene.traverse((o) => {

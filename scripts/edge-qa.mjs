@@ -12,7 +12,7 @@ const ok = (v, n) => {
 try {
   const c = await b.newContext({ viewport: { width: 1280, height: 900 } });
   let abortedModels = 0;
-  await c.route("**/console.glb", (r) => {
+  await c.route("**/console.glb*", (r) => {
     abortedModels++;
     return r.abort();
   });
@@ -38,7 +38,7 @@ try {
     await p.locator(".game-region canvas").isVisible(),
     "failed model still allows Canvas game",
   );
-  await c.unroute("**/console.glb");
+  await c.unroute("**/console.glb*");
   await p.getByRole("button", { name: "Retry 3D", exact: true }).click();
   await p.locator(".app:not(.light-mode)").waitFor();
   await p.waitForTimeout(1700);
