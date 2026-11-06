@@ -72,6 +72,9 @@ export class SaveScene {
   private screenTexture: THREE.CanvasTexture;
   private texLoader = new THREE.TextureLoader();
   private geometryCache = new Map<string, THREE.BufferGeometry>();
+  private coversPending = worlds.length;
+  private coversReady = 0;
+  private coverErrors = 0;
   constructor(
     public el: HTMLElement,
     public callbacks: {
@@ -137,6 +140,7 @@ export class SaveScene {
     this.scene.add(fill);
     this.scene.add(this.root);
     this.root.add(this.shelf, this.console);
+    this.reportCovers();
     this.buildBoxes();
     this.buildShelf();
     this.prepareConsole();
@@ -264,13 +268,55 @@ export class SaveScene {
       const inside = this.material({ color: "#bcaa8f", roughness: 0.96 });
       const paper = this.material({ color: "#e1d5bc", roughness: 0.88 });
       const edge = this.material({ color: w.ink, roughness: 0.83 });
-      const frontMat = this.material({ color: 0xffffff, roughness: 0.85 });
-      const frontTex = this.texLoader.load(A + w.cover + "-cover.webp", () =>
-        this.request(),
+      // Never bind an empty network Texture to the first visible frame.
+      const placeholder = this.canvasTex(256, 448, (c) => {
+        c.fillStyle = "#e9dfca";
+        c.fillRect(0, 0, 256, 448);
+        c.strokeStyle = w.ink;
+        c.lineWidth = 2;
+        c.strokeRect(12, 12, 232, 424);
+        c.fillStyle = w.ink;
+        c.textAlign = "center";
+        c.font = "bold 17px monospace";
+        c.fillText("SAVE SLOT", 128, 47);
+        c.font = "bold 29px monospace";
+        w.title
+          .split(" ")
+          .forEach((word, line) => c.fillText(word, 128, 130 + line * 38));
+        c.fillStyle = w.accent;
+        c.fillRect(27, 232, 202, 8);
+        c.fillStyle = w.ink;
+        c.font = "bold 80px monospace";
+        c.fillText(w.number, 128, 340);
+        c.font = "15px monospace";
+        c.fillText("SS—" + w.number, 128, 408);
+      });
+      const frontMat = this.material({ map: placeholder, roughness: 0.85 });
+      const frontTex = this.texLoader.load(
+        A + w.cover + "-cover.webp",
+        (tex) => {
+          if (this.dead) {
+            tex.dispose();
+            return;
+          }
+          frontMat.map = tex;
+          frontMat.needsUpdate = true;
+          this.coversPending--;
+          this.coversReady++;
+          this.reportCovers();
+          this.request();
+        },
+        undefined,
+        () => {
+          if (this.dead) return;
+          this.coversPending--;
+          this.coverErrors++;
+          this.reportCovers();
+          this.request();
+        },
       );
       frontTex.colorSpace = THREE.SRGBColorSpace;
       frontTex.anisotropy = 8;
-      frontMat.map = frontTex;
       this.coverTextures.push(frontTex);
       const front = this.mesh(new THREE.BoxGeometry(1.55, 2.72, 0.025), [
         edge,
@@ -388,6 +434,10 @@ export class SaveScene {
       const labelTex = this.canvasTex(512, 304, (c) => {
         c.fillStyle = w.ink;
         c.fillRect(0, 0, 512, 304);
+        c.fillStyle = "#f3e6bb";
+        c.textAlign = "center";
+        c.font = "bold 30px monospace";
+        c.fillText(w.title, 256, 160);
       });
       const labelImage = new Image();
       labelImage.onload = () => {
@@ -415,6 +465,11 @@ export class SaveScene {
       this.root.add(group);
       this.boxes.push({ group, flap, cart });
     });
+  }
+  private reportCovers() {
+    this.el.dataset.coverPending = String(this.coversPending);
+    this.el.dataset.coversReady = String(this.coversReady);
+    this.el.dataset.coverErrors = String(this.coverErrors);
   }
   private buildShelf() {
     const plank = this.mesh(

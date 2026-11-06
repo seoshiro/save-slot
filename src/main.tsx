@@ -764,99 +764,105 @@ function App() {
           </div>
         )}
         <div className="scene-wrap">
-          <div
-            className="scene"
-            ref={sceneEl}
-            role="img"
-            aria-label={
-              lang === "en"
-                ? "Interactive collection of six game boxes"
-                : "Интерактивная коллекция шести игровых коробок"
-            }
-          />
-          {light && (
-            <div className={"fallback " + (open ? "fallback-open" : "")}>
-              <p className="fallback-notice">
-                {error === "model" ? t.modelError : t.unavailable}{" "}
-                <button
-                  onClick={() => {
-                    setError("");
-                    setForceLight(false);
-                    setRetry((x) => x + 1);
-                    setModelReady(false);
-                  }}
-                >
-                  {t.retry}
-                </button>
-              </p>
-              {!open ? (
-                <div className="flat-shelf">
-                  {worlds.map((v, i) => (
-                    <button
-                      key={v.id}
-                      className={i === selected ? "flat-active" : ""}
-                      onClick={() => pickRef.current(i)}
-                      aria-label={v.title}
-                    >
-                      <img src={A + v.cover + "-cover.webp"} alt={v.title} />
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="flat-console">
-                  <img src={A + "console-poster.webp"} alt="" />
-                  <div className="flat-screen">
-                    <img src={A + w.cover + "-world.webp"} alt={w.title} />
-                  </div>
-                  <img
-                    className="flat-box"
-                    src={A + w.cover + "-cover.webp"}
-                    alt=""
-                  />
-                </div>
-              )}
-            </div>
-          )}
-          {isGame && (
+          <div className="scene-stage">
             <div
-              ref={gameRegion}
-              role="group"
-              tabIndex={0}
-              className={
-                "game-region " + (large || light ? "canvas-visible" : "")
-              }
+              className="scene"
+              ref={sceneEl}
+              role="img"
               aria-label={
                 lang === "en"
-                  ? "MOSS SIGNAL game. " + (touchUI ? nearCopy : t.controls)
-                  : "Игра MOSS SIGNAL. " + (touchUI ? nearCopy : t.controls)
+                  ? "Interactive collection of six game boxes"
+                  : "Интерактивная коллекция шести игровых коробок"
               }
-              data-testid="game-region"
-            >
-              <canvas
-                ref={visibleGame}
-                width={COLS * TILE}
-                height={ROWS * TILE}
-                aria-label={
-                  lang === "en" ? "Forest ruins game map" : "Карта лесных руин"
+            />
+            {light && (
+              <div className={"fallback " + (open ? "fallback-open" : "")}>
+                {!open ? (
+                  <div className="flat-shelf">
+                    {worlds.map((v, i) => (
+                      <button
+                        key={v.id}
+                        className={i === selected ? "flat-active" : ""}
+                        onClick={() => pickRef.current(i)}
+                        aria-label={v.title}
+                      >
+                        <img src={A + v.cover + "-cover.webp"} alt={v.title} />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flat-console">
+                    <img src={A + "console-poster.webp"} alt="" />
+                    <div className="flat-screen">
+                      <img src={A + w.cover + "-world.webp"} alt={w.title} />
+                    </div>
+                    <img
+                      className="flat-box"
+                      src={A + w.cover + "-cover.webp"}
+                      alt=""
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            {isGame && (
+              <div
+                ref={gameRegion}
+                role="group"
+                tabIndex={0}
+                className={
+                  "game-region " + (large || light ? "canvas-visible" : "")
                 }
-                role="img"
-              />
-              {(paused || gameUI.won) && (
-                <div className="game-overlay">
-                  <h3>{gameUI.won ? t.complete : t.paused}</h3>
-                  <p>{gameUI.won ? t.finish : progressNotice}</p>
-                  <button
-                    className="primary"
-                    onClick={() =>
-                      gameUI.won ? setRestart(true) : setPaused(false)
-                    }
-                  >
-                    {gameUI.won ? t.again : t.resume}
-                  </button>
-                  <button onClick={() => closeBox()}>{t.back}</button>
-                </div>
-              )}
-            </div>
+                aria-label={
+                  lang === "en"
+                    ? "MOSS SIGNAL game. " + (touchUI ? nearCopy : t.controls)
+                    : "Игра MOSS SIGNAL. " + (touchUI ? nearCopy : t.controls)
+                }
+                data-testid="game-region"
+              >
+                <canvas
+                  ref={visibleGame}
+                  width={COLS * TILE}
+                  height={ROWS * TILE}
+                  aria-label={
+                    lang === "en"
+                      ? "Forest ruins game map"
+                      : "Карта лесных руин"
+                  }
+                  role="img"
+                />
+                {(paused || gameUI.won) && (
+                  <div className="game-overlay">
+                    <h3>{gameUI.won ? t.complete : t.paused}</h3>
+                    <p>{gameUI.won ? t.finish : progressNotice}</p>
+                    <button
+                      className="primary"
+                      onClick={() =>
+                        gameUI.won ? setRestart(true) : setPaused(false)
+                      }
+                    >
+                      {gameUI.won ? t.again : t.resume}
+                    </button>
+                    <button onClick={() => closeBox()}>{t.back}</button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {light && (
+            <p className="fallback-notice" role="status">
+              <span>{error === "model" ? t.modelError : t.unavailable}</span>
+              <button
+                onClick={() => {
+                  setError("");
+                  setForceLight(false);
+                  setRetry((x) => x + 1);
+                  setModelReady(false);
+                }}
+              >
+                {t.retry}
+              </button>
+            </p>
           )}
         </div>
         {!viewOpen && (
