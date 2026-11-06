@@ -1,0 +1,1468 @@
+{
+  "url": "https://seoshiro.github.io/save-slot/",
+  "at": "2026-11-06T08:41:28.443Z",
+  "browser": "153.0.8010.12",
+  "environment": "Linux cloud Chromium, software WebGL; emulated viewport, not a physical phone",
+  "checks": [
+    "1440x1000-en-shelf: status visible",
+    "1440x1000-en-shelf: separate status row",
+    "1440x1000-en-shelf: status in viewport",
+    "1440x1000-en-open: status visible",
+    "1440x1000-en-open: separate status row",
+    "1440x1000-en-open: status in viewport",
+    "1440x1000-en-play: status visible",
+    "1440x1000-en-play: separate status row",
+    "1440x1000-en-play: status in viewport",
+    "1440x1000-en-play: no frame overlap",
+    "1440x1000-en-play: game inside stage",
+    "1440x1000-en-pause: status visible",
+    "1440x1000-en-pause: separate status row",
+    "1440x1000-en-pause: status in viewport",
+    "1440x1000-en-pause: no frame overlap",
+    "1440x1000-en-pause: game inside stage",
+    "1440x1000-en-large: status visible",
+    "1440x1000-en-large: separate status row",
+    "1440x1000-en-large: status in viewport",
+    "1440x1000-en-large: no frame overlap",
+    "1440x1000-en-large: game inside stage",
+    "1440x1000-en-return: status visible",
+    "1440x1000-en-return: separate status row",
+    "1440x1000-en-return: status in viewport",
+    "1440x1000-en: shelf controls restored",
+    "1440x1000-ru-shelf: status visible",
+    "1440x1000-ru-shelf: separate status row",
+    "1440x1000-ru-shelf: status in viewport",
+    "1440x1000-ru-open: status visible",
+    "1440x1000-ru-open: separate status row",
+    "1440x1000-ru-open: status in viewport",
+    "1440x1000-ru-play: status visible",
+    "1440x1000-ru-play: separate status row",
+    "1440x1000-ru-play: status in viewport",
+    "1440x1000-ru-play: no frame overlap",
+    "1440x1000-ru-play: game inside stage",
+    "1440x1000-ru-pause: status visible",
+    "1440x1000-ru-pause: separate status row",
+    "1440x1000-ru-pause: status in viewport",
+    "1440x1000-ru-pause: no frame overlap",
+    "1440x1000-ru-pause: game inside stage",
+    "1440x1000-ru-large: status visible",
+    "1440x1000-ru-large: separate status row",
+    "1440x1000-ru-large: status in viewport",
+    "1440x1000-ru-large: no frame overlap",
+    "1440x1000-ru-large: game inside stage",
+    "1440x1000-ru-return: status visible",
+    "1440x1000-ru-return: separate status row",
+    "1440x1000-ru-return: status in viewport",
+    "1440x1000-ru: shelf controls restored",
+    "1366x768-en-shelf: status visible",
+    "1366x768-en-shelf: separate status row",
+    "1366x768-en-shelf: status in viewport",
+    "1366x768-en-open: status visible",
+    "1366x768-en-open: separate status row",
+    "1366x768-en-open: status in viewport",
+    "1366x768-en-play: status visible",
+    "1366x768-en-play: separate status row",
+    "1366x768-en-play: status in viewport",
+    "1366x768-en-play: no frame overlap",
+    "1366x768-en-play: game inside stage",
+    "1366x768-en-pause: status visible",
+    "1366x768-en-pause: separate status row",
+    "1366x768-en-pause: status in viewport",
+    "1366x768-en-pause: no frame overlap",
+    "1366x768-en-pause: game inside stage",
+    "1366x768-en-large: status visible",
+    "1366x768-en-large: separate status row",
+    "1366x768-en-large: status in viewport",
+    "1366x768-en-large: no frame overlap",
+    "1366x768-en-large: game inside stage",
+    "1366x768-en-return: status visible",
+    "1366x768-en-return: separate status row",
+    "1366x768-en-return: status in viewport",
+    "1366x768-en: shelf controls restored",
+    "1366x768-ru-shelf: status visible",
+    "1366x768-ru-shelf: separate status row",
+    "1366x768-ru-shelf: status in viewport",
+    "1366x768-ru-open: status visible",
+    "1366x768-ru-open: separate status row",
+    "1366x768-ru-open: status in viewport",
+    "1366x768-ru-play: status visible",
+    "1366x768-ru-play: separate status row",
+    "1366x768-ru-play: status in viewport",
+    "1366x768-ru-play: no frame overlap",
+    "1366x768-ru-play: game inside stage",
+    "1366x768-ru-pause: status visible",
+    "1366x768-ru-pause: separate status row",
+    "1366x768-ru-pause: status in viewport",
+    "1366x768-ru-pause: no frame overlap",
+    "1366x768-ru-pause: game inside stage",
+    "1366x768-ru-large: status visible",
+    "1366x768-ru-large: separate status row",
+    "1366x768-ru-large: status in viewport",
+    "1366x768-ru-large: no frame overlap",
+    "1366x768-ru-large: game inside stage",
+    "1366x768-ru-return: status visible",
+    "1366x768-ru-return: separate status row",
+    "1366x768-ru-return: status in viewport",
+    "1366x768-ru: shelf controls restored",
+    "1024x768-en-shelf: status visible",
+    "1024x768-en-shelf: separate status row",
+    "1024x768-en-shelf: status in viewport",
+    "1024x768-en-open: status visible",
+    "1024x768-en-open: separate status row",
+    "1024x768-en-open: status in viewport",
+    "1024x768-en-play: status visible",
+    "1024x768-en-play: separate status row",
+    "1024x768-en-play: status in viewport",
+    "1024x768-en-play: no frame overlap",
+    "1024x768-en-play: game inside stage",
+    "1024x768-en-pause: status visible",
+    "1024x768-en-pause: separate status row",
+    "1024x768-en-pause: status in viewport",
+    "1024x768-en-pause: no frame overlap",
+    "1024x768-en-pause: game inside stage",
+    "1024x768-en-large: status visible",
+    "1024x768-en-large: separate status row",
+    "1024x768-en-large: status in viewport",
+    "1024x768-en-large: no frame overlap",
+    "1024x768-en-large: game inside stage",
+    "1024x768-en-return: status visible",
+    "1024x768-en-return: separate status row",
+    "1024x768-en-return: status in viewport",
+    "1024x768-en: shelf controls restored",
+    "1024x768-ru-shelf: status visible",
+    "1024x768-ru-shelf: separate status row",
+    "1024x768-ru-shelf: status in viewport",
+    "1024x768-ru-open: status visible",
+    "1024x768-ru-open: separate status row",
+    "1024x768-ru-open: status in viewport",
+    "1024x768-ru-play: status visible",
+    "1024x768-ru-play: separate status row",
+    "1024x768-ru-play: status in viewport",
+    "1024x768-ru-play: no frame overlap",
+    "1024x768-ru-play: game inside stage",
+    "1024x768-ru-pause: status visible",
+    "1024x768-ru-pause: separate status row",
+    "1024x768-ru-pause: status in viewport",
+    "1024x768-ru-pause: no frame overlap",
+    "1024x768-ru-pause: game inside stage",
+    "1024x768-ru-large: status visible",
+    "1024x768-ru-large: separate status row",
+    "1024x768-ru-large: status in viewport",
+    "1024x768-ru-large: no frame overlap",
+    "1024x768-ru-large: game inside stage",
+    "1024x768-ru-return: status visible",
+    "1024x768-ru-return: separate status row",
+    "1024x768-ru-return: status in viewport",
+    "1024x768-ru: shelf controls restored",
+    "390x844-en-shelf: status visible",
+    "390x844-en-shelf: separate status row",
+    "390x844-en-shelf: status in viewport",
+    "390x844-en-open: status visible",
+    "390x844-en-open: separate status row",
+    "390x844-en-open: status in viewport",
+    "390x844-en-play: status visible",
+    "390x844-en-play: separate status row",
+    "390x844-en-play: status in viewport",
+    "390x844-en-play: no frame overlap",
+    "390x844-en-play: game inside stage",
+    "390x844-en-pause: status visible",
+    "390x844-en-pause: separate status row",
+    "390x844-en-pause: status in viewport",
+    "390x844-en-pause: no frame overlap",
+    "390x844-en-pause: game inside stage",
+    "390x844-en-large: status visible",
+    "390x844-en-large: separate status row",
+    "390x844-en-large: status in viewport",
+    "390x844-en-large: no frame overlap",
+    "390x844-en-large: game inside stage",
+    "390x844-en-return: status visible",
+    "390x844-en-return: separate status row",
+    "390x844-en-return: status in viewport",
+    "390x844-en: shelf controls restored",
+    "390x844-ru-shelf: status visible",
+    "390x844-ru-shelf: separate status row",
+    "390x844-ru-shelf: status in viewport",
+    "390x844-ru-open: status visible",
+    "390x844-ru-open: separate status row",
+    "390x844-ru-open: status in viewport",
+    "390x844-ru-play: status visible",
+    "390x844-ru-play: separate status row",
+    "390x844-ru-play: status in viewport",
+    "390x844-ru-play: no frame overlap",
+    "390x844-ru-play: game inside stage",
+    "390x844-ru-pause: status visible",
+    "390x844-ru-pause: separate status row",
+    "390x844-ru-pause: status in viewport",
+    "390x844-ru-pause: no frame overlap",
+    "390x844-ru-pause: game inside stage",
+    "390x844-ru-large: status visible",
+    "390x844-ru-large: separate status row",
+    "390x844-ru-large: status in viewport",
+    "390x844-ru-large: no frame overlap",
+    "390x844-ru-large: game inside stage",
+    "390x844-ru-return: status visible",
+    "390x844-ru-return: separate status row",
+    "390x844-ru-return: status in viewport",
+    "390x844-ru: shelf controls restored",
+    "375x667-en-shelf: status visible",
+    "375x667-en-shelf: separate status row",
+    "375x667-en-shelf: status in viewport",
+    "375x667-en-open: status visible",
+    "375x667-en-open: separate status row",
+    "375x667-en-open: status in viewport",
+    "375x667-en-play: status visible",
+    "375x667-en-play: separate status row",
+    "375x667-en-play: status in viewport",
+    "375x667-en-play: no frame overlap",
+    "375x667-en-play: game inside stage",
+    "375x667-en-pause: status visible",
+    "375x667-en-pause: separate status row",
+    "375x667-en-pause: status in viewport",
+    "375x667-en-pause: no frame overlap",
+    "375x667-en-pause: game inside stage",
+    "375x667-en-large: status visible",
+    "375x667-en-large: separate status row",
+    "375x667-en-large: status in viewport",
+    "375x667-en-large: no frame overlap",
+    "375x667-en-large: game inside stage",
+    "375x667-en-return: status visible",
+    "375x667-en-return: separate status row",
+    "375x667-en-return: status in viewport",
+    "375x667-en: shelf controls restored",
+    "375x667-ru-shelf: status visible",
+    "375x667-ru-shelf: separate status row",
+    "375x667-ru-shelf: status in viewport",
+    "375x667-ru-open: status visible",
+    "375x667-ru-open: separate status row",
+    "375x667-ru-open: status in viewport",
+    "375x667-ru-play: status visible",
+    "375x667-ru-play: separate status row",
+    "375x667-ru-play: status in viewport",
+    "375x667-ru-play: no frame overlap",
+    "375x667-ru-play: game inside stage",
+    "375x667-ru-pause: status visible",
+    "375x667-ru-pause: separate status row",
+    "375x667-ru-pause: status in viewport",
+    "375x667-ru-pause: no frame overlap",
+    "375x667-ru-pause: game inside stage",
+    "375x667-ru-large: status visible",
+    "375x667-ru-large: separate status row",
+    "375x667-ru-large: status in viewport",
+    "375x667-ru-large: no frame overlap",
+    "375x667-ru-large: game inside stage",
+    "375x667-ru-return: status visible",
+    "375x667-ru-return: separate status row",
+    "375x667-ru-return: status in viewport",
+    "375x667-ru: shelf controls restored",
+    "cold: real WebGL scene mounted",
+    "cold: WebGL context confirmed",
+    "cold: language remains interactive",
+    "cold: correct completed texture count",
+    "cold: failure retains paper cover",
+    "cold: real WebGL scene mounted",
+    "cold: WebGL context confirmed",
+    "cold: language remains interactive",
+    "cold: correct completed texture count",
+    "cold: failure retains paper cover",
+    "no captured page errors"
+  ],
+  "errors": [],
+  "layouts": [
+    {
+      "id": "1440x1000-en",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 720,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 299,
+        "width": 1440,
+        "height": 411
+      },
+      "game": null
+    },
+    {
+      "id": "1440x1000-en",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 790,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1440,
+        "height": 591
+      },
+      "game": null
+    },
+    {
+      "id": "1440x1000-en",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 790,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1440,
+        "height": 591
+      },
+      "game": {
+        "x": 57.59375,
+        "y": 200.8125,
+        "width": 720,
+        "height": 514.28125
+      }
+    },
+    {
+      "id": "1440x1000-en",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 790,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1440,
+        "height": 591
+      },
+      "game": {
+        "x": 57.59375,
+        "y": 200.8125,
+        "width": 720,
+        "height": 514.28125
+      }
+    },
+    {
+      "id": "1440x1000-en",
+      "stage": "large",
+      "status": {
+        "x": 43.1875,
+        "y": 916,
+        "width": 1036.8125,
+        "height": 44
+      },
+      "visual": {
+        "x": 43.1875,
+        "y": 80,
+        "width": 1036.8125,
+        "height": 826
+      },
+      "game": {
+        "x": 43.1875,
+        "y": 80,
+        "width": 1036.8125,
+        "height": 826
+      }
+    },
+    {
+      "id": "1440x1000-en",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 720,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 299,
+        "width": 1440,
+        "height": 411
+      },
+      "game": null
+    },
+    {
+      "id": "1440x1000-ru",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 720,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 299,
+        "width": 1440,
+        "height": 411
+      },
+      "game": null
+    },
+    {
+      "id": "1440x1000-ru",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 790,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1440,
+        "height": 591
+      },
+      "game": null
+    },
+    {
+      "id": "1440x1000-ru",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 790,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1440,
+        "height": 591
+      },
+      "game": {
+        "x": 57.59375,
+        "y": 200.8125,
+        "width": 720,
+        "height": 514.28125
+      }
+    },
+    {
+      "id": "1440x1000-ru",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 790,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1440,
+        "height": 591
+      },
+      "game": {
+        "x": 57.59375,
+        "y": 200.8125,
+        "width": 720,
+        "height": 514.28125
+      }
+    },
+    {
+      "id": "1440x1000-ru",
+      "stage": "large",
+      "status": {
+        "x": 43.1875,
+        "y": 916,
+        "width": 1036.8125,
+        "height": 44
+      },
+      "visual": {
+        "x": 43.1875,
+        "y": 80,
+        "width": 1036.8125,
+        "height": 826
+      },
+      "game": {
+        "x": 43.1875,
+        "y": 80,
+        "width": 1036.8125,
+        "height": 826
+      }
+    },
+    {
+      "id": "1440x1000-ru",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 720,
+        "width": 1440,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 299,
+        "width": 1440,
+        "height": 411
+      },
+      "game": null
+    },
+    {
+      "id": "1366x768-en",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 535,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 299,
+        "width": 1366,
+        "height": 226
+      },
+      "game": null
+    },
+    {
+      "id": "1366x768-en",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 721.28125,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1366,
+        "height": 522.28125
+      },
+      "game": null
+    },
+    {
+      "id": "1366x768-en",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 605,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1366,
+        "height": 406
+      },
+      "game": {
+        "x": 54.625,
+        "y": 197.109375,
+        "width": 534.28125,
+        "height": 381.625
+      }
+    },
+    {
+      "id": "1366x768-en",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 605,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1366,
+        "height": 406
+      },
+      "game": {
+        "x": 54.625,
+        "y": 197.109375,
+        "width": 534.28125,
+        "height": 381.625
+      }
+    },
+    {
+      "id": "1366x768-en",
+      "stage": "large",
+      "status": {
+        "x": 40.96875,
+        "y": 693.28125,
+        "width": 983.53125,
+        "height": 44
+      },
+      "visual": {
+        "x": 40.96875,
+        "y": 61.4375,
+        "width": 983.53125,
+        "height": 621.84375
+      },
+      "game": {
+        "x": 40.96875,
+        "y": 61.4375,
+        "width": 983.53125,
+        "height": 621.84375
+      }
+    },
+    {
+      "id": "1366x768-en",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 535,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 299,
+        "width": 1366,
+        "height": 226
+      },
+      "game": null
+    },
+    {
+      "id": "1366x768-ru",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 535,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 299,
+        "width": 1366,
+        "height": 226
+      },
+      "game": null
+    },
+    {
+      "id": "1366x768-ru",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 742.078125,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1366,
+        "height": 543.078125
+      },
+      "game": null
+    },
+    {
+      "id": "1366x768-ru",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 605,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1366,
+        "height": 406
+      },
+      "game": {
+        "x": 54.625,
+        "y": 197.109375,
+        "width": 534.28125,
+        "height": 381.625
+      }
+    },
+    {
+      "id": "1366x768-ru",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 605,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 189,
+        "width": 1366,
+        "height": 406
+      },
+      "game": {
+        "x": 54.625,
+        "y": 197.109375,
+        "width": 534.28125,
+        "height": 381.625
+      }
+    },
+    {
+      "id": "1366x768-ru",
+      "stage": "large",
+      "status": {
+        "x": 40.96875,
+        "y": 693.28125,
+        "width": 983.53125,
+        "height": 44
+      },
+      "visual": {
+        "x": 40.96875,
+        "y": 61.4375,
+        "width": 983.53125,
+        "height": 621.84375
+      },
+      "game": {
+        "x": 40.96875,
+        "y": 61.4375,
+        "width": 983.53125,
+        "height": 621.84375
+      }
+    },
+    {
+      "id": "1366x768-ru",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 535,
+        "width": 1366,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 299,
+        "width": 1366,
+        "height": 226
+      },
+      "game": null
+    },
+    {
+      "id": "1024x768-en",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 494,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 289,
+        "width": 1024,
+        "height": 195
+      },
+      "game": null
+    },
+    {
+      "id": "1024x768-en",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 655.546875,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 179,
+        "width": 1024,
+        "height": 466.546875
+      },
+      "game": null
+    },
+    {
+      "id": "1024x768-en",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 595.375,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 179,
+        "width": 1024,
+        "height": 406.375
+      },
+      "game": {
+        "x": 40.953125,
+        "y": 187.125,
+        "width": 534.78125,
+        "height": 381.984375
+      }
+    },
+    {
+      "id": "1024x768-en",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 595.375,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 179,
+        "width": 1024,
+        "height": 406.375
+      },
+      "game": {
+        "x": 40.953125,
+        "y": 187.125,
+        "width": 534.78125,
+        "height": 381.984375
+      }
+    },
+    {
+      "id": "1024x768-en",
+      "stage": "large",
+      "status": {
+        "x": 30.71875,
+        "y": 693.28125,
+        "width": 737.28125,
+        "height": 44
+      },
+      "visual": {
+        "x": 30.71875,
+        "y": 61.4375,
+        "width": 737.28125,
+        "height": 621.84375
+      },
+      "game": {
+        "x": 30.71875,
+        "y": 61.4375,
+        "width": 737.28125,
+        "height": 621.84375
+      }
+    },
+    {
+      "id": "1024x768-en",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 494,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 289,
+        "width": 1024,
+        "height": 195
+      },
+      "game": null
+    },
+    {
+      "id": "1024x768-ru",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 494,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 289,
+        "width": 1024,
+        "height": 195
+      },
+      "game": null
+    },
+    {
+      "id": "1024x768-ru",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 655.546875,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 179,
+        "width": 1024,
+        "height": 466.546875
+      },
+      "game": null
+    },
+    {
+      "id": "1024x768-ru",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 595.375,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 179,
+        "width": 1024,
+        "height": 406.375
+      },
+      "game": {
+        "x": 40.953125,
+        "y": 187.125,
+        "width": 534.78125,
+        "height": 381.984375
+      }
+    },
+    {
+      "id": "1024x768-ru",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 595.375,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 179,
+        "width": 1024,
+        "height": 406.375
+      },
+      "game": {
+        "x": 40.953125,
+        "y": 187.125,
+        "width": 534.78125,
+        "height": 381.984375
+      }
+    },
+    {
+      "id": "1024x768-ru",
+      "stage": "large",
+      "status": {
+        "x": 30.71875,
+        "y": 693.28125,
+        "width": 737.28125,
+        "height": 44
+      },
+      "visual": {
+        "x": 30.71875,
+        "y": 61.4375,
+        "width": 737.28125,
+        "height": 621.84375
+      },
+      "game": {
+        "x": 30.71875,
+        "y": 61.4375,
+        "width": 737.28125,
+        "height": 621.84375
+      }
+    },
+    {
+      "id": "1024x768-ru",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 494,
+        "width": 1024,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 289,
+        "width": 1024,
+        "height": 195
+      },
+      "game": null
+    },
+    {
+      "id": "390x844-en",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 519,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 198,
+        "width": 390,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "390x844-en",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 434,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 113,
+        "width": 390,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "390x844-en",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 434,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 113,
+        "width": 390,
+        "height": 311
+      },
+      "game": {
+        "x": 19.5,
+        "y": 113,
+        "width": 351,
+        "height": 250.703125
+      }
+    },
+    {
+      "id": "390x844-en",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 434,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 113,
+        "width": 390,
+        "height": 311
+      },
+      "game": {
+        "x": 19.5,
+        "y": 113,
+        "width": 351,
+        "height": 250.703125
+      }
+    },
+    {
+      "id": "390x844-en",
+      "stage": "large",
+      "status": {
+        "x": 15,
+        "y": 306.1875,
+        "width": 360,
+        "height": 60
+      },
+      "visual": {
+        "x": 15,
+        "y": 70,
+        "width": 360,
+        "height": 226.1875
+      },
+      "game": {
+        "x": 15,
+        "y": 70,
+        "width": 360,
+        "height": 226.1875
+      }
+    },
+    {
+      "id": "390x844-en",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 519,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 198,
+        "width": 390,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "390x844-ru",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 519,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 198,
+        "width": 390,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "390x844-ru",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 434,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 113,
+        "width": 390,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "390x844-ru",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 434,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 113,
+        "width": 390,
+        "height": 311
+      },
+      "game": {
+        "x": 19.5,
+        "y": 113,
+        "width": 351,
+        "height": 250.703125
+      }
+    },
+    {
+      "id": "390x844-ru",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 434,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 113,
+        "width": 390,
+        "height": 311
+      },
+      "game": {
+        "x": 19.5,
+        "y": 113,
+        "width": 351,
+        "height": 250.703125
+      }
+    },
+    {
+      "id": "390x844-ru",
+      "stage": "large",
+      "status": {
+        "x": 15,
+        "y": 306.1875,
+        "width": 360,
+        "height": 60
+      },
+      "visual": {
+        "x": 15,
+        "y": 70,
+        "width": 360,
+        "height": 226.1875
+      },
+      "game": {
+        "x": 15,
+        "y": 70,
+        "width": 360,
+        "height": 226.1875
+      }
+    },
+    {
+      "id": "390x844-ru",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 519,
+        "width": 390,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 198,
+        "width": 390,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "375x667-en",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 519,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 198,
+        "width": 375,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "375x667-en",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 383,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 62,
+        "width": 375,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "375x667-en",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 284,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 93,
+        "width": 375,
+        "height": 181
+      },
+      "game": {
+        "x": 18.75,
+        "y": 93,
+        "width": 253.390625,
+        "height": 180.984375
+      }
+    },
+    {
+      "id": "375x667-en",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 284,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 93,
+        "width": 375,
+        "height": 181
+      },
+      "game": {
+        "x": 18.75,
+        "y": 93,
+        "width": 253.390625,
+        "height": 180.984375
+      }
+    },
+    {
+      "id": "375x667-en",
+      "stage": "large",
+      "status": {
+        "x": 15,
+        "y": 297.5,
+        "width": 345,
+        "height": 60
+      },
+      "visual": {
+        "x": 15,
+        "y": 70,
+        "width": 345,
+        "height": 217.5
+      },
+      "game": {
+        "x": 15,
+        "y": 70,
+        "width": 345,
+        "height": 217.5
+      }
+    },
+    {
+      "id": "375x667-en",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 468,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 147,
+        "width": 375,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "375x667-ru",
+      "stage": "shelf",
+      "status": {
+        "x": 0,
+        "y": 519,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 198,
+        "width": 375,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "375x667-ru",
+      "stage": "open",
+      "status": {
+        "x": 0,
+        "y": 383,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 62,
+        "width": 375,
+        "height": 311
+      },
+      "game": null
+    },
+    {
+      "id": "375x667-ru",
+      "stage": "play",
+      "status": {
+        "x": 0,
+        "y": 284,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 93,
+        "width": 375,
+        "height": 181
+      },
+      "game": {
+        "x": 18.75,
+        "y": 93,
+        "width": 253.390625,
+        "height": 180.984375
+      }
+    },
+    {
+      "id": "375x667-ru",
+      "stage": "pause",
+      "status": {
+        "x": 0,
+        "y": 284,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 93,
+        "width": 375,
+        "height": 181
+      },
+      "game": {
+        "x": 18.75,
+        "y": 93,
+        "width": 253.390625,
+        "height": 180.984375
+      }
+    },
+    {
+      "id": "375x667-ru",
+      "stage": "large",
+      "status": {
+        "x": 15,
+        "y": 297.5,
+        "width": 345,
+        "height": 60
+      },
+      "visual": {
+        "x": 15,
+        "y": 70,
+        "width": 345,
+        "height": 217.5
+      },
+      "game": {
+        "x": 15,
+        "y": 70,
+        "width": 345,
+        "height": 217.5
+      }
+    },
+    {
+      "id": "375x667-ru",
+      "stage": "return",
+      "status": {
+        "x": 0,
+        "y": 468,
+        "width": 375,
+        "height": 44
+      },
+      "visual": {
+        "x": 0,
+        "y": 147,
+        "width": 375,
+        "height": 311
+      },
+      "game": null
+    }
+  ],
+  "cold": [
+    {
+      "fail": false,
+      "state": {
+        "coverPending": "0",
+        "coversReady": "6",
+        "coverErrors": "0"
+      },
+      "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "cache": false,
+      "latencyMs": 250,
+      "downloadBytesPerSecond": 128000
+    },
+    {
+      "fail": true,
+      "state": {
+        "coverPending": "0",
+        "coversReady": "5",
+        "coverErrors": "1"
+      },
+      "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "cache": false,
+      "latencyMs": 250,
+      "downloadBytesPerSecond": 128000
+    }
+  ]
+}

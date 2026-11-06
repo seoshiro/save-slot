@@ -8,8 +8,7 @@ const browser = await chromium.launch({
   headless: true,
   args: [
     "--no-sandbox",
-    "--use-angle=swiftshader",
-    "--enable-unsafe-swiftshader",
+    ...(process.env.SOFTWARE_WEBGL === "1" ? ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] : []),
   ],
 });
 const report = {
@@ -17,7 +16,7 @@ const report = {
   at: new Date().toISOString(),
   browser: browser.version(),
   environment:
-    "Linux cloud Chromium, software WebGL; emulated viewport, not a physical phone",
+    `${process.platform} Chromium; emulated viewport, not a physical phone`,
   checks: [],
   errors: [],
   layouts: [],
