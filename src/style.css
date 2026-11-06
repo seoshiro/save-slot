@@ -1814,3 +1814,22 @@ figcaption {
     width: 90%;
   }
 }
+.world-picks {
+  width: max-content;
+}
+.light-mode.shelved .fallback-notice {
+  top: 0;
+  bottom: auto;
+  margin: 0 auto;
+  max-width: 530px;
+  line-height: 1.6;
+}
+.light-mode.shelved .flat-shelf {
+  padding-top: 75px;
+  padding-bottom: 40px;
+}
+@media (max-width: 700px) {
+  .light-mode.shelved .fallback-notice {
+    max-width: 320px;
+  }
+}

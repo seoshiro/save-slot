@@ -50,6 +50,13 @@ try {
       await p.locator(".game-region").waitFor({ state: "visible" });
       await p.waitForTimeout(900);
       const field = await p.locator(".game-region").boundingBox();
+      if (light) {
+        const area = await p.locator(".scene-wrap").boundingBox();
+        ok(
+          field.y >= area.y && field.y + field.height <= area.y + area.height,
+          `${prefix} complete framed game fits scene`,
+        );
+      }
       report[`${prefix}Field`] = field;
       if (width === 1440)
         ok(field.width >= 450, `${prefix} game width >=450px`);
@@ -93,6 +100,29 @@ try {
         )),
         `${prefix} no overflow`,
       );
+      if (!light) {
+        await p.getByRole("button", { name: /OPEN BOX/ }).click();
+        await p.waitForTimeout(500);
+        await p
+          .getByRole("button", { name: /Back to shelf/ })
+          .first()
+          .click();
+        await p.waitForTimeout(100);
+        await p.keyboard.press("ArrowRight");
+        await p.keyboard.press("Enter");
+        await p.waitForTimeout(2100);
+        ok(
+          await p
+            .getByRole("heading", { name: "TIDEBOUND", exact: true })
+            .isVisible(),
+          `${prefix} queued selection and reopen during return`,
+        );
+        await p
+          .getByRole("button", { name: /Back to shelf/ })
+          .first()
+          .click();
+        await p.waitForTimeout(1600);
+      }
       await p.close();
     }
 } finally {

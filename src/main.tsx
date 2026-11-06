@@ -527,7 +527,7 @@ function App() {
       paintGame(
         source.current.getContext("2d")!,
         game.current,
-        now,
+        reduced ? 0 : now,
         !!(dx || dy) && !paused,
       );
       if (visibleGame.current) {
@@ -552,7 +552,7 @@ function App() {
     };
     paint(performance.now());
     return () => cancelAnimationFrame(raf);
-  }, [isGame, paused, large, about, restart, lang, gameUI.won, light]);
+  }, [isGame, paused, large, about, restart, lang, gameUI.won, light, reduced]);
   useEffect(() => {
     if (about) aboutRef.current?.showModal();
     else if (aboutRef.current?.open) aboutRef.current.close();

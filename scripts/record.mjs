@@ -32,24 +32,29 @@ try {
     ).observe({ type: "longtask", buffered: true });
   });
   await p.goto(url + (light ? "?webgl=0" : ""));
-  await p.getByRole("button", { name: "MOSS SIGNAL", exact: true }).last().click();
+  await p
+    .getByRole("button", { name: "MOSS SIGNAL", exact: true })
+    .last()
+    .click();
   await p.waitForTimeout(800);
   await p.screenshot({
-    path: "evidence/" + (mobile ? "mobile" : "desktop") + "-shelf.png",
+    path: "evidence/" + stem + "-shelf.png",
     fullPage: true,
   });
-  const gpu = light ? "Canvas2D fallback; no WebGL" : await p.locator(".scene canvas").evaluate((c) => {
-    const gl = c.getContext("webgl2");
-    const d = gl.getExtension("WEBGL_debug_renderer_info");
-    return d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : "Not exposed";
-  });
+  const gpu = light
+    ? "Canvas2D fallback; no WebGL"
+    : await p.locator(".scene canvas").evaluate((c) => {
+        const gl = c.getContext("webgl2");
+        const d = gl.getExtension("WEBGL_debug_renderer_info");
+        return d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : "Not exposed";
+      });
   await p.getByRole("button", { name: /OPEN BOX/ }).click();
   await p
     .getByRole("button", { name: "INSERT & START", exact: true })
     .waitFor({ state: "visible" });
   await p.waitForTimeout(1900);
   await p.screenshot({
-    path: "evidence/" + (mobile ? "mobile" : "desktop") + "-open.png",
+    path: "evidence/" + stem + "-open.png",
     fullPage: true,
   });
   await p.getByRole("button", { name: "INSERT & START", exact: true }).click();
@@ -83,7 +88,7 @@ try {
       await p.evaluate(() => sessionStorage.getItem("save-slot:moss:v1")),
     );
     await p.screenshot({
-      path: "evidence/desktop-complete.png",
+      path: "evidence/" + stem + "-complete.png",
       fullPage: true,
     });
     if (
@@ -174,8 +179,6 @@ try {
   );
 } finally {
   await ctx.close();
-  await video.saveAs(
-    "evidence/" + stem + "-full-scenario.webm",
-  );
+  await video.saveAs("evidence/" + stem + "-full-scenario.webm");
   await b.close();
 }
