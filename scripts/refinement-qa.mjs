@@ -28,6 +28,8 @@ try {
         .click();
       await p.waitForTimeout(700);
       const hero = await p.locator(".hero-copy").boundingBox();
+      const selectors = await p.locator('.world-picks').boundingBox();
+      ok(selectors.x >= 0 && selectors.x + selectors.width <= width, `${prefix} all six selectors inside viewport`);
       if (light) {
         const covers = await p.locator(".flat-active").boundingBox();
         ok(

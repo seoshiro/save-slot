@@ -1833,3 +1833,6 @@ figcaption {
     max-width: 320px;
   }
 }
+/* Fade selectors without replacing their centering transform. */
+.shelved .world-picks { animation: selectors-arrive .3s ease-out both; }
+@keyframes selectors-arrive { from { opacity: 0; } to { opacity: 1; } }
