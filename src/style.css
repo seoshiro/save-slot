@@ -1845,3 +1845,93 @@ figcaption {
     opacity: 1;
   }
 }
+/* Compact handheld play; the scene's offset follows the same 3D progress. */
+@media (max-width: 700px) {
+  .scene-wrap {
+    transform: translateY(calc(var(--scene-open, 0) * -85px));
+  }
+  .light-mode.opened .scene-wrap {
+    transform: translateY(-85px);
+  }
+  .light-mode.shelved .scene-wrap {
+    transform: none;
+  }
+  .opened .main {
+    padding-top: 410px;
+  }
+  .playing .main {
+    padding-top: 365px;
+  }
+  .playing .world-info {
+    padding: 10px 0 14px;
+    min-height: 0;
+  }
+  .playing .world-heading .eyebrow,
+  .playing .tagline,
+  .playing .type-label {
+    display: none;
+  }
+  .playing .world-heading h1 {
+    font-size: 12px;
+    line-height: 1.7;
+    letter-spacing: 0;
+    margin-bottom: 8px;
+  }
+  .playing .game-stat {
+    padding: 7px 0;
+  }
+  .playing .game-stat > span {
+    font-size: 12px;
+  }
+  .playing .game-stat > b {
+    font-size: 18px;
+  }
+  .playing .game-hint {
+    margin: 7px 0;
+    min-height: 25px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .playing .touch-controls {
+    margin: 8px 0;
+    gap: 10px;
+  }
+  .playing .dpad {
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+  }
+  .playing .activate {
+    min-height: 58px;
+  }
+  .playing .game-actions {
+    gap: 5px;
+    margin-top: 5px;
+  }
+  .playing .game-actions > .secondary {
+    font-size: 10px;
+    padding: 8px;
+  }
+  .playing .game-actions .text-button {
+    width: 100%;
+    min-height: 30px;
+    padding: 4px;
+    font-size: 11px;
+  }
+  .playing .game-controls > .small-copy {
+    display: none;
+  }
+  .light-mode.playing .fallback-notice {
+    display: none;
+  }
+  .large-mode.playing .main {
+    padding-top: calc(75px + min(58vw, 330px));
+  }
+}
+@media (max-width: 700px) {
+  .playing:not(.large-mode) .main {
+    padding-top: 390px;
+  }
+  .playing .spark {
+    display: none;
+  }
+}

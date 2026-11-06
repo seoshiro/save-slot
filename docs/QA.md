@@ -1,5 +1,7 @@
 # SAVE SLOT — verification log
 
+**Current asset status, 6 November: resolved.** The confirmed Blender-cleaned console is published and its actual browser response matches the local SHA-256 and Git blob. Earlier blocked-status entries below describe the preceding verification stage. See the final section and evidence/clean-model-qa.json.
+
 ## Scope
 
 Independent preview; existing portfolio, NOCT and SIDE A unchanged. All eight supplied images were downloaded and visually inspected. The clean console image alone was sent to Meshy; the storyboard and website screenshots were not used as 3D-generation input.
@@ -74,3 +76,19 @@ The public recovery run passed after the fault route was installed before naviga
 New uncut public recordings: desktop 37.60 s, fallback 36.32 s, and mobile viewport. The first two show actual play through all three signals and the portal, restart and return. Return frames show the console/cart packing while the hero and shelf actions remain absent; they reappear only after the physical transition settles. Contact sheets were extracted from the videos and visually reviewed. Mobile recording uses viewport-only screenshots to avoid Chrome video padding caused by temporary full-page-capture viewport resizing.
 
 Recording conditions remain Chrome 156 / Windows 11 / Ryzen 5 7535HS / AMD Radeon ANGLE D3D11. Mobile is an emulated viewport, not a physical phone. RAF intervals are diagnostics only. The desktop capture retained startup long tasks up to 956 ms during genuine first scene preparation; it is not evidence of universal smoothness or 60 fps. No new paid asset operations were needed for this refinement pass.
+
+## Confirmed cleaned model publication
+
+After the owner's new confirmation, the original operation was checked first: its deterministic Git blob returned 404 and the old request had not uploaded it. One new submission of the known-unexecuted upload succeeded with Git blob **9d3abcec543fb2974cc852d1780c3e52ead29c8d**. No duplicate model generation or paid operation was made. The GLB was committed, Pages deployed successfully, and the runtime uses `console.glb?v=9d3abce` so a cached earlier asset is not reused.
+
+The actual browser-loaded public response is **1,003,836 bytes**, SHA-256 **0C142EDACBC018DB33643BA6B9402E70AA28AEDDA7C77FC017580C6DE54011BD**. Its Git blob SHA also matches. The previous 6,379,068-byte response is retained as historical evidence in public-model-before-clean.json; public-model.json now describes the cleaned asset.
+
+Five targeted model checks passed: actual public bytes/SHA-256/Git blob, one scene through insertion and a completed return. Front, angle and intermediate cartridge screenshots are `console-front-public.png`, `console-angle-public.png`, `console-cartridge-public.png`. All 24 refinement checks were repeated with the cleaned model and passed on the public address. Desktop/mobile real-interaction recordings were refreshed with the cleaned body. Fallback does not use this asset and its separate complete recording remains valid. No Safari or physical-phone claim is made.
+
+## Screen fit, compact touch mode and genuine no-WebGL return
+
+The missing fallback UI was reproduced against the public pre-fix version by disabling WebGL context creation before page startup (not by selecting ?webgl=0). The MOSS -> insert -> back flow remained in `returning`; see evidence/repro-before.json and repro-before-return.png. The history listener had captured the first render's close function, before the asynchronous WebGL error. It now calls the current close function through a ref.
+
+A shared CRT opening now drives an actual 3D bezel, the rounded glass alpha mask and projected HTML screen bounds. The generated Meshy shell is retained. This removes the former screen plane's horizontal/depth offset and keeps the opening/image registration consistent through camera movement. No new GLB or generation was needed.
+
+Mobile play collapses description and uses a compact control layout. The scene offset follows existing transition progress. Touch instructions say tap Activate / нажми «Включить» instead of keyboard E. The initial local EN/RU matrix passed with both real ANGLE WebGL and unavailable-context fallback; public confirmation follows deployment. Recordings explicitly report WebGL2 vs Canvas2D fallback and must be sent with their matching identities.

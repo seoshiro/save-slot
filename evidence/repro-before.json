@@ -1,0 +1,15 @@
+{
+  "url": "https://seoshiro.github.io/save-slot/",
+  "at": "2026-11-06T06:55:56.770Z",
+  "checks": [
+    "390-en-fallback actual WebGL failure fallback"
+  ],
+  "errors": [],
+  "modes": [
+    {
+      "id": "390-en-fallback",
+      "mode": "Canvas2D; WebGL context unavailable"
+    }
+  ],
+  "failure": "390-en-fallback return settles to shelf"
+}

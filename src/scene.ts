@@ -8,6 +8,22 @@ import { worlds, type Lang } from "./data";
 const A = import.meta.env.BASE_URL + "media/";
 const clamp = THREE.MathUtils.clamp;
 const mix = THREE.MathUtils.lerp;
+const CRT = { width: 2.14, height: (2.14 * 5) / 7, x: -0.04, y: 0.11, z: 1.16 };
+const rounded = (w: number, h: number, r: number) => {
+  const s = new THREE.Shape(),
+    x = -w / 2,
+    y = -h / 2;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y);
+  s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r);
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h);
+  s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r);
+  s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+};
 const smooth = (a: number, b: number, x: number) => {
   const t = clamp((x - a) / (b - a), 0, 1);
   return t * t * (3 - 2 * t);
@@ -64,6 +80,7 @@ export class SaveScene {
       ready: () => void;
       error: (s: string) => void;
       screenRect?: (x: number, y: number, w: number, h: number) => void;
+      progress?: (p: number) => void;
     },
     gameCanvas: HTMLCanvasElement,
   ) {
@@ -482,20 +499,42 @@ export class SaveScene {
   }
   private prepareConsole() {
     // Screen, indicator and slot are independent controllable surfaces, never baked game artwork.
-    const display = new THREE.PlaneGeometry(2.34, 1.72, 16, 12);
+    // One measured opening drives the physical bezel, glass mask and HTML projection.
+    const surround = rounded(2.44, 1.84, 0.23);
+    surround.holes.push(rounded(CRT.width, CRT.height, 0.15));
+    const bezel = this.mesh(
+      new THREE.ExtrudeGeometry(surround, {
+        depth: 0.045,
+        bevelEnabled: true,
+        bevelSize: 0.012,
+        bevelThickness: 0.012,
+        bevelSegments: 2,
+        steps: 1,
+        curveSegments: 12,
+      }),
+      this.material({ color: 0x202b3b, roughness: 0.8 }),
+    );
+    bezel.position.set(CRT.x, CRT.y, 1.11);
+    this.console.add(bezel);
+    const display = new THREE.PlaneGeometry(CRT.width, CRT.height, 16, 12);
     const pos = display.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i),
         y = pos.getY(i);
-      pos.setZ(i, 0.055 * (1 - (x / 1.3) ** 2) * (1 - (y / 0.98) ** 2));
+      pos.setZ(
+        i,
+        0.024 *
+          (1 - (x / (CRT.width / 2)) ** 2) *
+          (1 - (y / (CRT.height / 2)) ** 2),
+      );
     }
     display.computeVertexNormals();
-    const mask = this.canvasTex(512, 384, (c) => {
+    const mask = this.canvasTex(512, 366, (c) => {
       c.fillStyle = "#000";
-      c.fillRect(0, 0, 512, 384);
+      c.fillRect(0, 0, 512, 366);
       c.fillStyle = "#fff";
       c.beginPath();
-      c.roundRect(0, 0, 512, 384, 35);
+      c.roundRect(0, 0, 512, 366, 36);
       c.fill();
     });
     this.screen = new THREE.Mesh(
@@ -507,7 +546,7 @@ export class SaveScene {
         toneMapped: false,
       }),
     );
-    this.screen.position.set(-0.2, 0.02, 1.2);
+    this.screen.position.set(CRT.x, CRT.y, CRT.z);
     this.console.add(this.screen);
     this.led = new THREE.Mesh(
       new THREE.SphereGeometry(0.035, 8, 8),
@@ -649,11 +688,12 @@ export class SaveScene {
       op = clamp(p, 0, 1),
       ins = clamp(p - 1, 0, 1),
       mobile = this.width < 700;
+    this.callbacks.progress?.(p);
     const play = smooth(1, 2, p);
     const viewW = mobile
-      ? mix(5.2, 4.5, play)
+      ? mix(5.2, 3.8, play)
       : mix(mix(12.8, 11.4, op), 6.2, play);
-    const fitY = mobile ? mix(4.3, 3.8, play) : mix(4.0, 3.45, play);
+    const fitY = mobile ? mix(4.3, 3.35, play) : mix(4.0, 3.45, play);
     const distance =
       Math.max(viewW / this.camera.aspect, fitY) /
       2 /
@@ -749,10 +789,10 @@ export class SaveScene {
     this.renderer.render(this.scene, this.camera);
     if (this.callbacks.screenRect && p > 1) {
       const corners = [
-        [-1.17, -0.86],
-        [1.17, -0.86],
-        [1.17, 0.86],
-        [-1.17, 0.86],
+        [-CRT.width / 2, -CRT.height / 2],
+        [CRT.width / 2, -CRT.height / 2],
+        [CRT.width / 2, CRT.height / 2],
+        [-CRT.width / 2, CRT.height / 2],
       ].map(([x, y]) =>
         this.screen
           .localToWorld(new THREE.Vector3(x, y, 0.04))

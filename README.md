@@ -45,7 +45,7 @@ The console began as **one Meshy 7 Ultra generation through Higgsfield**. Blende
 - [Model inspection](art/source/console-report.json)
 - [Generation and expense ledger](docs/CREDITS.md)
 
-The original Meshy GLB and editable Blender source are retained in the delivered source-asset archive. They are not required to run the preview. The local cleaned browser model is 1,003,836 bytes; replacing the earlier public GLB is pending the connector's asset-upload confirmation.
+The original Meshy GLB and editable Blender source are retained in the delivered source-asset archive. They are not required to run the preview. The Blender-cleaned browser model is 1,003,836 bytes and is published. Its versioned asset URL was verified against both the local SHA-256 and the confirmed Git blob; see docs/QA.md.
 
 The main portfolio, NOCT and SIDE A are unchanged. No backend, tracking, payments, account system or external AI calls run in the published site.
 

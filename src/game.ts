@@ -125,6 +125,7 @@ export function paintGame(
   s: GameState,
   time: number,
   active: boolean,
+  touch = false,
 ) {
   const W = COLS * TILE,
     H = ROWS * TILE;
@@ -339,7 +340,7 @@ export function paintGame(
       ctx.fillRect(bx - 6, by - 36, 12, 10);
       ctx.fillStyle = "#173e33";
       ctx.font = "bold 8px monospace";
-      ctx.fillText("E", bx - 3, by - 28);
+      ctx.fillText(touch ? "•" : "E", bx - 3, by - 28);
     }
   });
   // Tiny original amber robot sprite.

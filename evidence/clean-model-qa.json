@@ -1,0 +1,22 @@
+{
+  "url": "https://seoshiro.github.io/save-slot/",
+  "at": "2026-11-06T06:43:22.320Z",
+  "checks": [
+    "Actual browser GLB matches cleaned local GLB by SHA256",
+    "Actual browser GLB matches confirmed Git blob",
+    "Actual browser GLB is 1,003,836 bytes",
+    "One WebGL scene through opening and insertion",
+    "Cleaned console returns to shelf"
+  ],
+  "errors": [],
+  "asset": {
+    "url": "https://seoshiro.github.io/save-slot/media/console.glb?v=9d3abce",
+    "status": 200,
+    "bytes": 1003836,
+    "sha256": "0C142EDACBC018DB33643BA6B9402E70AA28AEDDA7C77FC017580C6DE54011BD",
+    "gitBlob": "9d3abcec543fb2974cc852d1780c3e52ead29c8d"
+  },
+  "browser": "156.0.8078.76",
+  "viewport": "1440x1000",
+  "headless": true
+}

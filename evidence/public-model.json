@@ -1,10 +1,11 @@
 {
-  "at": "2026-11-06T06:06:38.9221815Z",
-  "reason": "The binary replacement still lacks the mandatory platform confirmation.",
-  "url": "https://seoshiro.github.io/save-slot/media/console.glb",
-  "publicBytes": 6379068,
-  "cleanedLocalBytes": 1003836,
-  "matchesCleaned": false,
+  "matchesCleaned": true,
+  "status": "Confirmed upload and public browser byte/hash match; prior blocker resolved.",
   "cleanedLocalSha256": "0C142EDACBC018DB33643BA6B9402E70AA28AEDDA7C77FC017580C6DE54011BD",
-  "publicSha256": "96A74FF021B4EE249FF52E22CD05D6B6ECB8879F64160E841E00DE852873685B"
+  "publicSha256": "0C142EDACBC018DB33643BA6B9402E70AA28AEDDA7C77FC017580C6DE54011BD",
+  "gitBlob": "9d3abcec543fb2974cc852d1780c3e52ead29c8d",
+  "at": "2026-11-06T06:43:22.32Z",
+  "url": "https://seoshiro.github.io/save-slot/media/console.glb?v=9d3abce",
+  "cleanedLocalBytes": 1003836,
+  "publicBytes": 1003836
 }

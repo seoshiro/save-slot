@@ -3,10 +3,13 @@ import fs from "node:fs";
 import os from "node:os";
 const url = process.env.TEST_URL || "http://localhost:4197/";
 const mobile = process.env.MOBILE === "1";
-const light = process.env.LIGHT === "1";
+const contextFailure = process.env.WEBGL_FAIL === "1";
+const light = process.env.LIGHT === "1" || contextFailure;
 const stem = (mobile ? "mobile" : "desktop") + (light ? "-fallback" : "");
 const b = await chromium.launch({ channel: "chrome", headless: true });
 const ctx = await b.newContext({
+  isMobile: mobile,
+  hasTouch: mobile,
   viewport: mobile
     ? { width: 390, height: 844 }
     : { width: 1440, height: 1000 },
@@ -18,6 +21,17 @@ const ctx = await b.newContext({
 const p = await ctx.newPage();
 const video = p.video();
 try {
+  if (contextFailure)
+    await p.addInitScript(() => {
+      const original = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type, ...args) {
+        return type === "webgl" ||
+          type === "webgl2" ||
+          type === "experimental-webgl"
+          ? null
+          : original.call(this, type, ...args);
+      };
+    });
   await p.addInitScript(() => {
     window.__qa = { frames: [], tasks: [] };
     let prev = 0;
@@ -31,7 +45,7 @@ try {
       window.__qa.tasks.push(...l.getEntries().map((e) => e.duration)),
     ).observe({ type: "longtask", buffered: true });
   });
-  await p.goto(url + (light ? "?webgl=0" : ""));
+  await p.goto(url + (light && !contextFailure ? "?webgl=0" : ""));
   await p
     .getByRole("button", { name: "MOSS SIGNAL", exact: true })
     .last()
@@ -108,9 +122,7 @@ try {
     if (!(await p.locator(".game-stat").innerText()).includes("0"))
       throw Error("Restart did not clear progress");
   } else {
-    await p
-      .getByRole("button", { name: "Larger game screen", exact: true })
-      .click();
+    await p.screenshot({path:'evidence/mobile-compact-play.png'});
     await p
       .getByRole("button", { name: "Move up", exact: true })
       .scrollIntoViewIfNeeded();
@@ -127,9 +139,6 @@ try {
     await p
       .getByRole("button", { name: "Resume", exact: true })
       .first()
-      .click();
-    await p
-      .getByRole("button", { name: "Return to console", exact: true })
       .click();
   }
   await p
@@ -161,6 +170,9 @@ try {
     };
   });
   const report = {
+    mode: light ? "Canvas2D fallback" : "WebGL2",
+    webglVerified: !light,
+    contextFailureSimulated: contextFailure,
     url,
     at: new Date().toISOString(),
     browser: await b.version(),

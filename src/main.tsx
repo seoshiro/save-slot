@@ -116,7 +116,15 @@ function App() {
   const [lang, setLang] = useState<Lang>(() =>
     read("save-slot:lang") === "ru" ? "ru" : "en",
   );
+  const [touchUI, setTouchUI] = useState(
+    () => matchMedia("(max-width: 700px), (pointer: coarse)").matches,
+  );
   const t = words[lang];
+  const nearCopy = touchUI
+    ? lang === "en"
+      ? "Get close to a beacon, then tap Activate."
+      : "Подойди к маяку и нажми «Включить»."
+    : t.interact;
   const [selected, setSelected] = useState(chooseInitial);
   const w = worlds[selected];
   const [open, setOpen] = useState(() =>
@@ -149,6 +157,7 @@ function App() {
   }));
   const [hint, setHint] = useState("");
   const sceneEl = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<(fromPop?: boolean) => void>(() => {});
   const scene = useRef<SaveScene | null>(null);
   const source = useRef<HTMLCanvasElement>(document.createElement("canvas"));
   const visibleGame = useRef<HTMLCanvasElement>(null);
@@ -196,6 +205,12 @@ function App() {
   useEffect(() => {
     const q = matchMedia("(prefers-reduced-motion: reduce)");
     const f = () => setReduced(q.matches);
+    q.addEventListener("change", f);
+    return () => q.removeEventListener("change", f);
+  }, []);
+  useEffect(() => {
+    const q = matchMedia("(max-width: 700px), (pointer: coarse)");
+    const f = () => setTouchUI(q.matches);
     q.addEventListener("change", f);
     return () => q.removeEventListener("change", f);
   }, []);
@@ -261,6 +276,10 @@ function App() {
               el.style.setProperty("--screen-h", h + "px");
             }
           },
+          progress: (p) =>
+            sceneEl.current
+              ?.closest("main")
+              ?.style.setProperty("--scene-open", String(Math.min(1, p))),
         },
         source.current,
       );
@@ -386,6 +405,7 @@ function App() {
     }
     tone(220);
   }
+  closeRef.current = closeBox;
   useEffect(() => {
     const f = () => {
       const i = worlds.findIndex((w) => w.id === location.hash.slice(1));
@@ -393,7 +413,7 @@ function App() {
         setSelected(i);
         setOpen(true);
         setInserted(false);
-      } else closeBox(true);
+      } else closeRef.current(true);
     };
     window.addEventListener("popstate", f);
     return () => window.removeEventListener("popstate", f);
@@ -529,6 +549,7 @@ function App() {
         game.current,
         reduced ? 0 : now,
         !!(dx || dy) && !paused,
+        touchUI,
       );
       if (visibleGame.current) {
         const c = visibleGame.current.getContext("2d")!;
@@ -552,7 +573,18 @@ function App() {
     };
     paint(performance.now());
     return () => cancelAnimationFrame(raf);
-  }, [isGame, paused, large, about, restart, lang, gameUI.won, light, reduced]);
+  }, [
+    isGame,
+    paused,
+    large,
+    about,
+    restart,
+    lang,
+    gameUI.won,
+    light,
+    reduced,
+    touchUI,
+  ]);
   useEffect(() => {
     if (about) aboutRef.current?.showModal();
     else if (aboutRef.current?.open) aboutRef.current.close();
@@ -787,8 +819,8 @@ function App() {
               }
               aria-label={
                 lang === "en"
-                  ? "MOSS SIGNAL game. " + t.controls
-                  : "Игра MOSS SIGNAL. " + t.controls
+                  ? "MOSS SIGNAL game. " + (touchUI ? nearCopy : t.controls)
+                  : "Игра MOSS SIGNAL. " + (touchUI ? nearCopy : t.controls)
               }
               data-testid="game-region"
             >
@@ -992,7 +1024,7 @@ function App() {
                   </b>
                 </div>
                 <p className="game-hint" role="status">
-                  {hint || (gameUI.count === 3 ? t.allSignals : t.interact)}
+                  {hint || (gameUI.count === 3 ? t.allSignals : nearCopy)}
                 </p>
                 <div className="desktop-controls">
                   <p>
