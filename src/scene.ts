@@ -649,14 +649,20 @@ export class SaveScene {
       op = clamp(p, 0, 1),
       ins = clamp(p - 1, 0, 1),
       mobile = this.width < 700;
-    const viewW = mobile ? mix(5.2, 5.1, op) : mix(12.8, 9.8, op);
-    const fitY = mobile ? 4.3 : mix(4.0, 4.8, op);
+    const play = smooth(1, 2, p);
+    const viewW = mobile
+      ? mix(5.2, 4.5, play)
+      : mix(mix(12.8, 11.4, op), 6.2, play);
+    const fitY = mobile ? mix(4.3, 3.8, play) : mix(4.0, 3.45, play);
     const distance =
       Math.max(viewW / this.camera.aspect, fitY) /
       2 /
       Math.tan(THREE.MathUtils.degToRad(16));
-    this.camera.position.set(0, mix(2.7, 2.0, smooth(1, 2, p)), distance);
-    this.camera.lookAt(0, mix(-0.04, 0.0, smooth(1, 2, p)), 0);
+    const focusX = mobile
+      ? mix(0, 0.1, play)
+      : mix(0, mix(1.6, 0.95, play), op);
+    this.camera.position.set(focusX, mix(2.7, 0.65, play), distance);
+    this.camera.lookAt(focusX, mix(-0.04, 0.04, play), 0);
     this.camera.updateMatrixWorld();
     // Opening groups share one progress. Reverse traversal naturally extracts before packing.
     this.boxes.forEach((b, i) => {
@@ -668,7 +674,7 @@ export class SaveScene {
         z = openAmount * 0.42;
       let ry = (r < 0 ? 1.05 : 1.05) * (1 - openAmount) + 0.09 * openAmount;
       if (sel) {
-        const travel = smooth(0, 0.32, op);
+        const travel = smooth(0, 0.14, op);
         x = mix(x, mobile ? -1.85 : -3.65, travel);
         b.group.position.set(x, mix(y, -0.08, travel), mix(z, 0.12, travel));
         b.group.rotation.set(
@@ -701,7 +707,7 @@ export class SaveScene {
         );
         b.cart.scale.setScalar(0.95);
       } else {
-        const spread = smooth(0.05, 0.38, op);
+        const spread = smooth(0.02, 0.14, op);
         b.group.position.set(
           x + Math.sign(r) * spread * 9,
           y - spread * 0.15,
@@ -715,7 +721,7 @@ export class SaveScene {
       b.group.visible = Math.abs(b.group.position.x) < 18;
     });
     this.shelf.position.y = -smooth(0.05, 0.5, op) * 5;
-    const cp = smooth(0.22, 0.66, op);
+    const cp = smooth(0.15, 0.27, op);
     this.console.visible = cp > 0;
     this.console.position.set(mobile ? 0.33 : 0.4, mix(-5, -0.05, cp), -0.1);
     this.console.rotation.y = mix(-0.28, -0.08, ins);

@@ -1668,3 +1668,149 @@ figcaption {
     height: calc(100svh - 152px);
   }
 }
+/* Stable viewport: objects and camera compose each state; no CSS resize races. */
+@media (min-width: 701px) {
+  .scene-wrap,
+  .opened .scene-wrap {
+    inset: 105px -34px 100px;
+    transition: none;
+  }
+  .opened .main {
+    min-height: 665px;
+  }
+  .playing .world-info {
+    margin-left: 78%;
+    padding-left: 22px;
+  }
+  .playing .world-heading h1 {
+    font-size: 23px;
+    line-height: 1.5;
+  }
+  .playing .tagline,
+  .playing .type-label {
+    display: none;
+  }
+  .playing .world-info {
+    padding-top: 32px;
+  }
+  .world-info {
+    transition:
+      margin-left 0.68s,
+      padding 0.68s;
+  }
+  .playing .game-hint {
+    font-size: 13px;
+  }
+  .playing .desktop-controls p {
+    flex-wrap: wrap;
+  }
+  .playing .game-actions {
+    gap: 5px;
+  }
+  .playing .secondary {
+    padding: 10px 8px;
+  }
+}
+.shelved .shelf-actions,
+.shelved .world-picks {
+  animation: arrive 0.3s ease-out both;
+}
+.returning .hero-copy {
+  opacity: 0;
+}
+@media (max-width: 700px) {
+  .scene-wrap,
+  .opened .scene-wrap {
+    top: 130px;
+    bottom: auto;
+    height: 365px;
+    transition: none;
+  }
+  .opened .main {
+    padding-top: 505px;
+  }
+}
+/* Light mode uses an independent framed display, never a guessed poster crop. */
+.light-mode .scene-wrap {
+  overflow: hidden;
+}
+.light-mode .flat-shelf {
+  height: 100%;
+  align-items: center;
+  padding: 30px 10px 60px;
+}
+.light-mode .flat-shelf > button {
+  max-height: 90%;
+  width: 9%;
+}
+.light-mode .flat-shelf > button.flat-active {
+  width: 22%;
+}
+.light-mode .flat-shelf img {
+  max-height: 100%;
+  object-fit: contain;
+}
+.light-mode .flat-console .flat-screen {
+  display: none;
+}
+.light-mode.playing .flat-console {
+  display: none;
+}
+.light-mode:not(.large-mode) .game-region {
+  inset: auto;
+  left: 4%;
+  top: 8%;
+  width: 70%;
+  height: auto;
+  aspect-ratio: 7 / 5;
+  border: 12px solid #293b3b;
+  outline: 2px solid #b4aa91;
+  border-radius: 8px;
+  background: #092d2d;
+  box-shadow: 10px 16px 0 #ccc1ad;
+  pointer-events: auto;
+}
+.light-mode .fallback-notice {
+  bottom: 0;
+}
+@media (max-width: 700px) {
+  .light-mode .flat-shelf > button {
+    width: 17%;
+  }
+  .light-mode .flat-shelf > button.flat-active {
+    width: 39%;
+  }
+  .light-mode:not(.large-mode) .game-region {
+    left: 5%;
+    top: 4%;
+    width: 90%;
+    border-width: 7px;
+  }
+}
+@media (min-width: 701px) {
+  .light-mode.shelved .scene-wrap {
+    top: 215px;
+  }
+}
+.light-mode .flat-shelf > button {
+  height: 100%;
+}
+.light-mode .flat-shelf img {
+  height: 100%;
+  object-fit: contain;
+}
+.light-mode .flat-shelf {
+  align-items: flex-end;
+}
+.light-mode .flat-shelf > button {
+  height: auto;
+  aspect-ratio: 2 / 3;
+}
+.light-mode:not(.large-mode) .game-region {
+  width: min(70%, 720px);
+}
+@media (max-width: 700px) {
+  .light-mode:not(.large-mode) .game-region {
+    width: 90%;
+  }
+}

@@ -54,3 +54,13 @@ The new local cleaned GLB is **1,003,836 bytes** and its inspected mesh has **22
 - Session progress belongs to this tab's browser session; it is not a cloud save or account.
 - User-provided illustration crops are used for the six worlds. Exact full-resolution source artwork was not separately generated or purchased.
 - No optional concept film was generated; the live game is the evidence of gameplay.
+
+## Refinement pass - 6 November
+
+- The 3D viewport stays fixed during opening, insertion and return. Camera framing approaches the console at insertion; the desktop projected screen is about 533 px wide at 1440x1000 in the local measurement, previously about 250 px in the reviewed recording. This is screen width, not a performance claim.
+- A separate returning state withholds the shelf heading/actions until physical reversal settles. The timeline reverses insertion, cross-travel, descent, flap, console withdrawal, then shelf restoration. Repeated changes retain the current progress.
+- MOSS SIGNAL has layered foliage on blocked terrain, ruined stone silhouettes, taller numbered beacons, proximity hints, activation ripples and a portal that lights with restored signals. Collision data and objective logic remain unchanged.
+- Light mode uses a standalone 7:5 Canvas frame, not guessed alignment over a console photograph. Covers have bounded aspect ratios and a separate shelf area below the heading.
+- No new Higgsfield operations. Cumulative 93.5 / 300; reserve 206.5. The binary replacement still lacks the specific platform confirmation; it has not been resubmitted or bypassed.
+
+Local TypeScript/build and six game tests pass. The existing three-viewport interaction matrix passes, with no captured page errors or automated shelf accessibility violations. Targeted width, return-state and EN/RU WebGL/fallback layout checks are in evidence/refinement-qa.json. Public checks and new recordings follow the text/code deployment; the exact public model will be identified separately.

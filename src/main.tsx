@@ -123,6 +123,8 @@ function App() {
     worlds.some((w) => w.id === location.hash.slice(1)),
   );
   const [inserted, setInserted] = useState(false);
+  const [returning, setReturning] = useState(false);
+  const viewOpen = open || returning;
   const [settled, setSettled] = useState(0);
   const [about, setAbout] = useState(false);
   const [detail, setDetail] = useState(0);
@@ -216,7 +218,13 @@ function App() {
           settled: (x) => {
             setSettled(x);
             if (x === 0) {
+              setReturning(false);
               closing.current = false;
+              requestAnimationFrame(() =>
+                document
+                  .querySelector<HTMLButtonElement>("[data-open-box]")
+                  ?.focus({ preventScroll: true }),
+              );
               if (queuedSelection.current !== null) {
                 setSelected(queuedSelection.current);
                 queuedSelection.current = null;
@@ -289,15 +297,24 @@ function App() {
   }, [selected]);
   useEffect(() => {
     scene.current?.setStage(open ? (inserted ? 2 : 1) : 0);
-    if (light) setSettled(open ? (inserted ? 2 : 1) : 0);
+    if (light) {
+      setSettled(open ? (inserted ? 2 : 1) : 0);
+      if (!open) {
+        setReturning(false);
+        closing.current = false;
+      }
+    }
   }, [open, inserted, light]);
   useEffect(() => {
     scene.current?.setInspect(inspect);
   }, [inspect]);
   useEffect(() => {
-    scene.current?.setGame(isGame, open && inserted && settled === 2);
+    scene.current?.setGame(
+      isGame || (returning && selected === 2),
+      open && inserted && settled === 2,
+    );
     if (isGame) gameRegion.current?.focus({ preventScroll: true });
-  }, [isGame, open, inserted, settled]);
+  }, [isGame, open, inserted, settled, returning, selected]);
   function select(i: number) {
     if (open) return;
     openIntent.current = false;
@@ -331,6 +348,7 @@ function App() {
       return;
     }
     closing.current = false;
+    setReturning(false);
     queuedSelection.current = null;
     previousFocus.current = document.activeElement as HTMLElement;
     setOpen(true);
@@ -350,6 +368,7 @@ function App() {
   }
   openRef.current = openBox;
   function closeBox(fromPop = false) {
+    setReturning(!light);
     setSettled(-1);
     setAbout(false);
     setRestart(false);
@@ -365,9 +384,6 @@ function App() {
       if (history.state?.saveSlot) history.back();
       else history.replaceState(null, "", location.pathname + location.search);
     }
-    requestAnimationFrame(() =>
-      document.querySelector<HTMLButtonElement>("[data-open-box]")?.focus(),
-    );
     tone(220);
   }
   useEffect(() => {
@@ -593,12 +609,22 @@ function App() {
     <div
       className={
         "app " +
-        (open ? "opened" : "shelved") +
+        (viewOpen ? "opened" : "shelved") +
+        (returning ? " returning" : "") +
+        (open && inserted ? " playing" : "") +
         (inserted ? " inserted" : "") +
         (light ? " light-mode" : "") +
         (large ? " large-mode" : "")
       }
-      data-stage={open ? (inserted ? "inserted" : "open") : "shelf"}
+      data-stage={
+        returning
+          ? "returning"
+          : open
+            ? inserted
+              ? "inserted"
+              : "open"
+            : "shelf"
+      }
     >
       <a className="skip" href="#main">
         {lang === "en" ? "Skip to collection" : "К коллекции"}
@@ -674,7 +700,7 @@ function App() {
         <div className="spark s3" aria-hidden="true">
           +
         </div>
-        <section className="hero-copy" aria-hidden={open}>
+        <section className="hero-copy" aria-hidden={viewOpen}>
           <p className="eyebrow">{t.six}</p>
           <h1>
             {t.headline.split("\n").map((s, i) => (
@@ -793,7 +819,7 @@ function App() {
             </div>
           )}
         </div>
-        {!open && (
+        {!viewOpen && (
           <div className="shelf-actions">
             <div className="selected-copy" aria-live="polite">
               <h2>
@@ -842,7 +868,7 @@ function App() {
             )}
           </div>
         )}
-        {!open && (
+        {!viewOpen && (
           <div className="world-picks" role="group" aria-label={t.select}>
             {worlds.map((v, i) => (
               <button

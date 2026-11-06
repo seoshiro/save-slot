@@ -3,6 +3,8 @@ import fs from "node:fs";
 import os from "node:os";
 const url = process.env.TEST_URL || "http://localhost:4197/";
 const mobile = process.env.MOBILE === "1";
+const light = process.env.LIGHT === "1";
+const stem = (mobile ? "mobile" : "desktop") + (light ? "-fallback" : "");
 const b = await chromium.launch({ channel: "chrome", headless: true });
 const ctx = await b.newContext({
   viewport: mobile
@@ -29,14 +31,14 @@ try {
       window.__qa.tasks.push(...l.getEntries().map((e) => e.duration)),
     ).observe({ type: "longtask", buffered: true });
   });
-  await p.goto(url);
-  await p.getByRole("button", { name: "MOSS SIGNAL", exact: true }).click();
+  await p.goto(url + (light ? "?webgl=0" : ""));
+  await p.getByRole("button", { name: "MOSS SIGNAL", exact: true }).last().click();
   await p.waitForTimeout(800);
   await p.screenshot({
     path: "evidence/" + (mobile ? "mobile" : "desktop") + "-shelf.png",
     fullPage: true,
   });
-  const gpu = await p.locator(".scene canvas").evaluate((c) => {
+  const gpu = light ? "Canvas2D fallback; no WebGL" : await p.locator(".scene canvas").evaluate((c) => {
     const gl = c.getContext("webgl2");
     const d = gl.getExtension("WEBGL_debug_renderer_info");
     return d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : "Not exposed";
@@ -167,13 +169,13 @@ try {
     note: "RAF timings measure callback delivery, not complete GPU presentation. Read together with the uncut browser recording; no all-device smoothness claim.",
   };
   fs.writeFileSync(
-    "evidence/" + (mobile ? "mobile" : "desktop") + "-performance.json",
+    "evidence/" + stem + "-performance.json",
     JSON.stringify(report, null, 2),
   );
 } finally {
   await ctx.close();
   await video.saveAs(
-    "evidence/" + (mobile ? "mobile" : "desktop") + "-full-scenario.webm",
+    "evidence/" + stem + "-full-scenario.webm",
   );
   await b.close();
 }

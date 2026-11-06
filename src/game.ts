@@ -118,6 +118,8 @@ const noise = (x: number, y: number) => {
   const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
   return n - Math.floor(n);
 };
+const ignition = [-1e6, -1e6, -1e6];
+let previousSignals = 0;
 export function paintGame(
   ctx: CanvasRenderingContext2D,
   s: GameState,
@@ -129,6 +131,12 @@ export function paintGame(
   ctx.imageSmoothingEnabled = false;
   ctx.fillStyle = "#092d2d";
   ctx.fillRect(0, 0, W, H);
+  const signals = s.beacons.reduce((mask, v, i) => mask | (v ? 1 << i : 0), 0);
+  if (!signals) ignition.fill(-1e6);
+  s.beacons.forEach((v, i) => {
+    if (v && !(previousSignals & (1 << i))) ignition[i] = time;
+  });
+  previousSignals = signals;
   for (let y = 0; y < ROWS; y++)
     for (let x = 0; x < COLS; x++) {
       const n = noise(x, y);
@@ -146,8 +154,6 @@ export function paintGame(
         }
       } else {
         const path =
-          Math.abs(x - 13) < 2 ||
-          Math.abs(y - 10) < 2 ||
           Math.abs(x - 5) < 1.5 ||
           Math.abs(y - 5) < 1.5 ||
           Math.abs(y - 16) < 1.3 ||
@@ -162,8 +168,8 @@ export function paintGame(
         ctx.fillRect(px, py, 16, 16);
         if (path) {
           ctx.fillStyle = "#485e4c";
-          ctx.fillRect(px, py, 16, 1);
-          ctx.fillRect(px, py, 1, 16);
+          if (n > 0.7) ctx.fillRect(px + 3, py, 10, 1);
+          if (n < 0.3) ctx.fillRect(px, py + 3, 1, 8);
           if (n > 0.6) ctx.fillRect(px + 5, py + 8, 6, 1);
           ctx.fillStyle = "#9a9c70";
           ctx.fillRect(px + 2, py + 2, 5, 1);
@@ -178,6 +184,34 @@ export function paintGame(
       }
     }
   // The ruins are structural obstacles, not just a painted background.
+  // Layered foliage stays on blocked terrain; silhouettes still mark collision edges.
+  const shrub = (x: number, y: number, radius: number, seed: number) => {
+    ctx.fillStyle = "#062d29";
+    ctx.fillRect(x - radius, y, radius * 2 + 4, radius);
+    for (let j = 0; j < 7; j++) {
+      const nx = Math.floor(noise(seed, j) * radius * 1.6 - radius * 0.8);
+      const ny = Math.floor(noise(j, seed) * radius * 0.8);
+      ctx.fillStyle = ["#144e3b", "#216344", "#35764a", "#4d8950"][j % 4];
+      ctx.fillRect(x + nx - 8, y + ny - radius, 16, 10);
+      ctx.fillStyle = j % 3 ? "#609950" : "#8ba957";
+      ctx.fillRect(x + nx - 4, y + ny - radius, 7, 2);
+    }
+  };
+  for (let j = 0; j < 16; j++) {
+    shrub(15 + j * 29, 20 + (j % 3) * 5, 18, j + 3);
+    shrub(12 + j * 29, H - 5, 21, j + 33);
+  }
+  for (let j = 0; j < 9; j++) {
+    shrub(16, 40 + j * 28, 22, j + 61);
+    shrub(W - 16, 40 + j * 28, 22, j + 90);
+  }
+  // Ferns cling to the two impassable ruins, never across the walking corridor.
+  [
+    [11, 7],
+    [13, 7],
+    [15, 13],
+    [17, 13],
+  ].forEach(([x, y], i) => shrub(x * TILE, y * TILE, 17, i + 120));
   for (const [x, y] of [
     [10, 6],
     [12, 7],
@@ -206,9 +240,29 @@ export function paintGame(
   ctx.fillRect(tx - 21, ty - 19, 7, 31);
   ctx.fillRect(tx + 14, ty - 19, 7, 31);
   ctx.fillRect(tx - 15, ty - 34, 30, 8);
+  // Stepped keystones and runes make the portal read as a structure, not a rectangle.
+  ctx.fillStyle = "#d0c599";
+  ctx.fillRect(tx - 10, ty - 35, 20, 4);
+  ctx.fillStyle = "#667f65";
+  for (let j = 0; j < 4; j++) {
+    ctx.fillRect(tx - 22, ty - 18 + j * 8, 9, 2);
+    ctx.fillRect(tx + 13, ty - 18 + j * 8, 9, 2);
+  }
+  ctx.fillStyle = "#648e57";
+  ctx.fillRect(tx - 24, ty + 5, 12, 5);
+  ctx.fillRect(tx + 11, ty - 25, 10, 5);
+  ctx.fillStyle = "#e8cf73";
+  s.beacons.forEach((v, i) => {
+    if (v) ctx.fillRect(tx - 8 + i * 7, ty - 29, 3, 3);
+  });
   ctx.fillStyle = s.beacons.every(Boolean) ? "#e9d975" : "#325b48";
   ctx.fillRect(tx - 12, ty - 19, 24, 29);
   if (s.beacons.every(Boolean)) {
+    const glow = ctx.createRadialGradient(tx, ty - 3, 4, tx, ty - 3, 47);
+    glow.addColorStop(0, "rgba(232,241,153,.45)");
+    glow.addColorStop(1, "rgba(182,241,153,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(tx - 48, ty - 50, 96, 98);
     ctx.fillStyle = "#c0eab2";
     for (let j = 0; j < 4; j++)
       ctx.fillRect(
@@ -217,18 +271,60 @@ export function paintGame(
         2,
         17,
       );
+    for (let j = 0; j < 12; j++) {
+      const angle = (j * Math.PI) / 6 + time * 0.00035;
+      ctx.fillStyle = j % 2 ? "#fff0a4" : "#a7d58d";
+      ctx.fillRect(
+        Math.round(tx + Math.cos(angle) * 28),
+        Math.round(ty - 5 + Math.sin(angle) * 30),
+        2,
+        2,
+      );
+    }
   }
   beacons.forEach((b, i) => {
     const bx = b.x * TILE,
       by = b.y * TILE;
+    const near = !s.beacons[i] && Math.hypot(s.x - b.x, s.y - b.y) < 1.3;
+    const age = Math.max(0, time - ignition[i]);
+    if (s.beacons[i]) {
+      const glow = ctx.createRadialGradient(bx, by - 12, 2, bx, by - 12, 30);
+      glow.addColorStop(0, "rgba(255,224,114,.32)");
+      glow.addColorStop(1, "rgba(255,224,114,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(bx - 30, by - 42, 60, 60);
+      if (age < 1100) {
+        ctx.strokeStyle = `rgba(246,223,126,${0.75 * (1 - age / 1100)})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(bx, by + 7, 10 + age / 38, 5 + age / 76, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.fillStyle = "#fae49b";
+      for (let j = 0; j < 3; j++)
+        ctx.fillRect(
+          bx - 7 + j * 7,
+          by - 18 - ((time * 0.018 + j * 11) % 25),
+          2,
+          2,
+        );
+    }
     ctx.fillStyle = "#183a2e";
     ctx.fillRect(bx - 9, by + 5, 20, 7);
     ctx.fillStyle = "#7d8f6a";
     ctx.fillRect(bx - 8, by - 4, 16, 14);
     ctx.fillStyle = "#b8b58a";
     ctx.fillRect(bx - 10, by - 6, 20, 5);
+    ctx.fillStyle = "#4d6654";
+    ctx.fillRect(bx - 6, by - 27, 12, 20);
+    ctx.fillStyle = "#bdb382";
+    ctx.fillRect(bx - 8, by - 28, 16, 4);
+    ctx.fillStyle = "#485c4a";
+    ctx.fillRect(bx - 5, by - 21, 10, 6);
+    ctx.fillStyle = "#c6bd85";
+    ctx.fillRect(bx - 7, by - 22, 14, 3);
     ctx.fillStyle = s.beacons[i] ? "#eebb48" : "#536b5b";
-    ctx.fillRect(bx - 4, by - 16, 8, 10);
+    ctx.fillRect(bx - 4, by - 24, 8, 17);
     if (s.beacons[i]) {
       ctx.fillStyle = "#fff2a4";
       ctx.fillRect(bx - 2, by - 15, 4, 6);
@@ -238,6 +334,13 @@ export function paintGame(
     ctx.fillStyle = "#d9deae";
     ctx.font = "7px monospace";
     ctx.fillText(String(i + 1), bx - 2, by + 6);
+    if (near) {
+      ctx.fillStyle = "#faf0c5";
+      ctx.fillRect(bx - 6, by - 36, 12, 10);
+      ctx.fillStyle = "#173e33";
+      ctx.font = "bold 8px monospace";
+      ctx.fillText("E", bx - 3, by - 28);
+    }
   });
   // Tiny original amber robot sprite.
   const rx = Math.round(s.x * TILE),
