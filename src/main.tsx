@@ -276,10 +276,14 @@ function App() {
               el.style.setProperty("--screen-h", h + "px");
             }
           },
-          progress: (p) =>
-            sceneEl.current
-              ?.closest("main")
-              ?.style.setProperty("--scene-open", String(Math.min(1, p))),
+          progress: (p) => {
+            const host = sceneEl.current?.closest("main");
+            host?.style.setProperty("--scene-open", String(Math.min(1, p)));
+            host?.style.setProperty(
+              "--scene-play",
+              String(Math.max(0, Math.min(1, p - 1))),
+            );
+          },
         },
         source.current,
       );
@@ -334,6 +338,10 @@ function App() {
     );
     if (isGame) gameRegion.current?.focus({ preventScroll: true });
   }, [isGame, open, inserted, settled, returning, selected]);
+  useEffect(() => {
+    if (isGame && touchUI)
+      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+  }, [isGame, touchUI, reduced]);
   function select(i: number) {
     if (open) return;
     openIntent.current = false;

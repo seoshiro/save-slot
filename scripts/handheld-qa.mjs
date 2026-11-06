@@ -15,13 +15,20 @@ const ok = (v, n) => {
   report.checks.push(n);
 };
 try {
-  for (const width of repro ? [390] : [390, 1440])
+  for (const width of repro
+    ? [390]
+    : process.env.SHORT_ONLY === "1"
+      ? [375]
+      : [390, 1440])
     for (const disabled of repro ? [true] : [false, true])
       for (const lang of repro ? ["en"] : ["en", "ru"]) {
         const p = await browser.newPage({
-          viewport: { width, height: width === 390 ? 844 : 1000 },
-          isMobile: width === 390,
-          hasTouch: width === 390,
+          viewport: {
+            width,
+            height: width === 375 ? 667 : width <= 700 ? 844 : 1000,
+          },
+          isMobile: width <= 700,
+          hasTouch: width <= 700,
         });
         p.on("pageerror", (e) => report.errors.push(e.message));
         if (disabled)
@@ -75,7 +82,18 @@ try {
             mode: "Canvas2D; WebGL context unavailable",
           });
         }
-        if (width === 390 && !repro) {
+        if (width <= 700 && !repro) {
+          ok(
+            await p.evaluate(() => scrollY < 2),
+            `${id} compact play starts at page top`,
+          );
+          const area = await p.locator(".scene-wrap").boundingBox(),
+            field = await p.locator(".game-region").boundingBox();
+          ok(
+            field.y >= area.y &&
+              field.y + field.height <= area.y + area.height + 1,
+            `${id} game inside scene bounds`,
+          );
           for (const sel of [
             ".game-region",
             ".dpad",
@@ -84,7 +102,7 @@ try {
           ]) {
             const b = await p.locator(sel).boundingBox();
             ok(
-              b.y >= 0 && b.y + b.height <= 844,
+              b.y >= 0 && b.y + b.height <= (width === 375 ? 667 : 844),
               `${id} ${sel} inside first viewport`,
             );
           }
@@ -147,7 +165,7 @@ try {
 } finally {
   await browser.close();
   fs.writeFileSync(
-    `evidence/${repro ? "repro-before" : "handheld-qa"}.json`,
+    `evidence/${repro ? "repro-before" : process.env.SHORT_ONLY === "1" ? "handheld-short-qa" : "handheld-qa"}.json`,
     JSON.stringify(report, null, 2),
   );
   console.log(JSON.stringify(report, null, 2));

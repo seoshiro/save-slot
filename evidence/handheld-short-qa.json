@@ -1,0 +1,79 @@
+{
+  "url": "http://localhost:4197/",
+  "at": "2026-11-06T07:09:23.797Z",
+  "checks": [
+    "375-en-webgl genuine scene canvas",
+    "375-en-webgl compact play starts at page top",
+    "375-en-webgl game inside scene bounds",
+    "375-en-webgl .game-region inside first viewport",
+    "375-en-webgl .dpad inside first viewport",
+    "375-en-webgl .activate inside first viewport",
+    "375-en-webgl .game-actions > .secondary:first-child inside first viewport",
+    "375-en-webgl touch instructions",
+    "375-en-webgl return settles to shelf",
+    "375-en-webgl shelf actions restored",
+    "375-en-webgl heading restored",
+    "375-en-webgl open button restored",
+    "375-en-webgl arrows restored",
+    "375-ru-webgl genuine scene canvas",
+    "375-ru-webgl compact play starts at page top",
+    "375-ru-webgl game inside scene bounds",
+    "375-ru-webgl .game-region inside first viewport",
+    "375-ru-webgl .dpad inside first viewport",
+    "375-ru-webgl .activate inside first viewport",
+    "375-ru-webgl .game-actions > .secondary:first-child inside first viewport",
+    "375-ru-webgl touch instructions",
+    "375-ru-webgl return settles to shelf",
+    "375-ru-webgl shelf actions restored",
+    "375-ru-webgl heading restored",
+    "375-ru-webgl open button restored",
+    "375-ru-webgl arrows restored",
+    "375-en-fallback actual WebGL failure fallback",
+    "375-en-fallback compact play starts at page top",
+    "375-en-fallback game inside scene bounds",
+    "375-en-fallback .game-region inside first viewport",
+    "375-en-fallback .dpad inside first viewport",
+    "375-en-fallback .activate inside first viewport",
+    "375-en-fallback .game-actions > .secondary:first-child inside first viewport",
+    "375-en-fallback touch instructions",
+    "375-en-fallback return settles to shelf",
+    "375-en-fallback shelf actions restored",
+    "375-en-fallback heading restored",
+    "375-en-fallback open button restored",
+    "375-en-fallback arrows restored",
+    "375-ru-fallback actual WebGL failure fallback",
+    "375-ru-fallback compact play starts at page top",
+    "375-ru-fallback game inside scene bounds",
+    "375-ru-fallback .game-region inside first viewport",
+    "375-ru-fallback .dpad inside first viewport",
+    "375-ru-fallback .activate inside first viewport",
+    "375-ru-fallback .game-actions > .secondary:first-child inside first viewport",
+    "375-ru-fallback touch instructions",
+    "375-ru-fallback return settles to shelf",
+    "375-ru-fallback shelf actions restored",
+    "375-ru-fallback heading restored",
+    "375-ru-fallback open button restored",
+    "375-ru-fallback arrows restored"
+  ],
+  "errors": [],
+  "modes": [
+    {
+      "id": "375-en-webgl",
+      "mode": "WebGL",
+      "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    },
+    {
+      "id": "375-ru-webgl",
+      "mode": "WebGL",
+      "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    },
+    {
+      "id": "375-en-fallback",
+      "mode": "Canvas2D; WebGL context unavailable"
+    },
+    {
+      "id": "375-ru-fallback",
+      "mode": "Canvas2D; WebGL context unavailable"
+    }
+  ]
+}

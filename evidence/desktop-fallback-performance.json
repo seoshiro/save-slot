@@ -1,6 +1,9 @@
 {
+  "mode": "Canvas2D fallback",
+  "webglVerified": false,
+  "contextFailureSimulated": true,
   "url": "https://seoshiro.github.io/save-slot/",
-  "at": "2026-11-06T06:08:29.918Z",
+  "at": "2026-11-06T07:02:42.545Z",
   "browser": "156.0.8078.76",
   "os": "Windows_NT 10.0.26200",
   "cpu": "AMD Ryzen 5 7535HS with Radeon Graphics        ",
@@ -10,17 +13,17 @@
   "headless": true,
   "physicalPhone": false,
   "metrics": {
-    "rafSamples": 3003,
-    "rafMedianMs": 8.100000000002183,
-    "rafP95Ms": 16.200000000000728,
+    "rafSamples": 2973,
+    "rafMedianMs": 8.100000000000364,
+    "rafP95Ms": 16.100000000000364,
     "longTasks": [
-      57
+      51
     ],
     "resources": [],
     "navigation": [
       {
-        "domContentLoaded": 867.3999999761581,
-        "load": 867.5
+        "domContentLoaded": 711.2000000476837,
+        "load": 711.2999999523163
       }
     ]
   },

@@ -1935,3 +1935,31 @@ figcaption {
     display: none;
   }
 }
+@media (max-width: 700px) and (max-height: 740px) {
+  .app:not(.light-mode):not(.large-mode) .scene-wrap {
+    height: calc(365px - var(--scene-play, 0) * 130px);
+    top: calc(130px - var(--scene-play, 0) * 20px);
+  }
+  .playing:not(.large-mode) .main {
+    padding-top: 260px;
+  }
+  .light-mode.playing:not(.large-mode) .scene-wrap {
+    height: 235px;
+    top: 110px;
+  }
+  .playing .world-info {
+    padding-top: 7px;
+  }
+  .playing .game-hint {
+    min-height: 22px;
+    margin-block: 4px;
+  }
+  .playing .touch-controls {
+    margin-block: 4px;
+  }
+}
+@media (max-width: 700px) and (max-height: 740px) {
+  .light-mode.playing:not(.large-mode) .game-region {
+    width: min(90%, 300px);
+  }
+}

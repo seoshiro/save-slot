@@ -1,6 +1,6 @@
 {
   "url": "https://seoshiro.github.io/save-slot/",
-  "at": "2026-11-06T06:06:34.002Z",
+  "at": "2026-11-06T07:03:19.614Z",
   "checks": [
     "v2-1440-webgl all six selectors inside viewport",
     "v2-1440-webgl game width >=450px",
@@ -30,10 +30,10 @@
   "errors": [],
   "screens": [],
   "v2-1440-webglField": {
-    "x": 261.828125,
-    "y": 354.703125,
-    "width": 533.25,
-    "height": 395.640625
+    "x": 323.0625,
+    "y": 356.359375,
+    "width": 486.25,
+    "height": 350.40625
   },
   "v2-1440-fallbackField": {
     "x": 57.59375,
@@ -42,14 +42,14 @@
     "height": 514.28125
   },
   "v2-390-webglField": {
-    "x": 88.421875,
-    "y": 319.125,
-    "width": 208.6875,
-    "height": 153.5625
+    "x": 93.78125,
+    "y": 223.15625,
+    "width": 232.5,
+    "height": 165.515625
   },
   "v2-390-fallbackField": {
     "x": 19.5,
-    "y": 212.59375,
+    "y": 127.59375,
     "width": 351,
     "height": 250.703125
   }

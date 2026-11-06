@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-06T06:06:38.9221815Z",
+  "reason": "The binary replacement still lacks the mandatory platform confirmation.",
+  "url": "https://seoshiro.github.io/save-slot/media/console.glb",
+  "publicBytes": 6379068,
+  "cleanedLocalBytes": 1003836,
+  "matchesCleaned": false,
+  "cleanedLocalSha256": "0C142EDACBC018DB33643BA6B9402E70AA28AEDDA7C77FC017580C6DE54011BD",
+  "publicSha256": "96A74FF021B4EE249FF52E22CD05D6B6ECB8879F64160E841E00DE852873685B"
+}

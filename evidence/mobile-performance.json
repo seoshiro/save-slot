@@ -1,6 +1,9 @@
 {
+  "mode": "WebGL2",
+  "webglVerified": true,
+  "contextFailureSimulated": false,
   "url": "https://seoshiro.github.io/save-slot/",
-  "at": "2026-11-06T06:11:51.582Z",
+  "at": "2026-11-06T07:02:06.286Z",
   "browser": "156.0.8078.76",
   "os": "Windows_NT 10.0.26200",
   "cpu": "AMD Ryzen 5 7535HS with Radeon Graphics        ",
@@ -10,25 +13,25 @@
   "headless": true,
   "physicalPhone": false,
   "metrics": {
-    "rafSamples": 1012,
+    "rafSamples": 1010,
     "rafMedianMs": 8,
-    "rafP95Ms": 15.600000000000364,
+    "rafP95Ms": 15.600000000000136,
     "longTasks": [
-      867,
-      442,
-      228
+      860,
+      279,
+      119
     ],
     "resources": [
       {
-        "url": "https://seoshiro.github.io/save-slot/media/console.glb",
-        "transferBytes": 6041894,
-        "durationMs": 761.8999999761581
+        "url": "https://seoshiro.github.io/save-slot/media/console.glb?v=9d3abce",
+        "transferBytes": 657085,
+        "durationMs": 287.09999990463257
       }
     ],
     "navigation": [
       {
-        "domContentLoaded": 638,
-        "load": 638.1000000238419
+        "domContentLoaded": 698.1000000238419,
+        "load": 698.1999999284744
       }
     ]
   },

@@ -1,0 +1,115 @@
+{
+  "url": "https://seoshiro.github.io/save-slot/",
+  "at": "2026-11-06T07:00:18.139Z",
+  "checks": [
+    "390-en-webgl genuine scene canvas",
+    "390-en-webgl .game-region inside first viewport",
+    "390-en-webgl .dpad inside first viewport",
+    "390-en-webgl .activate inside first viewport",
+    "390-en-webgl .game-actions > .secondary:first-child inside first viewport",
+    "390-en-webgl touch instructions",
+    "390-en-webgl return settles to shelf",
+    "390-en-webgl shelf actions restored",
+    "390-en-webgl heading restored",
+    "390-en-webgl open button restored",
+    "390-en-webgl arrows restored",
+    "390-ru-webgl genuine scene canvas",
+    "390-ru-webgl .game-region inside first viewport",
+    "390-ru-webgl .dpad inside first viewport",
+    "390-ru-webgl .activate inside first viewport",
+    "390-ru-webgl .game-actions > .secondary:first-child inside first viewport",
+    "390-ru-webgl touch instructions",
+    "390-ru-webgl return settles to shelf",
+    "390-ru-webgl shelf actions restored",
+    "390-ru-webgl heading restored",
+    "390-ru-webgl open button restored",
+    "390-ru-webgl arrows restored",
+    "390-en-fallback actual WebGL failure fallback",
+    "390-en-fallback .game-region inside first viewport",
+    "390-en-fallback .dpad inside first viewport",
+    "390-en-fallback .activate inside first viewport",
+    "390-en-fallback .game-actions > .secondary:first-child inside first viewport",
+    "390-en-fallback touch instructions",
+    "390-en-fallback return settles to shelf",
+    "390-en-fallback shelf actions restored",
+    "390-en-fallback heading restored",
+    "390-en-fallback open button restored",
+    "390-en-fallback arrows restored",
+    "390-ru-fallback actual WebGL failure fallback",
+    "390-ru-fallback .game-region inside first viewport",
+    "390-ru-fallback .dpad inside first viewport",
+    "390-ru-fallback .activate inside first viewport",
+    "390-ru-fallback .game-actions > .secondary:first-child inside first viewport",
+    "390-ru-fallback touch instructions",
+    "390-ru-fallback return settles to shelf",
+    "390-ru-fallback shelf actions restored",
+    "390-ru-fallback heading restored",
+    "390-ru-fallback open button restored",
+    "390-ru-fallback arrows restored",
+    "1440-en-webgl genuine scene canvas",
+    "1440-en-webgl return settles to shelf",
+    "1440-en-webgl shelf actions restored",
+    "1440-en-webgl heading restored",
+    "1440-en-webgl open button restored",
+    "1440-en-webgl arrows restored",
+    "1440-ru-webgl genuine scene canvas",
+    "1440-ru-webgl return settles to shelf",
+    "1440-ru-webgl shelf actions restored",
+    "1440-ru-webgl heading restored",
+    "1440-ru-webgl open button restored",
+    "1440-ru-webgl arrows restored",
+    "1440-en-fallback actual WebGL failure fallback",
+    "1440-en-fallback notice outside game",
+    "1440-en-fallback return settles to shelf",
+    "1440-en-fallback shelf actions restored",
+    "1440-en-fallback heading restored",
+    "1440-en-fallback open button restored",
+    "1440-en-fallback arrows restored",
+    "1440-ru-fallback actual WebGL failure fallback",
+    "1440-ru-fallback notice outside game",
+    "1440-ru-fallback return settles to shelf",
+    "1440-ru-fallback shelf actions restored",
+    "1440-ru-fallback heading restored",
+    "1440-ru-fallback open button restored",
+    "1440-ru-fallback arrows restored"
+  ],
+  "errors": [],
+  "modes": [
+    {
+      "id": "390-en-webgl",
+      "mode": "WebGL",
+      "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    },
+    {
+      "id": "390-ru-webgl",
+      "mode": "WebGL",
+      "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    },
+    {
+      "id": "390-en-fallback",
+      "mode": "Canvas2D; WebGL context unavailable"
+    },
+    {
+      "id": "390-ru-fallback",
+      "mode": "Canvas2D; WebGL context unavailable"
+    },
+    {
+      "id": "1440-en-webgl",
+      "mode": "WebGL",
+      "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    },
+    {
+      "id": "1440-ru-webgl",
+      "mode": "WebGL",
+      "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    },
+    {
+      "id": "1440-en-fallback",
+      "mode": "Canvas2D; WebGL context unavailable"
+    },
+    {
+      "id": "1440-ru-fallback",
+      "mode": "Canvas2D; WebGL context unavailable"
+    }
+  ]
+}
