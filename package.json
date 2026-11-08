@@ -16,7 +16,8 @@
     "test:performance": "node tests/scene-performance.mjs",
     "test:layout": "node tests/layout-journey.mjs && node tests/intro-first-frame.mjs",
     "test:composition": "node tests/composition-journey.mjs",
-    "test:scene-composition": "node tests/scene-composition-browser.mjs"
+    "test:scene-composition": "node tests/scene-composition-browser.mjs",
+    "test:polish": "node tests/transition-polish.mjs"
   },
   "dependencies": {
     "@fontsource-variable/golos-text": "^5.3.0",

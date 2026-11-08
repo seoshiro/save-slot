@@ -21,3 +21,5 @@ No purchases, top-ups, subscriptions, paid assets or paid hosting were used for 
 8 November layout/controls follow-up: **0 additional credits**. Responsive layout, procedural TIDEBOUND atmosphere and local verification only; no generation or paid hosting changes.
 
 8 November three-composition/transition pass: **0 additional credits**. Reused all existing models/art and current game mechanics; no paid generation or hosting changes.
+
+8 November transition polish and enlarged-return verification: **0 additional credits**. Existing geometry, artwork and game rules retained; no paid generation or hosting changes.

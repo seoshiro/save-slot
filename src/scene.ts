@@ -83,6 +83,13 @@ export class SaveScene {
     new THREE.Vector3(-1.9, -1.55, -1.2),
     new THREE.Vector3(1.9, 1.55, 1.3),
   );
+  private fadeComposite?: {
+    absent: THREE.WebGLRenderTarget;
+    present: THREE.WebGLRenderTarget;
+    scene: THREE.Scene;
+    camera: THREE.Camera;
+    quad: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
+  };
   private shadowPose = { p: NaN, selection: NaN, width: 0, height: 0 };
   gameCanvas: HTMLCanvasElement;
   gameTexture: THREE.CanvasTexture;
@@ -709,6 +716,13 @@ export class SaveScene {
       .compileAsync(this.scene, this.camera)
       .then(() => {
         if (this.dead) return;
+        // Warm offscreen variants while the existing intro is still covering the
+        // scene, not on the first visible partial reveal. No additional timer.
+        const consoleVisible = this.console.visible;
+        this.console.visible = true;
+        this.renderTransitionScene(this.console, 0);
+        this.console.visible = consoleVisible;
+        this.renderer.shadowMap.needsUpdate = true;
         this.assetsPrepared = true;
         this.request();
         requestAnimationFrame(() => {
@@ -988,27 +1002,6 @@ export class SaveScene {
       }
       // Neighbors cannot leak back at very wide aspect ratios.
       b.group.visible = (sel && boxRetire < 1) || op < 0.23;
-      const alpha = sel ? 1 - boxRetire : 1;
-      b.group.traverse((object) => {
-        if (!(object as THREE.Mesh).isMesh) return;
-        const mesh = object as THREE.Mesh;
-        for (const material of Array.isArray(mesh.material)
-          ? mesh.material
-          : [mesh.material]) {
-          if (material.userData.boxOpacity === undefined) {
-            material.userData.boxOpacity = material.opacity;
-            material.userData.boxTransparent = material.transparent;
-            material.userData.boxDepthWrite = material.depthWrite;
-          }
-          const transparent = material.userData.boxTransparent || alpha < 1;
-          if (material.transparent !== transparent) {
-            material.transparent = transparent;
-            material.needsUpdate = true;
-          }
-          material.opacity = material.userData.boxOpacity * alpha;
-          material.depthWrite = material.userData.boxDepthWrite && alpha > 0.98;
-        }
-      });
     });
     this.shelf.position.y = -smooth(0.24, 0.7, op) * 5;
     const cp = smooth(0.36, 0.74, op);
@@ -1016,27 +1009,6 @@ export class SaveScene {
     this.console.position.set(mobile ? 0.33 : 0.4, mix(-0.18, -0.05, cp), -0.1);
     this.console.rotation.y = mix(-0.28, -0.08, ins);
     this.console.scale.setScalar((mobile ? 0.89 : 1.0) * mix(0.92, 1, cp));
-    // Reveal in place rather than slicing the body through the canvas floor.
-    this.console.traverse((object) => {
-      if (!(object as THREE.Mesh).isMesh) return;
-      const mesh = object as THREE.Mesh;
-      for (const material of Array.isArray(mesh.material)
-        ? mesh.material
-        : [mesh.material]) {
-        if (material.userData.revealOpacity === undefined) {
-          material.userData.revealOpacity = material.opacity;
-          material.userData.revealTransparent = material.transparent;
-          material.userData.revealDepthWrite = material.depthWrite;
-        }
-        const transparent = material.userData.revealTransparent || cp < 1;
-        if (material.transparent !== transparent) {
-          material.transparent = transparent;
-          material.needsUpdate = true;
-        }
-        material.opacity = material.userData.revealOpacity * cp;
-        material.depthWrite = material.userData.revealDepthWrite && cp > 0.98;
-      }
-    });
     // Hide work-in-progress silhouette until actual model has loaded; fallback is handled by HTML.
     if (this.led)
       (this.led.material as THREE.MeshBasicMaterial).color.set(
@@ -1057,7 +1029,16 @@ export class SaveScene {
         height: this.height,
       };
     }
-    this.renderer.render(this.scene, this.camera);
+    const fading =
+      cp > 0 && cp < 1
+        ? this.console
+        : boxRetire > 0 && boxRetire < 1
+          ? this.boxes[this.openingIndex].group
+          : null;
+    this.renderTransitionScene(
+      fading,
+      fading === this.console ? cp : 1 - boxRetire,
+    );
     if (this.callbacks.screenRect && p > 1) {
       const corners = [
         [-CRT.width / 2, -CRT.height / 2],
@@ -1084,7 +1065,123 @@ export class SaveScene {
     if (this.rafTimes.length > 300) this.rafTimes.shift();
     if (this.inspectPose.value > 0.001 && p > 0.95 && p < 1.1) this.request();
   }
+  private renderTransitionScene(group: THREE.Object3D | null, opacity: number) {
+    if (!group) {
+      this.renderer.render(this.scene, this.camera);
+      return;
+    }
+    if (!this.fadeComposite) {
+      const gl = this.renderer.getContext() as WebGL2RenderingContext;
+      const colorSamples = Array.from(
+        gl.getInternalformatParameter(
+          gl.RENDERBUFFER,
+          gl.RGBA8,
+          gl.SAMPLES,
+        ) as Int32Array,
+      );
+      const depthSamples = Array.from(
+        gl.getInternalformatParameter(
+          gl.RENDERBUFFER,
+          gl.DEPTH_COMPONENT24,
+          gl.SAMPLES,
+        ) as Int32Array,
+      );
+      const samples = Math.max(
+        0,
+        ...colorSamples.filter((n) => n <= 4 && depthSamples.includes(n)),
+      );
+      const makeTarget = () => {
+        const target = new THREE.WebGLRenderTarget(1, 1, {
+          type: THREE.UnsignedByteType,
+          samples,
+          colorSpace: THREE.LinearSRGBColorSpace,
+        });
+        // Three r187's display-target flag preserves per-material toneMapped
+        // behavior (the CRT deliberately bypasses it). No XR session is used.
+        // RGBA8 stores already tone-mapped linear color, avoiding float extensions.
+        (
+          target as THREE.WebGLRenderTarget & { isXRRenderTarget: boolean }
+        ).isXRRenderTarget = true;
+        return target;
+      };
+      const absent = makeTarget(),
+        present = makeTarget();
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          absent: { value: absent.texture },
+          present: { value: present.texture },
+          opacity: { value: 1 },
+        },
+        toneMapped: false,
+        depthTest: false,
+        depthWrite: false,
+        vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+        fragmentShader: `uniform sampler2D absent; uniform sampler2D present; uniform float opacity; varying vec2 vUv;
+          void main() {
+            // Targets contain tone-mapped linear, premultiplied scene color. Composite whole
+            // opaque scenes, including their shadows, before output encoding.
+            vec4 color = mix(texture2D(absent, vUv), texture2D(present, vUv), opacity);
+            gl_FragColor = vec4(color.a > 0.00001 ? color.rgb / color.a : vec3(0.0), color.a);
+            #include <colorspace_fragment>
+            gl_FragColor.rgb *= gl_FragColor.a;
+          }`,
+      });
+      const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+      quad.frustumCulled = false;
+      const scene = new THREE.Scene();
+      scene.add(quad);
+      this.fadeComposite = {
+        absent,
+        present,
+        scene,
+        camera: new THREE.Camera(),
+        quad,
+      };
+    }
+    const pass = this.fadeComposite;
+    // Capacity follows the browser viewport, never the animated stage box.
+    // Bound pixel count and DPR to avoid large mobile MSAA buffers.
+    const vw = window.innerWidth,
+      vh = window.innerHeight;
+    const ratio = Math.min(
+      this.renderer.getPixelRatio(),
+      vw < 700 ? 1.25 : 1.5,
+      Math.sqrt(1500000 / (vw * vh)),
+    );
+    const size = new THREE.Vector2(
+      Math.max(1, Math.ceil(vw * ratio)),
+      Math.max(1, Math.ceil(vh * ratio)),
+    );
+    if (pass.absent.width !== size.x || pass.absent.height !== size.y) {
+      pass.absent.setSize(size.x, size.y);
+      pass.present.setSize(size.x, size.y);
+    }
+    const target = this.renderer.getRenderTarget();
+    const visible = group.visible;
+    try {
+      group.visible = false;
+      this.renderer.shadowMap.needsUpdate = true;
+      this.renderer.setRenderTarget(pass.absent);
+      this.renderer.render(this.scene, this.camera);
+      group.visible = visible;
+      this.renderer.shadowMap.needsUpdate = true;
+      this.renderer.setRenderTarget(pass.present);
+      this.renderer.render(this.scene, this.camera);
+      pass.quad.material.uniforms.opacity.value = opacity;
+      this.renderer.setRenderTarget(target);
+      this.renderer.render(pass.scene, pass.camera);
+    } finally {
+      group.visible = visible;
+      this.renderer.setRenderTarget(target);
+    }
+  }
   dispose() {
+    if (this.fadeComposite) {
+      this.fadeComposite.absent.dispose();
+      this.fadeComposite.present.dispose();
+      this.fadeComposite.quad.geometry.dispose();
+      this.fadeComposite.quad.material.dispose();
+    }
     this.dead = true;
     cancelAnimationFrame(this.frame);
     gsap.killTweensOf(this.progress);
@@ -1101,6 +1198,7 @@ export class SaveScene {
       if (!(o as THREE.Mesh).isMesh) return;
       const mesh = o as THREE.Mesh;
       geometries.add(mesh.geometry);
+      if (mesh.customDepthMaterial) materials.add(mesh.customDepthMaterial);
       for (const material of Array.isArray(mesh.material)
         ? mesh.material
         : [mesh.material]) {

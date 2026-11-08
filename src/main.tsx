@@ -144,6 +144,7 @@ function App() {
   const [returning, setReturning] = useState(false);
   const viewOpen = open || returning;
   const [settled, setSettled] = useState(0);
+  const [backReady, setBackReady] = useState(false);
   const [about, setAbout] = useState(false);
   const [detail, setDetail] = useState(0);
   const [inspect, setInspect] = useState(false);
@@ -430,6 +431,15 @@ function App() {
               "--shelf-reveal",
               String(1 - smooth(0, 0.18)),
             );
+            host?.style.setProperty(
+              "--back-reveal",
+              String(smooth(0.18, 0.32)),
+            );
+            host?.style.setProperty(
+              "--back-visibility",
+              p > 0.18 ? "visible" : "hidden",
+            );
+            setBackReady(p >= 0.32);
             if (host) host.dataset.sceneProgress = p.toFixed(4);
           },
         },
@@ -535,13 +545,17 @@ function App() {
       location.pathname + location.search + "#" + w.id,
     );
     requestAnimationFrame(() =>
-      document.getElementById("world-title")?.focus({ preventScroll: true }),
+      document
+        .querySelector<HTMLButtonElement>(".brand")
+        ?.focus({ preventScroll: true }),
     );
     tone(330);
   }
   openRef.current = openBox;
   function closeBox(fromPop = false) {
-    if (closing.current) return;
+    // Light mode can settle before history.back() delivers popstate. Closing an
+    // already closed shelf must not put it back into an unsettled state.
+    if (closing.current || (!open && !returning)) return;
     setReturning(!light);
     setSettled(-1);
     setAbout(false);
@@ -955,7 +969,7 @@ function App() {
             <p className="intro">{t.intro}</p>
           </section>
           {viewOpen && (
-            <div className="backbar" inert={!open}>
+            <div className="backbar" inert={!open || (!light && !backReady)}>
               <button onClick={() => closeBox()} className="back">
                 <span>←</span>
                 {t.back}
@@ -1451,4 +1465,40 @@ function App() {
     </>
   );
 }
-createRoot(document.getElementById("root")!).render(<App />);
+// Keep the HTML intro on screen until the non-render-blocking production CSS is
+// usable. Its elapsed time still starts at navigation, not at React mount.
+async function mount() {
+  const styles = [
+    ...document.querySelectorAll<HTMLLinkElement>("link[data-app-css]"),
+  ];
+  try {
+    await Promise.all(
+      styles.map(
+        (link) =>
+          new Promise<void>((resolve, reject) => {
+            if (link.dataset.failed) return reject(new Error("stylesheet"));
+            if (link.sheet || link.dataset.loaded) return resolve();
+            link.addEventListener("load", () => resolve(), { once: true });
+            link.addEventListener(
+              "error",
+              () => reject(new Error("stylesheet")),
+              { once: true },
+            );
+          }),
+      ),
+    );
+    createRoot(document.getElementById("root")!).render(<App />);
+  } catch {
+    const ru = read("save-slot:lang") === "ru";
+    const status = document.querySelector(".boot-status");
+    if (status)
+      status.textContent = ru
+        ? "Не удалось загрузить оформление коллекции. Попробуйте ещё раз."
+        : "The collection styles could not load. Please try again.";
+    const retry = document.createElement("button");
+    retry.textContent = ru ? "Попробовать снова" : "Try again";
+    retry.addEventListener("click", () => location.reload());
+    document.querySelector(".boot-actions")?.append(retry);
+  }
+}
+void mount();

@@ -78,8 +78,9 @@ try {
   try {
     await init(p,lang);
     await p.locator('.world-picks').getByRole('button',{name:'ORBIT ZERO',exact:true}).click();await p.waitForTimeout(750);
-    await p.locator('[data-open-box]').click();await p.locator('.backbar .back').waitFor();await p.waitForTimeout(140);
-    const back=await p.locator('.backbar .back').boundingBox();await p.mouse.click(back.x+back.width/2,back.y+back.height/2,{clickCount:2,delay:40});
+    await p.locator('[data-open-box]').click();await p.waitForTimeout(140);
+    // Header remains visible while the top labels hand off to Back.
+    const back=await p.locator('.brand').boundingBox();await p.mouse.click(back.x+back.width/2,back.y+back.height/2,{clickCount:2,delay:40});
     await settled(p,0);check(run,true,'Opening interrupted with repeated return; shelf settled');
     await p.locator('[data-open-box]').click();await settled(p,1);await p.locator('.insert-button').click();await p.waitForTimeout(160);
     await p.locator('.backbar .back').click();await settled(p,0);check(run,true,'Insertion interrupted; shelf settled');

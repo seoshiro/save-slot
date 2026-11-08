@@ -218,7 +218,9 @@ try {
       // Interrupt opening, repeat return intent, and then reopen cleanly.
       await p.locator("[data-open-box]").click();
       await p.waitForTimeout(140);
-      const quick = await hit(p, ".backbar .back");
+      // Back is intentionally delayed until shelf labels have cleared.
+      // The visible header remains an immediate repeated-return target.
+      const quick = await hit(p, ".brand");
       await p.mouse.click(quick.x, quick.y, { clickCount: 2, delay: 40 });
       await settled(p, 0);
       await top(p, label + " interrupted return");

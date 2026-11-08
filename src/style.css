@@ -2522,7 +2522,8 @@ figcaption {
   position: absolute;
   top: var(--large-top, 72px);
   left: 0;
-  right: 25%;
+  /* Reserve the measured HTML column, not the obsolete percentage layout. */
+  right: var(--visual-reserve);
   bottom: auto;
   width: auto;
   height: var(--large-height);
@@ -2801,6 +2802,7 @@ figcaption {
   --compose-open: 0;
   --panel-reveal: 0;
   --shelf-reveal: 1;
+  --back-reveal: 0;
   --open-stage-height: 520px;
   --visual-reserve: 394px;
   --panel-width: 370px;
@@ -2882,8 +2884,14 @@ figcaption {
 .app.light-mode.playing .main {
   --scene-play: 1;
 }
-.app.returning .backbar {
-  opacity: var(--panel-reveal);
+.app .backbar {
+  opacity: var(--back-reveal);
+  visibility: var(--back-visibility, hidden);
+  transition: none;
+}
+.app.light-mode .backbar {
+  opacity: 1;
+  visibility: visible;
 }
 .app .world-detail-preview img {
   max-height: 210px;

@@ -144,6 +144,7 @@ test("actual box bounds stay disjoint throughout open/return on mobile and deskt
         console: new THREE.Group(),
         ready: true,
         shadowPose: {},
+        renderTransitionScene: () => {},
         renderer: { shadowMap: {}, render: () => {} },
         request: () => {},
       });
@@ -210,6 +211,7 @@ test("shelf projection keeps all desktop endpoints and mobile selection inside w
         console: new THREE.Group(),
         ready: true,
         shadowPose: {},
+        renderTransitionScene: () => {},
         renderer: { shadowMap: {}, render: () => {} },
         request: () => {},
       });

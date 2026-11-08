@@ -85,6 +85,8 @@ This is a portfolio experiment. No commercial release, sales, publisher, awards 
 
 ## Current iteration
 
+See [transition polish and actual enlarged return](docs/ITERATION-2026-11-08-POLISH.md) for the current cold-entry, label, surface/shadow and enlarged-control follow-up.
+
 See [three compositions and DUSK/ORBIT acceptance](docs/ITERATION-2026-11-08-COMPOSITIONS.md) for the latest full-object framing, coordinated transitions and continuous-recording criteria.
 
 See [layout, controls and first-frame QA](docs/ITERATION-2026-11-08-LAYOUT.md) for the preceding viewport requirements, continuous return scenario and honest device limits.
