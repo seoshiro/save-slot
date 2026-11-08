@@ -60,7 +60,7 @@ This is an independent portfolio concept built with AI assistance. The console s
 
 - [Published console GLB](public/media/console.glb)
 - [Model inspection](art/source/console-report.json)
-- [Asset-generation and expense record](docs/CREDITS.md)
+- [Asset provenance](docs/ASSET-CREDITS.md)
 
 No backend, accounts, tracking, payments or external AI calls run in the published site. This is not a commercial game release or client commission. No sales, user metrics or awards are claimed. Project-specific art and models do not imply a general licence grant. Self-hosted fonts retain their upstream OFL licences.
 
