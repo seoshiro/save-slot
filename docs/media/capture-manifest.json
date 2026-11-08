@@ -1,0 +1,52 @@
+{
+  "url": "https://seoshiro.github.io/save-slot/",
+  "applicationCommit": "4234d5d2a668e5e85364704c1e5fcad894d1c82f",
+  "capturedAt": "2026-11-08T21:10:13.935Z",
+  "conditions": "Windows Chrome headless; DPR 1; mobile viewport and touch emulation, not a physical phone. Real public page; no app, game-state, scene or style changes.",
+  "runs": [
+    {
+      "label": "desktop",
+      "width": 1366,
+      "height": 768,
+      "status": 200,
+      "assets": [
+        "https://seoshiro.github.io/save-slot/assets/index-e1zKRcfX.js"
+      ],
+      "errors": [],
+      "images": [
+        "desktop-shelf.webp",
+        "desktop-box.webp",
+        "desktop-console.webp",
+        "desktop-game.webp"
+      ],
+      "video": "delivery/presentation-raw/page@e5d2866fe8d1ce922bf64e1bb592a7e4.webm"
+    },
+    {
+      "label": "mobile",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "assets": [
+        "https://seoshiro.github.io/save-slot/assets/index-e1zKRcfX.js"
+      ],
+      "errors": [],
+      "images": [
+        "mobile-shelf.webp",
+        "mobile-box.webp",
+        "mobile-console.webp",
+        "mobile-game.webp"
+      ],
+      "video": "delivery/presentation-raw/page@ffe4db21d2f7af20a586a70e97597744.webm"
+    }
+  ],
+  "animation": {
+    "file": "save-slot-preview.gif",
+    "source": "delivery/presentation-raw/page@e5d2866fe8d1ce922bf64e1bb592a7e4.webm",
+    "startSeconds": 6,
+    "durationSeconds": 6,
+    "frames": 48,
+    "width": 768,
+    "height": 432,
+    "description": "Original-speed 6-second excerpt sampled at 8 fps and resized. Alternating 120/130 ms GIF frame holds total 6000 ms. No interpolated frames or scene changes."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "output": "docs/media/six-games-verified.webm",
+  "width": 1366,
+  "height": 900,
+  "fps": 60,
+  "applicationCommit": "4234d5d2a668e5e85364704c1e5fcad894d1c82f",
+  "source": "https://seoshiro.github.io/save-slot/",
+  "description": "Edited original-speed excerpts from actual public first enlargement and all six victories. Not a continuous six-game run. Mobile touch emulation, not physical phones.",
+  "clips": [
+    {
+      "file": "evidence/six-game-audit/enlarged-first-use-screenshot-public/1366x768-ru-first-use-screenshot.webm",
+      "start": 0,
+      "duration": 3.566666666666667,
+      "label": "First enlarged-screen entry; RU 1366x768"
+    },
+    {
+      "file": "evidence/six-game-audit/first-three/final-public-4234d5d/touch-uncut.webm",
+      "start": 93.895,
+      "duration": 10,
+      "label": "DUSK DELIVERY victory; EN 390x844"
+    },
+    {
+      "file": "evidence/six-game-audit/first-three/final-public-4234d5d/orbit-retest/touch-uncut.webm",
+      "start": 77.863,
+      "duration": 10,
+      "label": "ORBIT ZERO victory; EN 390x844"
+    },
+    {
+      "file": "evidence/six-game-audit/first-three/final-public-4234d5d/touch-uncut.webm",
+      "start": 312.604,
+      "duration": 10,
+      "label": "MOSS SIGNAL victory; RU 375x812"
+    },
+    {
+      "file": "evidence/six-game-audit/last-three/final-public-4234d5d/full-uncut.webm",
+      "start": 59.48,
+      "duration": 9,
+      "label": "TIDEBOUND victory; EN 390x844"
+    },
+    {
+      "file": "evidence/six-game-audit/last-three/final-public-4234d5d/full-uncut.webm",
+      "start": 176.68,
+      "duration": 9,
+      "label": "EMBER VAULT victory; EN 390x844"
+    },
+    {
+      "file": "evidence/six-game-audit/last-three/final-public-4234d5d/full-uncut.webm",
+      "start": 293.24,
+      "duration": 9,
+      "label": "SNOWBYTE victory; EN 390x844"
+    }
+  ],
+  "encodedFrames": 3634,
+  "encodedDurationSeconds": 60.56666666666667,
+  "requestedExcerptSeconds": 60.56666666666666,
+  "method": "Explicitly edited excerpts from actual browser recordings, original speed. Letterboxed only; frame holds preserve timing. Output fps is an encoding timebase, not measured rendering fps. No interpolated gameplay, synthetic victories or state substitution."
+}
