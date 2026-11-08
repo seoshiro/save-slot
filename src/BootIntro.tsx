@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { worlds, type Lang } from "./data";
+import { BootMark } from "./BootMark";
 
 export function BootIntro({
   lang,
@@ -22,7 +23,8 @@ export function BootIntro({
   onLight: () => void;
   onDone: () => void;
 }) {
-  const started = useRef(performance.now());
+  const started = useRef(0);
+  const mounted = useRef(performance.now());
   const [loaded, setLoaded] = useState(0);
   const [fonts, setFonts] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -85,10 +87,11 @@ export function BootIntro({
       aria-label={ru ? "Загрузка SAVE SLOT" : "Loading SAVE SLOT"}
       data-testid="boot-intro"
       data-ready={ready}
+      style={{ "--boot-elapsed": mounted.current + "ms" } as CSSProperties}
     >
       <div className="boot-art" aria-hidden="true">
         <span className="boot-kicker">SIX SMALL WORLDS</span>
-        <h1>SAVE SLOT</h1>
+        <BootMark />
         <div className="boot-machine">
           <div className="boot-cartridge">
             <i />

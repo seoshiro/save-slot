@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "@fontsource/press-start-2p/latin.css";
 import "@fontsource/press-start-2p/cyrillic.css";
@@ -241,22 +241,85 @@ function App() {
     setStatus(gameStatus(game.current));
     keys.current.clear();
   }, [selected]);
-  useEffect(() => {
-    const el = heroEl.current,
+  // Measure real text and control rows; spare viewport space belongs to the scene.
+  const shelfMetrics = useRef({ actions: 76, picks: 36 });
+  useLayoutEffect(() => {
+    const hero = heroEl.current,
       host = mainEl.current;
-    if (!el || !host) return;
+    if (!hero || !host) return;
     const measure = () => {
-      const size = el.getBoundingClientRect();
-      host.style.setProperty("--shelf-top", Math.ceil(size.height + 24) + "px");
+      const app = host.closest(".app")!;
+      const header = app
+        .querySelector(".header")!
+        .getBoundingClientRect().height;
+      const footer = app
+        .querySelector(".footer")!
+        .getBoundingClientRect().height;
+      const actions = app.querySelector(".shelf-actions");
+      const picks = app.querySelector(".world-picks");
+      if (actions)
+        shelfMetrics.current.actions = actions.getBoundingClientRect().height;
+      if (picks)
+        shelfMetrics.current.picks = picks.getBoundingClientRect().height;
+      const mobile = innerWidth <= 700;
+      const back = host.querySelector(".backbar");
+      const openTop = Math.max(
+        mobile ? 52 : 64,
+        (back?.getBoundingClientRect().height || 0) + 16,
+      );
+      host.style.setProperty("--stage-open-top", openTop + "px");
+      host.style.setProperty("--large-top", openTop + 8 + "px");
+      const top = Math.ceil(
+        hero.getBoundingClientRect().height + (mobile ? 8 : 12),
+      );
+      const reserve = Math.ceil(
+        shelfMetrics.current.actions + shelfMetrics.current.picks + 32,
+      );
+      const available = innerHeight - header - footer;
+      host.style.setProperty("--viewport-main", available + "px");
+      const stage = Math.max(mobile ? 150 : 200, available - top - reserve);
+      const gameStage = mobile
+        ? Math.max(240, Math.min(330, (innerWidth - 32) * 0.78))
+        : Math.max(360, Math.min(560, innerHeight - header - 116));
+      host.style.setProperty("--shelf-top", top + "px");
+      host.style.setProperty("--shelf-stage-height", stage + "px");
+      host.style.setProperty("--shelf-reserve", reserve + "px");
+      host.style.setProperty(
+        "--actions-height",
+        shelfMetrics.current.actions + "px",
+      );
+      host.style.setProperty("--game-stage-height", gameStage + "px");
     };
     const observer = new ResizeObserver(measure);
-    observer.observe(el);
+    [
+      hero,
+      host.closest(".app")!.querySelector(".header"),
+      host.closest(".app")!.querySelector(".footer"),
+      host.querySelector(".shelf-actions"),
+      host.querySelector(".world-picks"),
+      host.querySelector(".backbar"),
+    ].forEach((el) => el && observer.observe(el));
     window.addEventListener("resize", measure);
     document.fonts.ready.then(measure);
     measure();
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", measure);
+    };
+  }, [open, lang]);
+  // View changes are deliberate navigation, not a continuation of an old scroll offset.
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    const raf = requestAnimationFrame(() =>
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
+    );
+    return () => cancelAnimationFrame(raf);
+  }, [open, inserted, large]);
+  useEffect(() => {
+    const previous = history.scrollRestoration;
+    history.scrollRestoration = "manual";
+    return () => {
+      history.scrollRestoration = previous;
     };
   }, []);
   useEffect(() => {
@@ -380,10 +443,6 @@ function App() {
     );
     if (isGame) gameRegion.current?.focus({ preventScroll: true });
   }, [isGame, open, inserted, settled, returning, selected]);
-  useEffect(() => {
-    if (isGame && touchUI)
-      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
-  }, [isGame, touchUI, reduced]);
   function select(i: number) {
     if (open) return;
     openIntent.current = false;
@@ -439,6 +498,7 @@ function App() {
   }
   openRef.current = openBox;
   function closeBox(fromPop = false) {
+    if (closing.current) return;
     setReturning(!light);
     setSettled(-1);
     setAbout(false);
@@ -477,7 +537,9 @@ function App() {
     setPaused(false);
     keys.current.clear();
     tone(523);
-    requestAnimationFrame(() => gameRegion.current?.focus());
+    requestAnimationFrame(() =>
+      gameRegion.current?.focus({ preventScroll: true }),
+    );
   }
   function act() {
     if (!isGame || paused || game.current.won) return;
@@ -667,7 +729,9 @@ function App() {
   }
   function endAbout() {
     setAbout(false);
-    requestAnimationFrame(() => previousFocus.current?.focus());
+    requestAnimationFrame(() =>
+      previousFocus.current?.focus({ preventScroll: true }),
+    );
   }
   function restartGame() {
     game.current = freshGame(w.id);
@@ -678,7 +742,9 @@ function App() {
     setStatus(gameStatus(game.current));
     setPaused(false);
     keys.current.clear();
-    requestAnimationFrame(() => gameRegion.current?.focus());
+    requestAnimationFrame(() =>
+      gameRegion.current?.focus({ preventScroll: true }),
+    );
   }
   const pad = (key: string, label: string, arrow: string) => (
     <button
@@ -772,6 +838,14 @@ function App() {
             <button onClick={showAbout}>{t.about}</button>
           </nav>
           <div className="header-tools">
+            <button
+              className="mobile-about"
+              onClick={showAbout}
+              aria-label={t.about}
+              title={t.about}
+            >
+              i
+            </button>
             <div
               className="languages"
               aria-label={lang === "en" ? "Language" : "Язык"}

@@ -45,7 +45,7 @@ export function shelfLayout(selection: number, count: number) {
     };
   });
   for (let i = 1; i < count; i++)
-    poses[i].x = poses[i - 1].x + poses[i - 1].half + poses[i].half + 0.22;
+    poses[i].x = poses[i - 1].x + poses[i - 1].half + poses[i].half + 0.52;
   const bounded = clamp(selection, 0, count - 1),
     lo = Math.floor(bounded),
     hi = Math.ceil(bounded);
@@ -738,6 +738,7 @@ export class SaveScene {
   }
   setStage(stage: number) {
     stage = clamp(stage, 0, 2);
+    if (stage === this.target && gsap.isTweening(this.progress)) return;
     this.target = stage;
     if (stage > 0) this.deferredSelection = null;
     const id = ++this.transitionId;
@@ -835,24 +836,33 @@ export class SaveScene {
       mobile = this.width < 700;
     this.callbacks.progress?.(p);
     const play = smooth(1, 2, p);
+    const poses = shelfLayout(this.selection.value, this.boxes.length);
+    const shelfLeft = poses[0].x - poses[0].half;
+    const shelfRight = poses[poses.length - 1].x + poses[poses.length - 1].half;
+    const shelfCenter = (shelfLeft + shelfRight) / 2;
     const viewW = mobile
-      ? mix(5.2, 3.8, play)
-      : mix(mix(12.8, 12.6, op), 6.2, play);
+      ? mix(5.2, 3.3, play)
+      : mix(
+          mix(Math.max(12.8, shelfRight - shelfLeft + 2.4), 12.6, op),
+          5.6,
+          play,
+        );
     const fitY = mobile
-      ? mix(mix(4.3, 4.8, op), 3.35, play)
-      : mix(mix(4.0, 5.0, op), 3.45, play);
+      ? mix(mix(4.3, 4.8, op), 2.95, play)
+      : mix(mix(4.0, 5.0, op), 2.95, play);
+    this.camera.fov = mix(20, 32, op);
+    this.camera.updateProjectionMatrix();
     const distance =
       Math.max(viewW / this.camera.aspect, fitY) /
       2 /
-      Math.tan(THREE.MathUtils.degToRad(16));
+      Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2));
     const focusX = mobile
       ? mix(0, 0.1, play)
-      : mix(0, mix(1.6, 0.95, play), op);
+      : mix(shelfCenter, mix(1.6, 0.4, play), op);
     this.camera.position.set(focusX, mix(2.7, 0.65, play), distance);
     this.camera.lookAt(focusX, mix(mix(-0.04, 0.25, op), 0.04, play), 0);
     this.camera.updateMatrixWorld();
     // Opening groups share one progress. Reverse traversal naturally extracts before packing.
-    const poses = shelfLayout(this.selection.value, this.boxes.length);
     if (this.inspectPose.value > 0.001 && this.lastTime)
       this.inspectAngle += Math.min(0.05, (time - this.lastTime) / 1000) * 0.7;
     this.boxes.forEach((b, i) => {

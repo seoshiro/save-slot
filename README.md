@@ -85,4 +85,6 @@ This is a portfolio experiment. No commercial release, sales, publisher, awards 
 
 ## Current iteration
 
+See [layout, controls and first-frame QA](docs/ITERATION-2026-11-08-LAYOUT.md) for the latest viewport requirements, continuous return scenario and honest device limits.
+
 See [8 November motion and six-game QA](docs/ITERATION-2026-11-08.md) for verified browsers, frame timing, recovery tests and remaining limitations. Older QA documents describe earlier iterations.

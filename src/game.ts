@@ -737,22 +737,112 @@ export function paintGame(
     rect(202, 140, 44, 34, "#244664");
     rect(210, 145, 25, 21, "#3d6a7d");
   } else if (id === "tidebound") {
-    for (let j = 0; j < 40; j++) {
-      const x = (j * 53 + Math.sin(time * 0.0006 + j) * 7) % W,
-        y = (j * 31) % H;
-      if (y < 135 || y > 185) rect(x, y, 15, 1, "#37778c");
+    // Pixel shelves and surf follow the existing walkable footprint exactly.
+    // Decorative movement uses time (zero under reduced motion); danger uses elapsed.
+    rect(0, 0, W, H, "#123f55");
+    for (let y = 0; y < H; y += 8) {
+      const coast = Math.abs(y - 160);
+      rect(
+        0,
+        y,
+        W,
+        8,
+        coast < 56 ? "#1a6374" : coast < 104 ? "#185367" : "#123f55",
+      );
+      for (let x = 0; x < W; x += 24) {
+        const n = noise(x, y);
+        if (n > 0.42) {
+          const drift = Math.round(Math.sin(time * 0.0005 + n * 9) * 5);
+          rect(
+            x + drift,
+            y + 2,
+            9 + Math.floor(n * 14),
+            1,
+            coast < 56 ? "#2e8290" : "#23667b",
+          );
+          if (n > 0.8) rect(x + drift + 5, y + 4, 6, 1, "#377f8c");
+        }
+      }
+    }
+    const land = (x: number, y: number) => walkable(x + 0.5, y + 0.5, id);
+    // Dark submerged rock ledges belong to water, not additional walking space.
+    for (let y = 0; y < ROWS; y++)
+      for (let x = 0; x < COLS; x++) {
+        if (!land(x, y)) continue;
+        const px = x * TILE,
+          py = y * TILE;
+        rect(px - 4, py + 5, 24, 16, "#153e50");
+        rect(px - 2, py + 2, 20, 17, "#547b78");
+      }
+    for (let y = 0; y < ROWS; y++)
+      for (let x = 0; x < COLS; x++) {
+        if (!land(x, y)) continue;
+        const px = x * TILE,
+          py = y * TILE,
+          n = noise(x, y);
+        rect(px, py, 16, 16, n > 0.5 ? "#c7b68b" : "#c0b08a");
+        if (n > 0.35) rect(px + 3, py + 7, 7, 1, "#a59979");
+        rect(px + 2, py + 3, 4, 1, "#dfcca0");
+        if (!land(x, y - 1)) {
+          rect(px, py, 16, 2, "#e3d1a2");
+          rect(px + 2, py - 4, 11, 1, "#9dc9bb");
+        }
+        if (!land(x, y + 1)) {
+          rect(px, py + 13, 16, 3, "#938e70");
+          rect(px + 2, py + 20, 10, 1, "#8dbdb4");
+        }
+        if (!land(x - 1, y)) rect(px, py + 2, 2, 11, "#e3d1a2");
+        if (!land(x + 1, y)) rect(px + 14, py + 2, 2, 12, "#968c70");
+      }
+    // Small weathered outcrops frame the route without resembling safe islands.
+    for (const [rx, ry, width] of [
+      [18, 42, 26],
+      [104, 269, 33],
+      [274, 53, 25],
+      [311, 285, 38],
+    ]) {
+      rect(rx - 4, ry + 9, width + 8, 4, "#266d7b");
+      rect(rx, ry, width, 10, "#254854");
+      rect(rx + 4, ry - 5, width - 10, 10, "#42626a");
+      rect(rx + 5, ry - 5, width - 14, 2, "#6a8580");
+      rect(rx - 2, ry + 12, width - 5, 1, "#86b5ad");
     }
     for (let i = 0; i < 3; i++) {
       const high = tideHigh(s.elapsed, i),
         x = (6 + i * 7) * TILE;
-      rect(x, 144, 40, 32, high ? "#3d9ab3" : "#8f9b8c");
-      for (let j = 0; j < 3; j++)
-        rect(x + 2, 148 + j * 10, 36, 2, high ? "#b0e1df" : "#cec5a1");
+      // These bounds are unchanged: bright water is dangerous, grey is passable.
+      rect(x, 144, 40, 32, high ? "#348eab" : "#8f9b8c");
+      rect(x, 144, 40, 2, high ? "#75c4ce" : "#b5b79c");
+      rect(x, 174, 40, 2, high ? "#215b79" : "#687e79");
+      for (let j = 0; j < 3; j++) {
+        const drift = high
+          ? Math.round(Math.sin(time * 0.0015 + i + j) * 3)
+          : 0;
+        rect(x + 4 + drift, 148 + j * 9, 29, 2, high ? "#b0e1df" : "#cec5a1");
+        if (high) rect(x + 8 + drift, 150 + j * 9, 18, 1, "#70c9cd");
+      }
+      // Keep the original high/low signal, with a dark surround for contrast.
+      rect(x + 8, 129, 24, 9, "#153e50");
       rect(x + 10, 131, 20, 5, high ? "#f09d77" : "#c7e5a4");
     }
+    // Permanent refuge markers stay on the safe side of every crossing.
     for (const x of [3.5, 10.5, 17.5, 24.5]) {
+      rect(x * TILE - 12, 172, 24, 3, "#e3d1a2");
       rect(x * TILE - 14, 176, 28, 8, "#6e8580");
       rect(x * TILE - 11, 183, 23, 4, "#436577");
+      rect(x * TILE - 8, 189, 17, 1, "#9dc9bb");
+    }
+    // Grass and driftwood stay on the two broad headlands, clear of crossings.
+    for (const [x, y] of [
+      [35, 193],
+      [68, 188],
+      [375, 231],
+      [400, 269],
+      [375, 279],
+    ]) {
+      rect(x, y, 2, 6, "#647a64");
+      rect(x - 3, y + 2, 2, 4, "#82916b");
+      rect(x + 3, y + 3, 2, 3, "#647a64");
     }
   } else if (id === "ember-vault") {
     for (let i = 0; i < 2; i++)
@@ -808,10 +898,34 @@ export function paintGame(
     gy = g.y * TILE,
     ready = s.beacons.every(Boolean);
   if (id === "tidebound") {
-    rect(gx - 10, gy - 33, 20, 40, "#e9ddbe");
-    rect(gx - 10, gy - 15, 20, 8, "#b95b53");
-    rect(gx - 13, gy - 38, 26, 7, "#d26f59");
-    rect(gx - 7, gy - 31, 14, 8, ready ? light : "#5e7d83");
+    if (ready) {
+      // Stepped, low-contrast beam stays above the route and never masks hazards.
+      const sweep = Math.round(Math.sin(time * 0.0004) * 9);
+      for (let i = 0; i < 18; i++) {
+        ctx.globalAlpha = 0.035 + (18 - i) * 0.003;
+        rect(
+          gx - 14 - i * 16,
+          gy - 29 - i + Math.round((sweep * i) / 18),
+          16,
+          5 + i * 2,
+          light,
+        );
+      }
+      ctx.globalAlpha = 1;
+    }
+    rect(gx - 15, gy + 5, 32, 8, "#687d78");
+    rect(gx - 12, gy - 22, 24, 29, "#e9ddbe");
+    rect(gx - 9, gy - 37, 18, 17, "#e9ddbe");
+    rect(gx + 6, gy - 35, 5, 40, "#b7ad92");
+    rect(gx - 12, gy - 15, 24, 8, "#b95b53");
+    rect(gx + 6, gy - 15, 6, 8, "#914c4b");
+    rect(gx - 15, gy - 38, 30, 4, "#713f43");
+    rect(gx - 11, gy - 43, 22, 5, "#d26f59");
+    rect(gx - 6, gy - 46, 12, 3, "#e49c76");
+    rect(gx - 7, gy - 33, 14, 9, ready ? light : "#5e7d83");
+    rect(gx - 1, gy - 33, 2, 9, "#8b796a");
+    rect(gx - 4, gy - 4, 8, 11, "#455e64");
+    rect(gx - 15, gy + 8, 30, 2, "#d1c59d");
   } else if (id === "snowbyte") {
     rect(gx - 17, gy - 20, 34, 30, "#61577b");
     rect(gx - 22, gy - 24, 44, 6, "#f3e8d9");

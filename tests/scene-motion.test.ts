@@ -33,7 +33,7 @@ test("rotated shelf boxes keep clearance across 5,001 intermediate positions", (
     for (let i = 1; i < 6; i++)
       assert.ok(
         poses[i].x - poses[i - 1].x - poses[i].half - poses[i - 1].half >=
-          0.219999,
+          0.519999,
         "overlap at " + n / 1000,
       );
   }
@@ -69,6 +69,7 @@ test("latest stage cancels prior completion and uses requested full durations", 
   let tweens: any[] = [];
   const gsap = {
     killTweensOf: () => {},
+    isTweening: () => false,
     to: (_: unknown, config: any) => tweens.push(config),
   };
   const make = new Function(
@@ -162,4 +163,138 @@ test("actual box bounds stay disjoint throughout open/return on mobile and deskt
     }
   geometry.dispose();
   material.dispose();
+});
+
+test("shelf projection keeps all desktop endpoints and mobile selection inside with visible gaps", () => {
+  const method = source.slice(
+    source.indexOf("  private render(time: number)"),
+    source.indexOf("  dispose()"),
+  );
+  const Harness = new Function(
+    "THREE",
+    "clamp",
+    "mix",
+    "smooth",
+    "shelfLayout",
+    js("class Harness {" + method + "}") + "; return Harness;",
+  )(THREE, clamp, mix, smooth, layout);
+  const geometry = new THREE.BoxGeometry(1.6, 2.72, 0.48);
+  for (const [width, height] of [
+    [1366, 310],
+    [1536, 350],
+    [375, 250],
+    [390, 300],
+  ]) {
+    for (let n = 0; n <= 100; n++) {
+      const selected = n / 20;
+      const boxes = Array.from({ length: 6 }, () => {
+        const group = new THREE.Group();
+        group.add(new THREE.Mesh(geometry));
+        return { group, flap: new THREE.Group(), cart: new THREE.Group() };
+      });
+      const scene = Object.assign(Object.create(Harness.prototype), {
+        dead: false,
+        progress: { value: 0 },
+        width,
+        height,
+        callbacks: {},
+        camera: new THREE.PerspectiveCamera(32, width / height, 0.1, 100),
+        selection: { value: selected },
+        boxes,
+        openingIndex: Math.round(selected),
+        inspectPose: { value: 0 },
+        inspectAngle: 0,
+        lastTime: 0,
+        rafTimes: [],
+        shelf: new THREE.Group(),
+        console: new THREE.Group(),
+        ready: true,
+        shadowPose: {},
+        renderer: { shadowMap: {}, render: () => {} },
+        request: () => {},
+      });
+      scene.render(0);
+      const bounds = boxes.map(({ group }) => {
+        group.updateMatrixWorld();
+        const points = [];
+        for (const x of [-0.8, 0.8])
+          for (const y of [-1.36, 1.36])
+            for (const z of [-0.24, 0.24])
+              points.push(
+                group
+                  .localToWorld(new THREE.Vector3(x, y, z))
+                  .project(scene.camera),
+              );
+        return {
+          points,
+          left: Math.min(...points.map((v) => v.x)),
+          right: Math.max(...points.map((v) => v.x)),
+          top: Math.max(...points.map((v) => v.y)),
+          bottom: Math.min(...points.map((v) => v.y)),
+        };
+      });
+      for (const [i, b] of bounds.entries()) {
+        if (width >= 700 || i === Math.round(selected))
+          assert.ok(
+            b.left >= -1 && b.right <= 1 && b.top <= 1 && b.bottom >= -1,
+            JSON.stringify({ width, height, selected, i, b }),
+          );
+        if (i > 0 && b.right > -1 && bounds[i - 1].left < 1) {
+          const a = bounds[i - 1].points,
+            c = b.points;
+          const axes = [new THREE.Vector2(1, 0)];
+          for (const points of [a, c])
+            for (const u of points)
+              for (const v of points)
+                if (u !== v)
+                  axes.push(
+                    new THREE.Vector2(-(v.y - u.y), v.x - u.x).normalize(),
+                  );
+          const separated = axes.some((axis) => {
+            const ap = a.map((v) => v.x * axis.x + v.y * axis.y),
+              cp = c.map((v) => v.x * axis.x + v.y * axis.y);
+            return (
+              Math.max(...ap) < Math.min(...cp) - 0.002 ||
+              Math.max(...cp) < Math.min(...ap) - 0.002
+            );
+          });
+          assert.ok(
+            separated,
+            "projected silhouettes overlap " +
+              JSON.stringify({ width, height, selected, i }),
+          );
+        }
+      }
+    }
+  }
+  geometry.dispose();
+});
+
+test("repeated stage intent does not restart the active timeline", () => {
+  const method = source.slice(
+    source.indexOf("  setStage(stage: number)"),
+    source.indexOf("  warmConsole()"),
+  );
+  let writes = 0,
+    kills = 0;
+  const gsap = {
+    isTweening: () => true,
+    killTweensOf: () => kills++,
+    to: () => writes++,
+  };
+  const Harness = new Function(
+    "clamp",
+    "gsap",
+    js("class Harness {" + method + "}") + ";return Harness;",
+  )(clamp, gsap);
+  const scene = Object.assign(Object.create(Harness.prototype), {
+    target: 1,
+    progress: { value: 0.47 },
+    transitionId: 7,
+  });
+  scene.setStage(1);
+  assert.equal(writes, 0);
+  assert.equal(kills, 0);
+  assert.equal(scene.progress.value, 0.47);
+  assert.equal(scene.transitionId, 7);
 });

@@ -1,1 +1,247 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="theme-color" content="#eee6d7"/><meta name="description" content="Six small worlds. A physical game collection you can open, explore and play. An independent interactive experiment by Beibars Ileskhan."/><title>SAVE SLOT — Six small worlds</title><link rel="icon" type="image/svg+xml" href="./favicon.svg"/></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eee6d7" />
+    <meta
+      name="description"
+      content="Six small worlds. A physical game collection you can open, explore and play. An independent interactive experiment by Beibars Ileskhan."
+    />
+    <title>SAVE SLOT - Six small worlds</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <style>
+      body {
+        margin: 0;
+        background: #eee6d7;
+      }
+      .boot-intro {
+        --paper: #eee6d7;
+        --navy: #151e3b;
+        --rust: #b43a1a;
+        position: fixed;
+        z-index: 1000;
+        inset: 0;
+        background: var(--paper);
+        color: var(--navy);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 36px 24px;
+        box-sizing: border-box;
+      }
+      .boot-art {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transform: translateY(-30px);
+      }
+      .boot-kicker {
+        font: 9px/1.8 monospace;
+        color: var(--rust);
+        letter-spacing: 0.15em;
+        margin-bottom: 28px;
+      }
+      .boot-logo {
+        width: min(760px, 80vw);
+        aspect-ratio: 51/7;
+        margin: 0;
+      }
+      .boot-logo svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .boot-machine {
+        width: 180px;
+        height: 165px;
+        position: relative;
+        margin-top: 38px;
+      }
+      .boot-cartridge {
+        box-sizing: border-box;
+        position: absolute;
+        width: 68px;
+        height: 78px;
+        left: 56px;
+        top: 0;
+        border: 3px solid var(--navy);
+        background: #b74529;
+        box-shadow: 5px 0 #953c28;
+        clip-path: polygon(
+          0 8px,
+          8px 8px,
+          8px 0,
+          60px 0,
+          60px 8px,
+          68px 8px,
+          68px 78px,
+          0 78px
+        );
+        animation: boot-seat 2.6s cubic-bezier(0.45, 0, 0.25, 1) both;
+        animation-delay: calc(-1 * var(--boot-elapsed, 0ms));
+      }
+      .boot-cartridge i {
+        display: block;
+        height: 40px;
+        margin: 12px 8px 4px;
+        background: var(--paper);
+        border: 2px solid var(--navy);
+        box-sizing: border-box;
+      }
+      .boot-cartridge span {
+        display: block;
+        font: 6px monospace;
+        text-align: center;
+        color: var(--paper);
+      }
+      .boot-slot {
+        box-sizing: border-box;
+        position: absolute;
+        top: 105px;
+        left: 0;
+        width: 180px;
+        height: 50px;
+        border: 3px solid var(--navy);
+        background: #e4d7c1;
+        box-shadow: 6px 7px #c8bca8;
+      }
+      .boot-slot:before {
+        content: "";
+        position: absolute;
+        box-sizing: border-box;
+        left: 38px;
+        top: -9px;
+        width: 98px;
+        height: 12px;
+        background: var(--navy);
+        border: 3px solid var(--navy);
+      }
+      .boot-slot span {
+        position: absolute;
+        width: 44px;
+        height: 5px;
+        background: var(--navy);
+        top: 20px;
+        left: 20px;
+      }
+      .boot-led {
+        width: 7px;
+        height: 7px;
+        position: absolute;
+        right: 16px;
+        top: 126px;
+        background: #9b8870;
+      }
+      .boot-bottom {
+        position: absolute;
+        bottom: clamp(24px, 7vh, 80px);
+        width: min(460px, calc(100% - 48px));
+        text-align: center;
+        font-family: Arial, sans-serif;
+      }
+      .boot-status {
+        font-size: 14px;
+        line-height: 1.6;
+        min-height: 44px;
+        margin: 0 0 14px;
+      }
+      .boot-segments {
+        display: flex;
+        gap: 4px;
+        border: 1px solid #a9a08e;
+        padding: 5px;
+        height: 23px;
+        box-sizing: border-box;
+      }
+      .boot-segments span {
+        flex: 1;
+        background: #d6c9b4;
+      }
+      .boot-detail {
+        font-size: 11px;
+        color: #625f60;
+        margin: 10px 0 0;
+        min-height: 17px;
+      }
+      .boot-actions {
+        min-height: 40px;
+        margin-top: 8px;
+      }
+      @keyframes boot-seat {
+        0%,
+        18% {
+          transform: translateY(-18px);
+        }
+        65%,
+        100% {
+          transform: translateY(62px);
+        }
+      }
+      @media (max-height: 600px) {
+        .boot-art {
+          transform: translateY(-50px) scale(0.72);
+        }
+        .boot-bottom {
+          bottom: 10px;
+        }
+        .boot-machine {
+          margin-top: 15px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .boot-cartridge {
+          animation: none;
+          transform: translateY(62px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <section class="boot-intro" aria-label="Loading SAVE SLOT">
+        <div class="boot-art" aria-hidden="true">
+          <span class="boot-kicker">SIX SMALL WORLDS</span>
+          <h1 class="boot-logo">
+            <svg
+              viewBox="0 0 51 7"
+              aria-hidden="true"
+              focusable="false"
+              shape-rendering="crispEdges"
+            >
+              <path
+                fill="currentColor"
+                d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM0 1h1v1h-1zM0 2h1v1h-1zM0 3h1v1h-1zM1 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM4 4h1v1h-1zM4 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM7 0h1v1h-1zM8 0h1v1h-1zM9 0h1v1h-1zM6 1h1v1h-1zM7 1h1v1h-1zM9 1h1v1h-1zM10 1h1v1h-1zM6 2h1v1h-1zM10 2h1v1h-1zM6 3h1v1h-1zM7 3h1v1h-1zM8 3h1v1h-1zM9 3h1v1h-1zM10 3h1v1h-1zM6 4h1v1h-1zM10 4h1v1h-1zM6 5h1v1h-1zM10 5h1v1h-1zM6 6h1v1h-1zM10 6h1v1h-1zM12 0h1v1h-1zM16 0h1v1h-1zM12 1h1v1h-1zM16 1h1v1h-1zM12 2h1v1h-1zM16 2h1v1h-1zM12 3h1v1h-1zM16 3h1v1h-1zM12 4h1v1h-1zM16 4h1v1h-1zM13 5h1v1h-1zM15 5h1v1h-1zM14 6h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM21 0h1v1h-1zM22 0h1v1h-1zM18 1h1v1h-1zM18 2h1v1h-1zM18 3h1v1h-1zM19 3h1v1h-1zM20 3h1v1h-1zM21 3h1v1h-1zM18 4h1v1h-1zM18 5h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM21 6h1v1h-1zM22 6h1v1h-1zM28 0h1v1h-1zM29 0h1v1h-1zM30 0h1v1h-1zM31 0h1v1h-1zM32 0h1v1h-1zM28 1h1v1h-1zM28 2h1v1h-1zM28 3h1v1h-1zM29 3h1v1h-1zM30 3h1v1h-1zM31 3h1v1h-1zM32 3h1v1h-1zM32 4h1v1h-1zM32 5h1v1h-1zM28 6h1v1h-1zM29 6h1v1h-1zM30 6h1v1h-1zM31 6h1v1h-1zM32 6h1v1h-1zM34 0h1v1h-1zM34 1h1v1h-1zM34 2h1v1h-1zM34 3h1v1h-1zM34 4h1v1h-1zM34 5h1v1h-1zM34 6h1v1h-1zM35 6h1v1h-1zM36 6h1v1h-1zM37 6h1v1h-1zM38 6h1v1h-1zM41 0h1v1h-1zM42 0h1v1h-1zM43 0h1v1h-1zM40 1h1v1h-1zM41 1h1v1h-1zM43 1h1v1h-1zM44 1h1v1h-1zM40 2h1v1h-1zM44 2h1v1h-1zM40 3h1v1h-1zM44 3h1v1h-1zM40 4h1v1h-1zM44 4h1v1h-1zM40 5h1v1h-1zM41 5h1v1h-1zM43 5h1v1h-1zM44 5h1v1h-1zM41 6h1v1h-1zM42 6h1v1h-1zM43 6h1v1h-1zM46 0h1v1h-1zM47 0h1v1h-1zM48 0h1v1h-1zM49 0h1v1h-1zM50 0h1v1h-1zM48 1h1v1h-1zM48 2h1v1h-1zM48 3h1v1h-1zM48 4h1v1h-1zM48 5h1v1h-1zM48 6h1v1h-1z"
+              />
+            </svg>
+          </h1>
+          <div class="boot-machine">
+            <div class="boot-cartridge"><i></i><span>SS-06</span></div>
+            <div class="boot-slot"><span></span></div>
+            <div class="boot-led"></div>
+          </div>
+        </div>
+        <div class="boot-bottom">
+          <p class="boot-status">Preparing your collection</p>
+          <div class="boot-segments">
+            <span></span><span></span><span></span><span></span><span></span
+            ><span></span><span></span><span></span><span></span><span></span
+            ><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <p class="boot-detail">0 / 13 images · fonts</p>
+          <div class="boot-actions"></div>
+        </div>
+      </section>
+    </div>
+    <noscript
+      ><style>
+        .boot-intro {
+          display: none;
+        }
+      </style>
+      <p>SAVE SLOT needs JavaScript to open the collection.</p></noscript
+    >
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
