@@ -15,3 +15,5 @@ Post-generation account check: **516.5**, a debit of `560.5 - 516.5 = 44`. Confi
 No purchases, top-ups, subscriptions, paid assets or paid hosting were used for SAVE SLOT. One Meshy operation is the entire new generation spend.
 
 6 November refinement pass: **0 additional credits**. Existing geometry, images and local scene/game changes only. Cumulative **93.5**, reserve **206.5** unchanged.
+
+8 November motion/loading and six-mini-game iteration: **0 additional credits**. Reused all supplied artwork and the existing cleaned console. No paid API, purchase, new asset generation or hosting change.

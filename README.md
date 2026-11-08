@@ -1,10 +1,10 @@
 # SAVE SLOT
 
-Six small worlds on one shelf. Pull out a box, open its flap, slide the cartridge into a small retro console — then find three lost signals in **MOSS SIGNAL**.
+Six small worlds on one shelf. Pull out a box, open its flap, slide the cartridge into a small retro console — then play one of six complete Canvas2D mini-games.
 
 [Open the preview](https://seoshiro.github.io/save-slot/) · [Beibars' portfolio](https://seoshiro.github.io/)
 
-An independent portfolio concept by **Beibars Ileskhan**, built with AI assistance. MOSS SIGNAL is a short original playable demo. The other five worlds are illustrated concepts, clearly labelled in the interface.
+An independent portfolio concept by **Beibars Ileskhan**, built with AI assistance. All six worlds are playable mini-games, each with a different mechanic, a clear finish and its own session progress.
 
 ![The forest world of MOSS SIGNAL](public/media/moss-world.webp)
 
@@ -23,9 +23,20 @@ An independent portfolio concept by **Beibars Ileskhan**, built with AI assistan
 
 - Browse a physical 3D shelf by dragging, selecting a neighbouring box, using arrows, or using the six HTML selection buttons.
 - Open the selected box. Its real hinged flap opens before the matching cartridge clears the box and moves over the console slot.
-- Insert the cartridge, explore the concept, or play MOSS SIGNAL. The return runs the same physical sequence in reverse.
-- Keep the selected world when returning. Game position and signals survive a page refresh in the same browser session. EN/RU and collection selection are stored locally.
-- Use the light view if WebGL/model loading fails. MOSS SIGNAL also runs on a flat Canvas screen.
+- Insert the cartridge and play the selected world. The return runs the same physical sequence in reverse.
+- Keep the selected world when returning. Each cartridge keeps its own position and objectives through a page refresh in the same browser session. EN/RU and collection selection are stored locally.
+- Use the light view if WebGL/model loading fails. All six games also run on a flat Canvas screen.
+
+## Six playable cartridges
+
+- **DUSK DELIVERY:** deliver three parcels, avoid moving traffic, and return to the depot.
+- **ORBIT ZERO:** collect three energy cells, steer around asteroids and brake to dock.
+- **MOSS SIGNAL:** restore three beacons and enter the portal.
+- **TIDEBOUND:** cross three tidal channels between waves, using islands as checkpoints, then reach the lighthouse.
+- **EMBER VAULT:** find the key, activate two seals, cross timed fire traps, and open the vault.
+- **SNOWBYTE:** negotiate a zigzag ice route with momentum and braking, then reach the cable-car station.
+
+The first entry prepares actual artwork, local fonts and GPU resources before revealing the shelf. The approximately three-second cartridge introduction is skippable once preparation is complete; reduced-motion users have no decorative wait. Errors offer retry or a playable light view. Returning from a game never repeats the intro.
 
 ## MOSS SIGNAL
 
@@ -66,8 +77,12 @@ Artwork is supplied with this concept. `node scripts/prepare-art.mjs` prepares t
 
 ## Verification
 
-`npm test` checks movement bounds, diagonal speed, unique activation, portal gating, reachability and invalid stored progress. `scripts/qa.mjs` runs the browser interaction matrix and axe checks at desktop, tablet and mobile widths. `scripts/record.mjs` records real keyboard/touch-control interaction; performance evidence states the browser, rendering environment and its limits.
+`npm test` checks all six game completions, hazards, inertia, isolated storage, movement bounds, beacon/portal gating, continuous shelf packing and intermediate 3D intersections. `scripts/qa.mjs` runs the browser interaction matrix and axe checks at desktop, tablet and mobile widths. `scripts/record.mjs` records real keyboard/touch-control interaction; performance evidence states the browser, rendering environment and its limits.
 
 [QA and limitations](docs/QA.md). Actual desktop/mobile screenshots, uncut browser recordings and the editable source assets are included in the delivered archive.
 
 This is a portfolio experiment. No commercial release, sales, publisher, awards or user results are implied. The supplied world art and generated console are project-specific materials; this repository does not grant rights to unrelated brands or third-party artwork.
+
+## Current iteration
+
+See [8 November motion and six-game QA](docs/ITERATION-2026-11-08.md) for verified browsers, frame timing, recovery tests and remaining limitations. Older QA documents describe earlier iterations.

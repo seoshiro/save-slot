@@ -8,10 +8,12 @@
     "build": "tsc && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4197",
     "test": "node --test tests/*.test.ts",
-    "test:e2e": "node scripts/qa.mjs",
-    "test:edge": "node scripts/edge-qa.mjs",
-    "record": "node scripts/record.mjs",
-    "format": "prettier --write src tests scripts docs README.md vite.config.ts"
+    "test:e2e": "node scripts/interaction-matrix.mjs && node tests/scene-browser-qa.mjs",
+    "test:edge": "node scripts/interaction-matrix.mjs",
+    "record": "node tests/scene-browser-qa.mjs && node scripts/gameplay-live.mjs",
+    "format": "prettier --write src tests scripts docs README.md vite.config.ts",
+    "test:games": "node scripts/gameplay-live.mjs",
+    "test:performance": "node tests/scene-performance.mjs"
   },
   "dependencies": {
     "@fontsource-variable/golos-text": "^5.3.0",

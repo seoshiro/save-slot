@@ -8,3 +8,8 @@ evidence/recordings/
 art/blender/raw-console.blend
 .env*
 !\.env.example
+
+# Private user reference and local capture deliverables
+evidence/user-review/
+evidence/six-games/
+evidence/scene-worker-*.png

@@ -1,17 +1,25 @@
+import type { GameId } from "./game";
 export type Lang = "en" | "ru";
 export type World = {
-  id: string;
+  id: GameId;
   title: string;
   number: string;
   genre: Record<Lang, string>;
   tagline: Record<Lang, string>;
   description: Record<Lang, string>;
   goal: Record<Lang, string>;
+  instructions: Record<Lang, string>;
+  objectiveLabel: Record<Lang, string>;
+  actionLabel: Record<Lang, string>;
+  winText: Record<Lang, string>;
   accent: string;
   ink: string;
   cover: string;
 };
-export const worlds: World[] = [
+const worldSeeds: Omit<
+  World,
+  "instructions" | "objectiveLabel" | "actionLabel" | "winText"
+>[] = [
   {
     id: "dusk-delivery",
     title: "DUSK DELIVERY",
@@ -139,7 +147,7 @@ export const worlds: World[] = [
     cover: "snow",
   },
 ];
-export const words = {
+const originalWords = {
   en: {
     collection: "Collection",
     about: "About",
@@ -279,5 +287,180 @@ export const words = {
     viewArt: "ПЕЙЗАЖ",
     viewStory: "ИСТОРИЯ",
     notes: ["Путешествие", "Пейзаж", "Идея"],
+  },
+} as const;
+
+const gameplay: Record<
+  GameId,
+  {
+    instructions: Record<Lang, string>;
+    objectiveLabel: Record<Lang, string>;
+    actionLabel: Record<Lang, string>;
+    winText: Record<Lang, string>;
+    goal: Record<Lang, string>;
+    description: Record<Lang, string>;
+  }
+> = {
+  "dusk-delivery": {
+    instructions: {
+      en: "Deliver to the three numbered doors with E. Cross the two traffic lanes carefully, then return to the depot at bottom left.",
+      ru: "Доставь посылки к трём дверям: подойди и нажми E. Осторожно пересекай дороги, затем вернись на склад слева внизу.",
+    },
+    objectiveLabel: { en: "DELIVERIES", ru: "ДОСТАВКИ" },
+    actionLabel: { en: "DELIVER", ru: "ДОСТАВИТЬ" },
+    winText: {
+      en: "Every parcel is home. Your shift is over.",
+      ru: "Все посылки доставлены. Смена окончена.",
+    },
+    goal: {
+      en: "Deliver three parcels. Return to the depot.",
+      ru: "Доставь три посылки. Вернись на склад.",
+    },
+    description: {
+      en: "A playable night courier route. Visit three glowing doors, dodge moving traffic and make it back to the depot. Delivered parcels stay safe after a collision.",
+      ru: "Ночной маршрут курьера. Найди три светящиеся двери, избегай машин и вернись на склад. Доставленные посылки сохраняются после столкновения.",
+    },
+  },
+  "orbit-zero": {
+    instructions: {
+      en: "Steer with arrows / WASD. Collect three energy cells, then dock at bottom left. You drift: press E to brake before docking. Avoid asteroids.",
+      ru: "Управляй стрелками / WASD. Собери три батареи и пристыкуйся слева внизу. Корабль движется по инерции: E тормозит. Избегай астероидов.",
+    },
+    objectiveLabel: { en: "ENERGY CELLS", ru: "БАТАРЕИ" },
+    actionLabel: { en: "BRAKE", ru: "ТОРМОЗ" },
+    winText: {
+      en: "Energy recovered. Docking confirmed.",
+      ru: "Энергия восстановлена. Стыковка завершена.",
+    },
+    goal: {
+      en: "Collect three cells. Brake and dock at the station.",
+      ru: "Собери три батареи. Затормози у станции.",
+    },
+    description: {
+      en: "Pilot a drifting survey ship around a broken orbital ring. Gather three energy cells, steer clear of circling debris and slow down to dock at your station.",
+      ru: "Управляй кораблём среди обломков орбитального кольца. Собери три батареи, обойди астероиды и сбрось скорость перед стыковкой.",
+    },
+  },
+  "moss-signal": {
+    instructions: {
+      en: "Find three numbered beacons. Get close and press E to restore each signal, then reach the stone portal at the top.",
+      ru: "Найди три пронумерованных маяка. Подойди и нажми E, чтобы включить каждый. Затем дойди до каменного портала наверху.",
+    },
+    objectiveLabel: { en: "SIGNALS", ru: "СИГНАЛЫ" },
+    actionLabel: { en: "ACTIVATE", ru: "ВКЛЮЧИТЬ" },
+    winText: { en: "The forest is awake again.", ru: "Лес снова проснулся." },
+    goal: {
+      en: "Restore three signals. Reach the portal.",
+      ru: "Включи три маяка. Дойди до портала.",
+    },
+    description: {
+      en: "Find three old beacons among the overgrown ruins. Restore their signals, then reach the stone portal. A short original game, made for this collection.",
+      ru: "Найди три древних маяка среди заросших руин. Восстанови сигналы и дойди до каменного портала.",
+    },
+  },
+  tidebound: {
+    instructions: {
+      en: "Cross right toward the lighthouse. Wait on sandy islands while the water is bright blue. Cross when it recedes to grey. Flags save your position.",
+      ru: "Двигайся вправо к маяку. Пережидай ярко-синюю волну на песчаных островках. Когда вода серая, переходи. Флажки сохраняют позицию.",
+    },
+    objectiveLabel: { en: "SAFE ISLANDS", ru: "ОСТРОВКИ" },
+    actionLabel: { en: "WAIT", ru: "ЖДАТЬ" },
+    winText: {
+      en: "The lighthouse is within reach. Safe at last.",
+      ru: "Ты у маяка. Наконец в безопасности.",
+    },
+    goal: {
+      en: "Time three tidal crossings. Reach the lighthouse.",
+      ru: "Пройди три приливных перехода. Дойди до маяка.",
+    },
+    description: {
+      en: "Read the waves along a narrow coastal causeway. Three sandy islands offer shelter and checkpoints. Wait for low water, cross decisively, and reach the lighthouse.",
+      ru: "Следи за волнами на узкой прибрежной тропе. Три песчаных островка дают укрытие и сохраняют позицию. Дождись отлива и доберись до маяка.",
+    },
+  },
+  "ember-vault": {
+    instructions: {
+      en: "Find key 1 at top left, then activate seals 2 and 3 with E. Cross fire rows only when the flames are out. Reach the vault at bottom right.",
+      ru: "Найди ключ 1 слева наверху, затем включи печати 2 и 3 кнопкой E. Пересекай огненные полосы, когда пламя гаснет. Сейф справа внизу.",
+    },
+    objectiveLabel: { en: "KEY & SEALS", ru: "КЛЮЧ И ПЕЧАТИ" },
+    actionLabel: { en: "UNLOCK", ru: "ОТКРЫТЬ" },
+    winText: {
+      en: "The seals are broken. The vault is yours.",
+      ru: "Печати сняты. Хранилище открыто.",
+    },
+    goal: {
+      en: "Find the key. Break two seals. Open the vault.",
+      ru: "Найди ключ. Сними две печати. Открой хранилище.",
+    },
+    description: {
+      en: "A brass key and two ordered seals guard the underground vault. Time your movement through pulsing fire traps. Claimed relics survive a setback.",
+      ru: "Латунный ключ и две печати охраняют подземное хранилище. Выбирай момент для прохода через огненные ловушки. Найденные реликвии сохраняются.",
+    },
+  },
+  snowbyte: {
+    instructions: {
+      en: "Follow flags in order: right, up, left, up, right. Ice keeps you sliding. Press E to brake at corners and avoid the dark cracks. Reach the cable car.",
+      ru: "Следуй флажкам: вправо, вверх, влево, вверх, вправо. На льду ты скользишь. Нажимай E перед поворотами, обходи трещины и доберись до фуникулёра.",
+    },
+    objectiveLabel: { en: "COURSE FLAGS", ru: "ФЛАЖКИ" },
+    actionLabel: { en: "BRAKE", ru: "ТОРМОЗ" },
+    winText: {
+      en: "Last cable car caught. Enjoy the view.",
+      ru: "Ты успел на последний фуникулёр. Наслаждайся видом.",
+    },
+    goal: {
+      en: "Pass three flags. Reach the cable-car station.",
+      ru: "Пройди три флажка. Доберись до фуникулёра.",
+    },
+    description: {
+      en: "Slide through a winding alpine ice course. Brake before the turns, avoid crevasses and pass three checkpoint flags on the way to the final cable car.",
+      ru: "Скользи по извилистой ледяной трассе. Тормози перед поворотами, обходи трещины и пройди три флажка по пути к последнему фуникулёру.",
+    },
+  },
+};
+export const worlds: World[] = worldSeeds.map((w) => ({
+  ...w,
+  ...gameplay[w.id],
+}));
+export const words = {
+  en: {
+    ...originalWords.en,
+    concept: "Original playable mini-game",
+    demo: "Original playable mini-game",
+    playing: "PLAYING",
+    complete: "ROUTE COMPLETE",
+    worldView: "World preview",
+    conceptNote:
+      "One of six original playable mini-games. Insert the cartridge to play.",
+    aboutCopy:
+      "SAVE SLOT is an independent portfolio experiment by Beibars Ileskhan. Six imagined worlds become physical objects you can open and explore. Every cartridge contains a short, original playable game, with its own controls, goal and saved progress.",
+    restartAsk: "Restart this game? Its objectives and position will reset.",
+    unavailable:
+      "3D is unavailable. You can still browse and play all six games.",
+    controls: "Arrows / WASD to move · E for action · Esc to pause",
+    touch: "Move with the pad. Use the action button below.",
+    saved: "Each game keeps its own progress in this browser session.",
+    six: "SIX PLAYABLE WORLDS",
+    intro: "Six small worlds.\nSix playable adventures.",
+  },
+  ru: {
+    ...originalWords.ru,
+    concept: "Авторская мини-игра",
+    demo: "Авторская мини-игра",
+    playing: "ИГРАЕМ",
+    complete: "МАРШРУТ ПРОЙДЕН",
+    worldView: "Обзор мира",
+    conceptNote:
+      "Одна из шести авторских мини-игр. Вставь картридж, чтобы играть.",
+    aboutCopy:
+      "SAVE SLOT — независимый проект Бейбарса Илесхана для портфолио. Шесть вымышленных миров превращаются в предметы, которые можно открыть и исследовать. В каждом картридже — короткая авторская игра со своими правилами, целью и отдельным сохранением.",
+    restartAsk: "Начать эту игру заново? Её цели и позиция сбросятся.",
+    unavailable: "3D недоступно. Все шесть игр по-прежнему работают.",
+    controls: "Стрелки / WASD — движение · E — действие · Esc — пауза",
+    touch: "Двигайся кнопками. Для действия используй кнопку ниже.",
+    saved: "Прогресс каждой игры хранится отдельно в этой сессии браузера.",
+    six: "ШЕСТЬ ИГРОВЫХ МИРОВ",
+    intro: "Шесть маленьких миров.\nШесть игровых приключений.",
   },
 } as const;

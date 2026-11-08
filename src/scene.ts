@@ -28,6 +28,32 @@ const smooth = (a: number, b: number, x: number) => {
   const t = clamp((x - a) / (b - a), 0, 1);
   return t * t * (3 - 2 * t);
 };
+// Conservative extents guarantee clearance at every intermediate selection.
+export function shelfLayout(selection: number, count: number) {
+  const poses = Array.from({ length: count }, (_, i) => {
+    const emphasis = 1 - smooth(0, 1.25, Math.abs(i - selection));
+    const ry = mix(1.05, 0.09, emphasis);
+    const half =
+      (1.6 * Math.cos(ry) + 0.48 * Math.sin(ry) + 2.72 * 0.035 * emphasis) / 2;
+    return {
+      x: 0,
+      y: -0.07 + emphasis * 0.12,
+      z: emphasis * 0.42,
+      ry,
+      emphasis,
+      half,
+    };
+  });
+  for (let i = 1; i < count; i++)
+    poses[i].x = poses[i - 1].x + poses[i - 1].half + poses[i].half + 0.22;
+  const bounded = clamp(selection, 0, count - 1),
+    lo = Math.floor(bounded),
+    hi = Math.ceil(bounded);
+  const center = mix(poses[lo].x, poses[hi].x, bounded - lo);
+  for (const pose of poses) pose.x -= center;
+  return poses;
+}
+
 type BoxRig = { group: THREE.Group; flap: THREE.Group; cart: THREE.Group };
 export class SaveScene {
   scene = new THREE.Scene();
@@ -75,12 +101,24 @@ export class SaveScene {
   private coversPending = worlds.length;
   private coversReady = 0;
   private coverErrors = 0;
+  private resourcesLoaded = 0;
+  private resourcesTotal = worlds.length * 2 + 1;
+  private assetsPrepared = false;
+  private worldImages = new Map<number, HTMLImageElement>();
+  private transitionId = 0;
+  private openingIndex = 2;
+  private deferredSelection: number | null = null;
+  private inspectPose = { value: 0 };
+  private inspectAngle = 0;
+  private projection = Array.from({ length: 4 }, () => new THREE.Vector3());
   constructor(
     public el: HTMLElement,
     public callbacks: {
-      select: (i: number) => void;
+      select: (i: number, source?: "tap" | "drag") => void;
       settled: (stage: number) => void;
       ready: () => void;
+      resources?: (loaded: number, total: number) => void;
+      assetsReady?: () => void;
       error: (s: string) => void;
       screenRect?: (x: number, y: number, w: number, h: number) => void;
       progress?: (p: number) => void;
@@ -126,7 +164,7 @@ export class SaveScene {
     const key = new THREE.DirectionalLight(0xfff2df, 2.3);
     key.position.set(-4, 8, 7);
     key.castShadow = true;
-    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.mapSize.set(1024, 1024);
     key.shadow.camera.left = -12;
     key.shadow.camera.right = 12;
     key.shadow.camera.top = 10;
@@ -144,12 +182,15 @@ export class SaveScene {
     this.buildBoxes();
     this.buildShelf();
     this.prepareConsole();
+    this.callbacks.resources?.(0, this.resourcesTotal);
+    this.loadConsole();
     this.drawStandby();
     this.observer = new ResizeObserver(() => this.resize());
     this.observer.observe(el);
     this.resize();
     this.onPointerDown = (e) => {
-      if (e.button !== 0 || this.target !== 0) return;
+      if (e.button !== 0 || this.target !== 0 || this.progress.value > 0.001)
+        return;
       this.start = {
         x: e.clientX,
         y: e.clientY,
@@ -163,15 +204,14 @@ export class SaveScene {
         dy = e.clientY - this.start.y;
       if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.2) {
         if (!this.drag) {
-          this.start.selection = this.selection.value;
           gsap.killTweensOf(this.selection);
           this.el.setPointerCapture(e.pointerId);
         }
         this.drag = true;
         this.selection.value = clamp(
           this.start.selection - dx / (this.width < 700 ? 95 : 150),
-          -0.15,
-          5.15,
+          0,
+          worlds.length - 1,
         );
         this.request();
       }
@@ -181,19 +221,30 @@ export class SaveScene {
       const dx = e.clientX - this.start.x;
       const wasDrag = this.drag;
       const origin = this.start.selection;
+      const dy = e.clientY - this.start.y;
       this.start = null;
       if (this.el.hasPointerCapture(e.pointerId))
         this.el.releasePointerCapture(e.pointerId);
       if (wasDrag) {
+        this.setSelected(Math.round(this.selection.value));
         this.callbacks.select(
-          Math.round(clamp(origin - dx / (this.width < 700 ? 120 : 180), 0, 5)),
+          Math.round(
+            clamp(
+              origin - dx / (this.width < 700 ? 95 : 150),
+              0,
+              worlds.length - 1,
+            ),
+          ),
+          "drag",
         );
         return;
       }
-      if (this.target === 0) {
+      if (Math.hypot(dx, dy) > 12) return;
+      if (this.target === 0 && this.progress.value < 0.001) {
+        const rect = this.el.getBoundingClientRect();
         const ndc = new THREE.Vector2(
-          (e.offsetX / this.width) * 2 - 1,
-          -(e.offsetY / this.height) * 2 + 1,
+          ((e.clientX - rect.left) / this.width) * 2 - 1,
+          -((e.clientY - rect.top) / this.height) * 2 + 1,
         );
         const ray = new THREE.Raycaster();
         ray.setFromCamera(ndc, this.camera);
@@ -205,7 +256,7 @@ export class SaveScene {
           let ob: THREE.Object3D | null = hit.object;
           while (ob && ob.userData.world === undefined) ob = ob.parent;
           if (ob && typeof ob.userData.world === "number")
-            this.callbacks.select(ob.userData.world);
+            this.callbacks.select(ob.userData.world, "tap");
         }
       }
     };
@@ -303,6 +354,7 @@ export class SaveScene {
           frontMat.needsUpdate = true;
           this.coversPending--;
           this.coversReady++;
+          this.resourceLoaded();
           this.reportCovers();
           this.request();
         },
@@ -311,6 +363,7 @@ export class SaveScene {
           if (this.dead) return;
           this.coversPending--;
           this.coverErrors++;
+          this.callbacks.error("texture");
           this.reportCovers();
           this.request();
         },
@@ -441,6 +494,8 @@ export class SaveScene {
       });
       const labelImage = new Image();
       labelImage.onload = () => {
+        if (this.dead) return;
+        this.worldImages.set(i, labelImage);
         const c = (labelTex.image as HTMLCanvasElement).getContext("2d")!;
         c.drawImage(labelImage, 0, 0, 512, 304);
         c.fillStyle = w.ink;
@@ -450,7 +505,12 @@ export class SaveScene {
         c.textAlign = "center";
         c.fillText(w.title, 256, 274);
         labelTex.needsUpdate = true;
+        this.resourceLoaded();
+        if (this.selected === i) this.drawStandby();
         this.request();
+      };
+      labelImage.onerror = () => {
+        if (!this.dead) this.callbacks.error("texture");
       };
       labelImage.src = A + w.cover + "-world.webp";
       const label = this.mesh(
@@ -519,26 +579,8 @@ export class SaveScene {
             }
           }
         });
-        // Upload and compile the console before starting the physical transition.
-        // This genuine preparation happens once; it never covers up a bad pose.
-        const position = this.console.position.clone();
-        const visible = this.console.visible;
-        const target = this.renderer.getRenderTarget();
-        const warm = new THREE.WebGLRenderTarget(32, 32);
-        try {
-          this.console.position.set(0, 0, 0);
-          this.console.visible = true;
-          this.renderer.setRenderTarget(warm);
-          this.renderer.shadowMap.needsUpdate = true;
-          this.renderer.render(this.scene, this.camera);
-        } finally {
-          this.renderer.setRenderTarget(target);
-          this.console.position.copy(position);
-          this.console.visible = visible;
-          warm.dispose();
-          this.shadowPose.p = NaN;
-        }
         this.ready = true;
+        this.resourceLoaded();
         if (this.target > 0) this.setStage(this.target);
         this.callbacks.ready();
         this.request();
@@ -617,8 +659,8 @@ export class SaveScene {
     c.fillRect(0, 0, 512, 384);
     const index = this.selected;
     const language = this.lang;
-    const im = new Image();
-    im.onload = () => {
+    const im = this.worldImages.get(index);
+    if (im) {
       if (this.dead || this.selected !== index || this.lang !== language)
         return;
       c.drawImage(im, 0, 0, 512, 384);
@@ -642,16 +684,52 @@ export class SaveScene {
       c.fillRect(182, 360, 148, 2);
       this.screenTexture.needsUpdate = true;
       this.request();
-    };
-    im.src = A + w.cover + "-world.webp";
+    }
     this.screenTexture.needsUpdate = true;
   }
+  private resourceLoaded() {
+    this.resourcesLoaded++;
+    this.el.dataset.resourcesLoaded = String(this.resourcesLoaded);
+    this.callbacks.resources?.(this.resourcesLoaded, this.resourcesTotal);
+    if (this.resourcesLoaded !== this.resourcesTotal || this.assetsPrepared)
+      return;
+    for (const texture of this.coverTextures)
+      this.renderer.initTexture(texture);
+    this.renderer.initTexture(this.screenTexture);
+    this.renderer.initTexture(this.gameTexture);
+    const visible = this.console.visible;
+    this.console.visible = true;
+    this.renderer
+      .compileAsync(this.scene, this.camera)
+      .then(() => {
+        if (this.dead) return;
+        this.assetsPrepared = true;
+        this.request();
+        requestAnimationFrame(() => {
+          if (this.dead) return;
+          this.el.dataset.resourceReady = "true";
+          this.callbacks.assetsReady?.();
+        });
+      })
+      .catch(() => {
+        if (!this.dead) this.callbacks.error("webgl");
+      });
+    this.console.visible = visible;
+  }
   setSelected(i: number) {
+    i = clamp(Math.round(i), 0, worlds.length - 1);
+    if (this.progress.value > 0.001 && i !== this.openingIndex) {
+      this.deferredSelection = i;
+      this.setStage(0);
+      return;
+    }
+    this.deferredSelection = null;
     this.selected = i;
+    if (this.progress.value < 0.001) this.openingIndex = i;
     gsap.to(this.selection, {
       value: i,
-      duration: this.reduced ? 0.12 : 0.6,
-      ease: "power3.out",
+      duration: this.reduced ? 0.12 : 0.8,
+      ease: "power2.inOut",
       overwrite: true,
       onUpdate: () => this.request(),
     });
@@ -659,27 +737,32 @@ export class SaveScene {
     this.request();
   }
   setStage(stage: number) {
+    stage = clamp(stage, 0, 2);
     this.target = stage;
+    if (stage > 0) this.deferredSelection = null;
+    const id = ++this.transitionId;
+    gsap.killTweensOf(this.progress);
     if (stage > 0 && !this.ready) {
       this.loadConsole();
       return;
     }
-    const travel =
-      Math.abs(stage - this.progress.value) /
-      (stage === 0 && this.progress.value > 1 ? 2 : 1);
+    if (stage > 0 && this.progress.value < 0.001)
+      this.openingIndex = this.selected;
+    const from = this.progress.value;
+    const duration = stage === 0 ? 2.2 : stage === 2 && from >= 1 ? 1.05 : 2.2;
     gsap.to(this.progress, {
       value: stage,
-      duration: this.reduced
-        ? 0.12
-        : Math.max(
-            0.12,
-            (stage === 0 ? 1.45 : stage === 2 ? 0.68 : 1.55) *
-              Math.min(1, travel),
-          ),
-      ease: "power2.inOut",
+      duration: this.reduced ? 0.12 : duration,
+      ease: "sine.inOut",
       overwrite: true,
       onUpdate: () => this.request(),
       onComplete: () => {
+        if (id !== this.transitionId || this.dead) return;
+        if (stage === 0 && this.deferredSelection !== null) {
+          const next = this.deferredSelection;
+          this.deferredSelection = null;
+          this.setSelected(next);
+        }
         this.callbacks.settled(stage);
         this.request();
       },
@@ -707,6 +790,7 @@ export class SaveScene {
   }
   setReduced(v: boolean) {
     this.reduced = v;
+    if (v) this.setInspect(false);
     this.request();
   }
   setLanguage(v: Lang) {
@@ -718,6 +802,12 @@ export class SaveScene {
   }
   setInspect(v: boolean) {
     this.inspect = v;
+    gsap.to(this.inspectPose, {
+      value: v && !this.reduced ? 1 : 0,
+      duration: 0.4,
+      overwrite: true,
+      onUpdate: () => this.request(),
+    });
     this.request();
   }
   private resize() {
@@ -747,8 +837,10 @@ export class SaveScene {
     const play = smooth(1, 2, p);
     const viewW = mobile
       ? mix(5.2, 3.8, play)
-      : mix(mix(12.8, 11.4, op), 6.2, play);
-    const fitY = mobile ? mix(4.3, 3.35, play) : mix(4.0, 3.45, play);
+      : mix(mix(12.8, 12.6, op), 6.2, play);
+    const fitY = mobile
+      ? mix(mix(4.3, 4.8, op), 3.35, play)
+      : mix(mix(4.0, 5.0, op), 3.45, play);
     const distance =
       Math.max(viewW / this.camera.aspect, fitY) /
       2 /
@@ -757,19 +849,18 @@ export class SaveScene {
       ? mix(0, 0.1, play)
       : mix(0, mix(1.6, 0.95, play), op);
     this.camera.position.set(focusX, mix(2.7, 0.65, play), distance);
-    this.camera.lookAt(focusX, mix(-0.04, 0.04, play), 0);
+    this.camera.lookAt(focusX, mix(mix(-0.04, 0.25, op), 0.04, play), 0);
     this.camera.updateMatrixWorld();
     // Opening groups share one progress. Reverse traversal naturally extracts before packing.
+    const poses = shelfLayout(this.selection.value, this.boxes.length);
+    if (this.inspectPose.value > 0.001 && this.lastTime)
+      this.inspectAngle += Math.min(0.05, (time - this.lastTime) / 1000) * 0.7;
     this.boxes.forEach((b, i) => {
-      const r = i - this.selection.value,
-        sel = i === this.selected;
-      const openAmount = Math.max(0, 1 - Math.abs(r));
-      let x = r * (mobile ? 1.02 : 1.17) + Math.sign(r) * 0.46 * openAmount;
-      const y = -0.07 + openAmount * 0.12,
-        z = openAmount * 0.42;
-      let ry = (r < 0 ? 1.05 : 1.05) * (1 - openAmount) + 0.09 * openAmount;
+      const sel = i === this.openingIndex;
+      const { y, z, ry, emphasis: openAmount } = poses[i];
+      let x = poses[i].x;
       if (sel) {
-        const travel = smooth(0, 0.14, op);
+        const travel = smooth(0.24, 0.52, op);
         x = mix(x, mobile ? -1.85 : -3.65, travel);
         b.group.position.set(x, mix(y, -0.08, travel), mix(z, 0.12, travel));
         b.group.rotation.set(
@@ -778,13 +869,13 @@ export class SaveScene {
           mix(-0.035 * openAmount, 0, travel),
         );
         b.group.scale.setScalar(mix(1, mobile ? 0.68 : 0.85, travel));
-        b.flap.rotation.x = -1.95 * smooth(0.28, 0.47, op);
-        b.cart.visible = p > 0.45;
+        b.flap.rotation.x = -1.95 * smooth(0.5, 0.67, op);
+        b.cart.visible = p > 0.66;
         const boxX = mobile ? -1.85 : -3.65;
         const top = 1.36 * (mobile ? 0.68 : 0.85);
         const cartClear = top + 0.61;
-        const lift = smooth(0.47, 0.65, op),
-          cross = smooth(0.66, 0.92, op);
+        const lift = smooth(0.66, 0.84, op),
+          cross = smooth(0.84, 1, op);
         const slotX = mobile ? 0.33 : 0.4;
         const slotY = 1.32;
         const cx = mix(boxX, slotX, cross),
@@ -797,14 +888,17 @@ export class SaveScene {
         b.cart.rotation.set(
           0,
           mix(-0.15, mix(-0.28, -0.08, ins), cross) +
-            (this.inspect && p < 1.1 ? Math.sin(time * 0.0007) * 0.4 : 0),
+            Math.sin(this.inspectAngle) *
+              0.4 *
+              this.inspectPose.value *
+              (1 - smooth(1, 1.1, p)),
           0,
         );
         b.cart.scale.setScalar(0.95);
       } else {
-        const spread = smooth(0.02, 0.14, op);
+        const spread = smooth(0, 0.23, op);
         b.group.position.set(
-          x + Math.sign(r) * spread * 9,
+          x + (i < this.openingIndex ? -1 : 1) * spread * 12,
           y - spread * 0.15,
           z,
         );
@@ -815,9 +909,9 @@ export class SaveScene {
       }
       b.group.visible = Math.abs(b.group.position.x) < 18;
     });
-    this.shelf.position.y = -smooth(0.05, 0.5, op) * 5;
-    const cp = smooth(0.15, 0.27, op);
-    this.console.visible = cp > 0;
+    this.shelf.position.y = -smooth(0.24, 0.7, op) * 5;
+    const cp = smooth(0.25, 0.64, op);
+    this.console.visible = cp > 0 && this.ready;
     this.console.position.set(mobile ? 0.33 : 0.4, mix(-5, -0.05, cp), -0.1);
     this.console.rotation.y = mix(-0.28, -0.08, ins);
     this.console.scale.setScalar(mobile ? 0.89 : 1.0);
@@ -831,7 +925,7 @@ export class SaveScene {
       this.shadowPose.selection !== this.selection.value ||
       this.shadowPose.width !== this.width ||
       this.shadowPose.height !== this.height ||
-      (this.inspect && p > 0.95 && p < 1.1)
+      (this.inspectPose.value > 0.001 && p > 0.95 && p < 1.1)
     ) {
       this.renderer.shadowMap.needsUpdate = true;
       this.shadowPose = {
@@ -848,9 +942,9 @@ export class SaveScene {
         [CRT.width / 2, -CRT.height / 2],
         [CRT.width / 2, CRT.height / 2],
         [-CRT.width / 2, CRT.height / 2],
-      ].map(([x, y]) =>
+      ].map(([x, y], i) =>
         this.screen
-          .localToWorld(new THREE.Vector3(x, y, 0.04))
+          .localToWorld(this.projection[i].set(x, y, 0.04))
           .project(this.camera),
       );
       const xs = corners.map((v) => ((v.x + 1) / 2) * this.width),
@@ -866,13 +960,14 @@ export class SaveScene {
       this.rafTimes.push(time - this.lastTime);
     this.lastTime = time;
     if (this.rafTimes.length > 300) this.rafTimes.shift();
-    if (this.inspect && p > 0.95 && p < 1.1) this.request();
+    if (this.inspectPose.value > 0.001 && p > 0.95 && p < 1.1) this.request();
   }
   dispose() {
     this.dead = true;
     cancelAnimationFrame(this.frame);
     gsap.killTweensOf(this.progress);
     gsap.killTweensOf(this.selection);
+    gsap.killTweensOf(this.inspectPose);
     this.observer.disconnect();
     this.el.removeEventListener("pointerdown", this.onPointerDown);
     this.el.removeEventListener("pointermove", this.onMove);
