@@ -460,6 +460,25 @@ try {
           area < 1,
           "Enlarged game canvas does not overlap HTML information/controls",
         );
+        const footer = await p.locator(".footer").boundingBox();
+        const footerArea =
+          info && footer
+            ? Math.max(
+                0,
+                Math.min(info.x + info.width, footer.x + footer.width) -
+                  Math.max(info.x, footer.x),
+              ) *
+              Math.max(
+                0,
+                Math.min(info.y + info.height, footer.y + footer.height) -
+                  Math.max(info.y, footer.y),
+              )
+            : 0;
+        assert(
+          r,
+          footerArea < 1,
+          "Enlarged information/controls do not overlap footer",
+        );
         assert(
           r,
           (await p.locator(".app.large-mode").count()) === 1,

@@ -2688,7 +2688,10 @@ figcaption {
     240px,
     min(calc(var(--viewport-main, 618px) - var(--large-top, 72px) - 24px), 52vw)
   );
-  min-height: calc(var(--large-height) + var(--large-top, 72px) + 24px);
+  min-height: max(
+    calc(var(--large-height) + var(--large-top, 72px) + 24px),
+    calc(72px + var(--panel-height, 0px) + 24px)
+  );
 }
 @media (max-width: 700px) {
   .app.opened.large-mode .main {
