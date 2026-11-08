@@ -19,10 +19,12 @@ A 6-second, original-speed excerpt of the public site, reduced to 768 px / 8 fps
   <img src="docs/media/desktop-console.webp" width="49%" alt="Desktop: inserted cartridge and playable console" />
 </p>
 <p>
-  <img src="docs/media/mobile-shelf.webp" width="24%" alt="390 × 844 mobile viewport: shelf" />
-  <img src="docs/media/mobile-box.webp" width="24%" alt="390 × 844 mobile viewport: open box" />
-  <img src="docs/media/mobile-console.webp" width="24%" alt="390 × 844 mobile viewport: console" />
-  <img src="docs/media/mobile-game.webp" width="24%" alt="390 × 844 mobile viewport: enlarged game and touch controls" />
+  <img src="docs/media/mobile-shelf.webp" width="45%" alt="390 × 844 mobile viewport: shelf" />
+  <img src="docs/media/mobile-box.webp" width="45%" alt="390 × 844 mobile viewport: open box" />
+</p>
+<p>
+  <img src="docs/media/mobile-console.webp" width="45%" alt="390 × 844 mobile viewport: console" />
+  <img src="docs/media/mobile-game.webp" width="45%" alt="390 × 844 mobile viewport: enlarged game and touch controls" />
 </p>
 
 Real screenshots from the current public build. Mobile images use Chromium viewport/touch emulation, not a physical phone. [Capture details](docs/PRESENTATION.md).
