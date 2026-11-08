@@ -174,7 +174,7 @@ export function hazards(s: GameState): (Point & { radius: number })[] {
   if (s.id === "dusk-delivery")
     return [8, 12].flatMap((y, i) =>
       [0, 12].map((offset) => ({
-        x: 2 + ((t * (i ? -2.4 : 2.4) + offset + 240) % 24),
+        x: 2 + (((t * (i ? -2.4 : 2.4) + offset + 240) % 24) + 24) % 24,
         y,
         radius: 0.8,
       })),

@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { flushSync } from "react-dom";
 import "@fontsource/press-start-2p/latin.css";
 import "@fontsource/press-start-2p/cyrillic.css";
 import "@fontsource-variable/golos-text";
@@ -7,7 +8,6 @@ import { SaveScene } from "./scene";
 import { worlds, words, type Lang } from "./data";
 import {
   freshGame,
-  parseGame,
   advance,
   activate,
   paintGame,
@@ -15,9 +15,9 @@ import {
   ROWS,
   TILE,
   type GameState,
-  type GameId,
   status as gameStatus,
 } from "./game";
+import { createGameStore } from "./game-storage";
 import "./style.css";
 import { BootIntro } from "./BootIntro";
 
@@ -36,33 +36,16 @@ const write = (k: string, v: string) => {
     /* no storage should never block play */
   }
 };
-const getGame = (id: GameId = "moss-signal") => {
-  try {
-    return parseGame(
-      JSON.parse(
-        sessionStorage.getItem(`save-slot:${id}:v2`) ||
-          (id === "moss-signal"
-            ? sessionStorage.getItem("save-slot:moss:v1")
-            : null) ||
-          "null",
-      ),
-      id,
-    );
-  } catch {
-    return freshGame(id);
-  }
-};
-const saveGame = (g: GameState) => {
-  try {
-    sessionStorage.setItem(`save-slot:${g.id}:v2`, JSON.stringify(g));
-  } catch {}
-};
+const { getGame, saveGame: persistGame } = createGameStore(
+  () => sessionStorage,
+);
 const sessionAvailable = () => {
   try {
     const k = "save-slot:storage-check";
     sessionStorage.setItem(k, "1");
+    const available = sessionStorage.getItem(k) === "1";
     sessionStorage.removeItem(k);
-    return true;
+    return available;
   } catch {
     return false;
   }
@@ -132,7 +115,7 @@ function App() {
   const t = words[lang];
   const [selected, setSelected] = useState(chooseInitial);
   const w = worlds[selected];
-  const nearCopy = w.instructions[lang];
+  const nearCopy = (touchUI ? w.touchInstructions : w.instructions)[lang];
   const [bootVisible, setBootVisible] = useState(true);
   const [sceneAssetsReady, setSceneAssetsReady] = useState(false);
   const heroEl = useRef<HTMLElement>(null);
@@ -151,6 +134,8 @@ function App() {
   const [sound, setSound] = useState(false);
   const [paused, setPaused] = useState(false);
   const [large, setLarge] = useState(false);
+  const largeIntent = useRef(false);
+  const screenTransition = useRef<ViewTransition | null>(null);
   const [restart, setRestart] = useState(false);
   const [modelReady, setModelReady] = useState(false);
   const [error, setError] = useState("");
@@ -161,12 +146,42 @@ function App() {
   const [reduced, setReduced] = useState(
     () => matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
+  function cancelScreenTransition() {
+    screenTransition.current?.skipTransition();
+    screenTransition.current = null;
+  }
+  function changeLarge(next: boolean) {
+    largeIntent.current = next;
+    cancelScreenTransition();
+    if (reduced || typeof document.startViewTransition !== "function") {
+      setLarge(next);
+      return;
+    }
+    const transition = document.startViewTransition(() => {
+      // A later toggle or Back must win even before this snapshot is ready.
+      if (largeIntent.current !== next) return;
+      flushSync(() => setLarge(next));
+    });
+    screenTransition.current = transition;
+    void transition.ready.catch(() => {});
+    void transition.finished
+      .catch(() => {})
+      .then(() => {
+        if (screenTransition.current === transition)
+          screenTransition.current = null;
+      });
+  }
+  useEffect(() => {
+    if (reduced) cancelScreenTransition();
+  }, [reduced]);
+  useEffect(() => () => cancelScreenTransition(), []);
   const game = useRef<GameState>(getGame(w.id));
   const [gameUI, setGameUI] = useState(() => ({
     count: game.current.beacons.filter(Boolean).length,
     won: game.current.won,
   }));
   const [hint, setHint] = useState("");
+  useEffect(() => setHint(""), [lang, touchUI]);
   const [status, setStatus] = useState(gameStatus(game.current));
   const sceneEl = useRef<HTMLDivElement>(null);
   const closeRef = useRef<(fromPop?: boolean) => void>(() => {});
@@ -174,6 +189,7 @@ function App() {
   const source = useRef<HTMLCanvasElement>(document.createElement("canvas"));
   const visibleGame = useRef<HTMLCanvasElement>(null);
   const keys = useRef(new Set<string>());
+  const touchActionStarted = useRef(false);
   const audio = useRef<AudioContext | null>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
   const aboutRef = useRef<HTMLDialogElement>(null);
@@ -188,7 +204,10 @@ function App() {
   const openRef = useRef<(prepared?: boolean) => void>(() => {});
   const queuedSelection = useRef<number | null>(null);
   const openAfterReturn = useRef(false);
-  const [hasSessionStorage] = useState(sessionAvailable);
+  const [hasSessionStorage, setHasSessionStorage] = useState(sessionAvailable);
+  function saveGame(game: GameState) {
+    if (!persistGame(game)) setHasSessionStorage(false);
+  }
   const progressNotice = hasSessionStorage
     ? t.saved
     : lang === "en"
@@ -564,6 +583,8 @@ function App() {
     setPaused(true);
     keys.current.clear();
     saveGame(game.current);
+    largeIntent.current = false;
+    cancelScreenTransition();
     setLarge(false);
     setOpen(false);
     setInspect(false);
@@ -613,7 +634,7 @@ function App() {
       );
       tone(440 + result.activated * 110);
       saveGame(game.current);
-    } else setHint(w.instructions[lang]);
+    } else setHint(nearCopy);
     scene.current?.updateGame();
   }
   const actRef = useRef(act);
@@ -632,8 +653,8 @@ function App() {
       const k = gameKey(e);
       if (k === "escape") {
         e.preventDefault();
-        if (large) {
-          setLarge(false);
+        if (largeIntent.current) {
+          changeLarge(false);
           setPaused(true);
           keys.current.clear();
           return;
@@ -685,6 +706,7 @@ function App() {
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
     window.addEventListener("blur", blur);
+    window.addEventListener("pagehide", blur);
     const visibility = () => {
       if (document.hidden) blur();
     };
@@ -693,9 +715,10 @@ function App() {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
       window.removeEventListener("blur", blur);
+      window.removeEventListener("pagehide", blur);
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [isGame, open, selected, about, restart, large, bootVisible]);
+  }, [isGame, open, selected, about, restart, large, reduced, bootVisible]);
   useEffect(() => {
     let raf = 0,
       last = 0,
@@ -1314,7 +1337,22 @@ function App() {
                     <button
                       className="primary activate"
                       disabled={!isGame || paused || gameUI.won}
-                      onClick={act}
+                      onPointerDown={(e) => {
+                        touchActionStarted.current = e.pointerType === "touch";
+                        if (e.pointerType !== "touch") return;
+                        // A second finger need not produce a click while a direction is held.
+                        e.preventDefault();
+                        act();
+                      }}
+                      onClick={(e) => {
+                        const touchClick =
+                          (e.nativeEvent as PointerEvent).pointerType ===
+                            "touch" ||
+                          (touchActionStarted.current && e.detail !== 0);
+                        touchActionStarted.current = false;
+                        // Touch already acted on press; mouse and keyboard still use click.
+                        if (!touchClick) act();
+                      }}
                     >
                       {w.actionLabel[lang]}
                     </button>
@@ -1332,7 +1370,7 @@ function App() {
                     </button>
                     <button
                       className="secondary"
-                      onClick={() => setLarge((v) => !v)}
+                      onClick={() => changeLarge(!largeIntent.current)}
                       disabled={!isGame}
                     >
                       {large ? t.shrink : t.fullscreen}

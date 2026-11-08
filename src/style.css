@@ -3046,3 +3046,29 @@ figcaption {
     padding-top: 8px;
   }
 }
+
+/* Only explicit enlarge/shrink requests snapshot the stage. Navigation and
+   controls remain live, and all existing layout endpoints remain untouched. */
+:root {
+  view-transition-name: none;
+}
+.scene-stage {
+  view-transition-name: save-slot-screen;
+}
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(save-slot-screen),
+::view-transition-old(save-slot-screen),
+::view-transition-new(save-slot-screen) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(save-slot-screen),
+  ::view-transition-old(save-slot-screen),
+  ::view-transition-new(save-slot-screen) {
+    animation: none;
+  }
+}

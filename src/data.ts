@@ -9,6 +9,7 @@ export type World = {
   description: Record<Lang, string>;
   goal: Record<Lang, string>;
   instructions: Record<Lang, string>;
+  touchInstructions: Record<Lang, string>;
   objectiveLabel: Record<Lang, string>;
   actionLabel: Record<Lang, string>;
   winText: Record<Lang, string>;
@@ -18,7 +19,11 @@ export type World = {
 };
 const worldSeeds: Omit<
   World,
-  "instructions" | "objectiveLabel" | "actionLabel" | "winText"
+  | "instructions"
+  | "touchInstructions"
+  | "objectiveLabel"
+  | "actionLabel"
+  | "winText"
 >[] = [
   {
     id: "dusk-delivery",
@@ -294,6 +299,7 @@ const gameplay: Record<
   GameId,
   {
     instructions: Record<Lang, string>;
+    touchInstructions: Record<Lang, string>;
     objectiveLabel: Record<Lang, string>;
     actionLabel: Record<Lang, string>;
     winText: Record<Lang, string>;
@@ -305,6 +311,10 @@ const gameplay: Record<
     instructions: {
       en: "Deliver to the three numbered doors with E. Cross the two traffic lanes carefully, then return to the depot at bottom left.",
       ru: "Доставь посылки к трём дверям: подойди и нажми E. Осторожно пересекай дороги, затем вернись на склад слева внизу.",
+    },
+    touchInstructions: {
+      en: "Hold the on-screen arrows to move. At each numbered door, tap DELIVER. Avoid traffic, then return to the depot at bottom left.",
+      ru: "Двигайся экранными стрелками. У трёх дверей нажми «ДОСТАВИТЬ». Избегай машин и вернись на склад слева внизу.",
     },
     objectiveLabel: { en: "DELIVERIES", ru: "ДОСТАВКИ" },
     actionLabel: { en: "DELIVER", ru: "ДОСТАВИТЬ" },
@@ -326,6 +336,10 @@ const gameplay: Record<
       en: "Steer with arrows / WASD. Collect three energy cells, then dock at bottom left. You drift: press E to brake before docking. Avoid asteroids.",
       ru: "Управляй стрелками / WASD. Собери три батареи и пристыкуйся слева внизу. Корабль движется по инерции: E тормозит. Избегай астероидов.",
     },
+    touchInstructions: {
+      en: "Steer with the on-screen arrows and collect three cells. Tap BRAKE to slow your drift, then dock at bottom left. Avoid asteroids.",
+      ru: "Управляй экранными стрелками. Собери три батареи, нажми «ТОРМОЗ» и пристыкуйся слева внизу. Избегай астероидов.",
+    },
     objectiveLabel: { en: "ENERGY CELLS", ru: "БАТАРЕИ" },
     actionLabel: { en: "BRAKE", ru: "ТОРМОЗ" },
     winText: {
@@ -346,6 +360,10 @@ const gameplay: Record<
       en: "Find three numbered beacons. Get close and press E to restore each signal, then reach the stone portal at the top.",
       ru: "Найди три пронумерованных маяка. Подойди и нажми E, чтобы включить каждый. Затем дойди до каменного портала наверху.",
     },
+    touchInstructions: {
+      en: "Move with the on-screen arrows. Get close to each numbered beacon and tap ACTIVATE. Restore all three, then reach the portal at the top.",
+      ru: "Двигайся экранными стрелками. Подойди к каждому маяку и нажми «ВКЛЮЧИТЬ». Зажги все три и иди к порталу наверху.",
+    },
     objectiveLabel: { en: "SIGNALS", ru: "СИГНАЛЫ" },
     actionLabel: { en: "ACTIVATE", ru: "ВКЛЮЧИТЬ" },
     winText: { en: "The forest is awake again.", ru: "Лес снова проснулся." },
@@ -362,6 +380,10 @@ const gameplay: Record<
     instructions: {
       en: "Cross right toward the lighthouse. Wait on sandy islands while the water is bright blue. Cross when it recedes to grey. Flags save your position.",
       ru: "Двигайся вправо к маяку. Пережидай ярко-синюю волну на песчаных островках. Когда вода серая, переходи. Флажки сохраняют позицию.",
+    },
+    touchInstructions: {
+      en: "Hold the on-screen arrows to move right. Release them to wait on sandy islands. Cross when the blue water turns grey. Flags save your position.",
+      ru: "Экранными стрелками двигайся вправо. Отпусти их, чтобы ждать на островке. Переходи, когда синяя вода станет серой. Флажки сохраняют позицию.",
     },
     objectiveLabel: { en: "SAFE ISLANDS", ru: "ОСТРОВКИ" },
     actionLabel: { en: "WAIT", ru: "ЖДАТЬ" },
@@ -383,6 +405,10 @@ const gameplay: Record<
       en: "Find key 1 at top left, then activate seals 2 and 3 with E. Cross fire rows only when the flames are out. Reach the vault at bottom right.",
       ru: "Найди ключ 1 слева наверху, затем включи печати 2 и 3 кнопкой E. Пересекай огненные полосы, когда пламя гаснет. Сейф справа внизу.",
     },
+    touchInstructions: {
+      en: "Move with the on-screen arrows. Tap UNLOCK by key 1, then seals 2 and 3. Cross fire rows when flames are out. Reach the vault at bottom right.",
+      ru: "Двигайся экранными стрелками. Нажми «ОТКРЫТЬ» у ключа 1, затем у печатей 2 и 3. Пересекай погасшие огненные полосы. Сейф справа внизу.",
+    },
     objectiveLabel: { en: "KEY & SEALS", ru: "КЛЮЧ И ПЕЧАТИ" },
     actionLabel: { en: "UNLOCK", ru: "ОТКРЫТЬ" },
     winText: {
@@ -402,6 +428,10 @@ const gameplay: Record<
     instructions: {
       en: "Follow flags in order: right, up, left, up, right. Ice keeps you sliding. Press E to brake at corners and avoid the dark cracks. Reach the cable car.",
       ru: "Следуй флажкам: вправо, вверх, влево, вверх, вправо. На льду ты скользишь. Нажимай E перед поворотами, обходи трещины и доберись до фуникулёра.",
+    },
+    touchInstructions: {
+      en: "Use the on-screen arrows: right, up, left, up, right. Tap BRAKE at corners to stop sliding. Avoid dark cracks and reach the cable car.",
+      ru: "Экранные стрелки: вправо, вверх, влево, вверх, вправо. Нажимай «ТОРМОЗ» на поворотах. Обходи тёмные трещины и доберись до фуникулёра.",
     },
     objectiveLabel: { en: "COURSE FLAGS", ru: "ФЛАЖКИ" },
     actionLabel: { en: "BRAKE", ru: "ТОРМОЗ" },
