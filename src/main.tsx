@@ -241,14 +241,14 @@ function App() {
     setStatus(gameStatus(game.current));
     keys.current.clear();
   }, [selected]);
-  // Measure real text and control rows; spare viewport space belongs to the scene.
+  // Three deliberate compositions share one measured visual stage and one timeline.
   const shelfMetrics = useRef({ actions: 76, picks: 36 });
   useLayoutEffect(() => {
     const hero = heroEl.current,
       host = mainEl.current;
     if (!hero || !host) return;
+    const app = host.closest(".app")!;
     const measure = () => {
-      const app = host.closest(".app")!;
       const header = app
         .querySelector(".header")!
         .getBoundingClientRect().height;
@@ -267,8 +267,6 @@ function App() {
         mobile ? 52 : 64,
         (back?.getBoundingClientRect().height || 0) + 16,
       );
-      host.style.setProperty("--stage-open-top", openTop + "px");
-      host.style.setProperty("--large-top", openTop + 8 + "px");
       const top = Math.ceil(
         hero.getBoundingClientRect().height + (mobile ? 8 : 12),
       );
@@ -276,28 +274,58 @@ function App() {
         shelfMetrics.current.actions + shelfMetrics.current.picks + 32,
       );
       const available = innerHeight - header - footer;
-      host.style.setProperty("--viewport-main", available + "px");
-      const stage = Math.max(mobile ? 150 : 200, available - top - reserve);
-      const gameStage = mobile
-        ? Math.max(240, Math.min(330, (innerWidth - 32) * 0.78))
-        : Math.max(360, Math.min(560, innerHeight - header - 116));
-      host.style.setProperty("--shelf-top", top + "px");
-      host.style.setProperty("--shelf-stage-height", stage + "px");
-      host.style.setProperty("--shelf-reserve", reserve + "px");
-      host.style.setProperty(
-        "--actions-height",
-        shelfMetrics.current.actions + "px",
+      const shelfStage = Math.max(
+        mobile ? 150 : 200,
+        available - top - reserve,
       );
-      host.style.setProperty("--game-stage-height", gameStage + "px");
+      const openStage = mobile
+        ? Math.max(250, Math.min(310, (innerWidth - 32) * 0.8))
+        : Math.max(360, Math.min(620, available - openTop - 24));
+      const gameStage = mobile
+        ? Math.max(
+            260,
+            Math.min(innerHeight < 740 ? 300 : 330, (innerWidth - 32) * 0.88),
+          )
+        : openStage;
+      const panelWidth = mobile
+        ? host.clientWidth
+        : Math.max(280, Math.min(370, host.clientWidth * 0.29));
+      const panelHeight =
+        host.querySelector(".world-info")?.getBoundingClientRect().height || 0;
+      const openTotal = mobile
+        ? openTop + openStage + panelHeight + 24
+        : Math.max(openTop + openStage + 24, panelHeight + 48);
+      const gameTotal = mobile
+        ? openTop + gameStage + panelHeight + 24
+        : Math.max(openTop + gameStage + 24, panelHeight + 48);
+      for (const [name, value] of Object.entries({
+        "stage-open-top": openTop,
+        "large-top": openTop + 8,
+        "viewport-main": available,
+        "shelf-top": top,
+        "shelf-stage-height": shelfStage,
+        "open-stage-height": openStage,
+        "game-stage-height": gameStage,
+        "shelf-reserve": reserve,
+        "actions-height": shelfMetrics.current.actions,
+        "panel-width": panelWidth,
+        "panel-height": panelHeight,
+        "visual-reserve": mobile ? 0 : panelWidth + 24,
+        "shelf-total": top + shelfStage + reserve,
+        "open-total": openTotal,
+        "game-total": gameTotal,
+      }))
+        host.style.setProperty("--" + name, value + "px");
     };
     const observer = new ResizeObserver(measure);
     [
       hero,
-      host.closest(".app")!.querySelector(".header"),
-      host.closest(".app")!.querySelector(".footer"),
+      app.querySelector(".header"),
+      app.querySelector(".footer"),
       host.querySelector(".shelf-actions"),
       host.querySelector(".world-picks"),
       host.querySelector(".backbar"),
+      host.querySelector(".world-info"),
     ].forEach((el) => el && observer.observe(el));
     window.addEventListener("resize", measure);
     document.fonts.ready.then(measure);
@@ -306,7 +334,7 @@ function App() {
       observer.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [open, lang]);
+  }, [viewOpen, inserted, lang]);
   // View changes are deliberate navigation, not a continuation of an old scroll offset.
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -339,6 +367,7 @@ function App() {
             setSettled(x);
             if (x === 0) {
               setReturning(false);
+              setInserted(false);
               closing.current = false;
               requestAnimationFrame(() =>
                 document
@@ -383,11 +412,25 @@ function App() {
           },
           progress: (p) => {
             const host = sceneEl.current?.closest("main");
+            const smooth = (a: number, b: number) => {
+              const x = Math.max(0, Math.min(1, (p - a) / (b - a)));
+              return x * x * (3 - 2 * x);
+            };
             host?.style.setProperty("--scene-open", String(Math.min(1, p)));
+            host?.style.setProperty("--scene-play", String(smooth(1, 2)));
             host?.style.setProperty(
-              "--scene-play",
-              String(Math.max(0, Math.min(1, p - 1))),
+              "--compose-open",
+              String(smooth(0.18, 0.72)),
             );
+            host?.style.setProperty(
+              "--panel-reveal",
+              String(smooth(0.74, 0.94)),
+            );
+            host?.style.setProperty(
+              "--shelf-reveal",
+              String(1 - smooth(0, 0.18)),
+            );
+            if (host) host.dataset.sceneProgress = p.toFixed(4);
           },
         },
         source.current,
@@ -438,7 +481,7 @@ function App() {
   }, [inspect]);
   useEffect(() => {
     scene.current?.setGame(
-      isGame || returning,
+      isGame || (returning && inserted),
       open && inserted && settled === 2,
     );
     if (isGame) gameRegion.current?.focus({ preventScroll: true });
@@ -508,7 +551,6 @@ function App() {
     keys.current.clear();
     saveGame(game.current);
     setLarge(false);
-    setInserted(false);
     setOpen(false);
     setInspect(false);
     if (!fromPop) {
@@ -797,7 +839,7 @@ function App() {
           "app " +
           (viewOpen ? "opened" : "shelved") +
           (returning ? " returning" : "") +
-          (open && inserted ? " playing" : "") +
+          (viewOpen && inserted ? " playing" : "") +
           (inserted ? " inserted" : "") +
           (light ? " light-mode" : "") +
           (large ? " large-mode" : "")
@@ -912,8 +954,8 @@ function App() {
             </h1>
             <p className="intro">{t.intro}</p>
           </section>
-          {open && (
-            <div className="backbar">
+          {viewOpen && (
+            <div className="backbar" inert={!open}>
               <button onClick={() => closeBox()} className="back">
                 <span>←</span>
                 {t.back}
@@ -1031,8 +1073,12 @@ function App() {
               </p>
             )}
           </div>
-          {!viewOpen && (
-            <div className="shelf-actions">
+          {true && (
+            <div
+              className="shelf-actions"
+              inert={viewOpen}
+              aria-hidden={viewOpen}
+            >
               <div className="selected-copy" aria-live="polite">
                 <h2>
                   <span>{String(selected + 1).padStart(2, "0")}</span>
@@ -1080,8 +1126,14 @@ function App() {
               )}
             </div>
           )}
-          {!viewOpen && (
-            <div className="world-picks" role="group" aria-label={t.select}>
+          {true && (
+            <div
+              className="world-picks"
+              role="group"
+              aria-label={t.select}
+              inert={viewOpen}
+              aria-hidden={viewOpen}
+            >
               {worlds.map((v, i) => (
                 <button
                   key={v.id}
@@ -1096,8 +1148,9 @@ function App() {
               ))}
             </div>
           )}
-          {open && (
+          {viewOpen && (
             <section
+              inert={!open || settled < 1}
               className={"world-info " + (settled >= 1 ? "arrived" : "")}
               aria-labelledby="world-title"
             >

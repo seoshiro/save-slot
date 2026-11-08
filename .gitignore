@@ -14,3 +14,8 @@ evidence/user-review/
 evidence/six-games/
 evidence/scene-worker-*.png
 /evidence/tide-build/
+
+# Private composition review inputs and current delivery evidence
+/evidence/composition-review/
+/evidence/composition-journey/
+/evidence/composition-public/

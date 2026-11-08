@@ -14,7 +14,9 @@
     "format": "prettier --write src tests scripts docs README.md vite.config.ts",
     "test:games": "node scripts/gameplay-live.mjs",
     "test:performance": "node tests/scene-performance.mjs",
-    "test:layout": "node tests/layout-journey.mjs && node tests/intro-first-frame.mjs"
+    "test:layout": "node tests/layout-journey.mjs && node tests/intro-first-frame.mjs",
+    "test:composition": "node tests/composition-journey.mjs",
+    "test:scene-composition": "node tests/scene-composition-browser.mjs"
   },
   "dependencies": {
     "@fontsource-variable/golos-text": "^5.3.0",

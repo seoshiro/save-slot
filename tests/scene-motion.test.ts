@@ -61,7 +61,7 @@ test("drag uses selection-only callback and same drag/release scale", () => {
   assert.equal((source.match(/this.width < 700 \? 95 : 150/g) || []).length, 2);
   assert.match(source, /Math.hypot\(dx, dy\) > 12/);
 });
-test("latest stage cancels prior completion and uses requested full durations", () => {
+test("latest stage cancels prior completion and uses remaining-distance durations", () => {
   const method = source.slice(
     source.indexOf("  setStage(stage: number)"),
     source.indexOf("  warmConsole()"),
@@ -91,17 +91,17 @@ test("latest stage cancels prior completion and uses requested full durations", 
     request: () => {},
   });
   scene.setStage(1);
-  assert.equal(tweens[0].duration, 2.2);
+  assert.equal(tweens[0].duration, 1.65);
   scene.progress.value = 0.6;
   scene.setStage(0);
   tweens[0].onComplete();
   assert.deepEqual(settled, []);
   tweens[1].onComplete();
   assert.deepEqual(settled, [0]);
-  assert.equal(tweens[1].duration, 2.2);
+  assert.ok(Math.abs(tweens[1].duration - 0.99) < 1e-9);
   scene.progress.value = 1;
   scene.setStage(2);
-  assert.equal(tweens[2].duration, 1.05);
+  assert.ok(Math.abs(tweens[2].duration - 1.05) < 1e-9);
 });
 
 test("actual box bounds stay disjoint throughout open/return on mobile and desktop", () => {
@@ -297,4 +297,52 @@ test("repeated stage intent does not restart the active timeline", () => {
   assert.equal(kills, 0);
   assert.equal(scene.progress.value, 0.47);
   assert.equal(scene.transitionId, 7);
+});
+
+test("opening during fractional shelf selection waits for its existing motion", () => {
+  const method = source.slice(
+    source.indexOf("  setStage(stage: number)"),
+    source.indexOf("  warmConsole()"),
+  );
+  const progress = { value: 0 },
+    selection = { value: 3.4 };
+  let moving = true;
+  const tweens: any[] = [];
+  const gsap = {
+    killTweensOf: () => {},
+    isTweening: (target: unknown) => target === selection && moving,
+    to: (_: unknown, config: any) => tweens.push(config),
+  };
+  const Harness = new Function(
+    "clamp",
+    "gsap",
+    js("class Harness {" + method + "}") + "; return Harness;",
+  )(clamp, gsap);
+  const scene = Object.assign(Object.create(Harness.prototype), {
+    progress,
+    selection,
+    selected: 0,
+    target: 0,
+    ready: true,
+    dead: false,
+    transitionId: 0,
+    callbacks: {},
+    request: () => {},
+  });
+  scene.setStage(1);
+  assert.equal(tweens.length, 0);
+  assert.equal(selection.value, 3.4);
+  assert.equal(scene.target, 1);
+  selection.value = 0;
+  moving = false;
+  scene.setStage(scene.target);
+  assert.equal(tweens.length, 1);
+  assert.equal(tweens[0].value, 1);
+  assert.match(
+    source.slice(
+      source.indexOf("  setSelected(i: number)"),
+      source.indexOf("  setStage(stage: number)"),
+    ),
+    /onComplete:[\s\S]*this.setStage\(this.target\)/,
+  );
 });

@@ -79,6 +79,10 @@ export class SaveScene {
   height = 0;
   consoleRequested = false;
   cartridgeInserted = false;
+  private consoleBounds = new THREE.Box3(
+    new THREE.Vector3(-1.9, -1.55, -1.2),
+    new THREE.Vector3(1.9, 1.55, 1.3),
+  );
   private shadowPose = { p: NaN, selection: NaN, width: 0, height: 0 };
   gameCanvas: HTMLCanvasElement;
   gameTexture: THREE.CanvasTexture;
@@ -560,6 +564,8 @@ export class SaveScene {
           });
           return;
         }
+        // Measure locally before attaching to the animated rig.
+        this.consoleBounds = new THREE.Box3().setFromObject(g.scene);
         this.console.add(g.scene);
         g.scene.traverse((o) => {
           if ((o as THREE.Mesh).isMesh) {
@@ -732,6 +738,10 @@ export class SaveScene {
       ease: "power2.inOut",
       overwrite: true,
       onUpdate: () => this.request(),
+      onComplete: () => {
+        if (this.target > 0 && this.progress.value < 0.001)
+          this.setStage(this.target);
+      },
     });
     this.drawStandby();
     this.request();
@@ -749,8 +759,23 @@ export class SaveScene {
     }
     if (stage > 0 && this.progress.value < 0.001)
       this.openingIndex = this.selected;
+    // Finish the already-visible shelf selection before opening its box. This
+    // retains the current tween, avoiding two coordinate systems moving at once.
+    if (
+      stage > 0 &&
+      this.progress.value < 0.001 &&
+      gsap.isTweening(this.selection) &&
+      Math.abs(this.selection.value - this.selected) > 0.001
+    )
+      return;
     const from = this.progress.value;
-    const duration = stage === 0 ? 2.2 : stage === 2 && from >= 1 ? 1.05 : 2.2;
+    // Travel time follows the remaining route, including interrupted reversals.
+    const routeTime = (v: number) =>
+      Math.min(v, 1) * 1.65 + Math.max(0, v - 1) * 1.05;
+    const duration = Math.max(
+      0.08,
+      Math.abs(routeTime(stage) - routeTime(from)),
+    );
     gsap.to(this.progress, {
       value: stage,
       duration: this.reduced ? 0.12 : duration,
@@ -833,35 +858,77 @@ export class SaveScene {
     const p = this.progress.value,
       op = clamp(p, 0, 1),
       ins = clamp(p - 1, 0, 1),
-      mobile = this.width < 700;
+      mobile =
+        (typeof window === "undefined" ? this.width : window.innerWidth) < 700;
     this.callbacks.progress?.(p);
     const play = smooth(1, 2, p);
+    const boxRetire = smooth(1.02, 1.42, p);
+    const hero = smooth(1.42, 2, p);
     const poses = shelfLayout(this.selection.value, this.boxes.length);
     const shelfLeft = poses[0].x - poses[0].half;
     const shelfRight = poses[poses.length - 1].x + poses[poses.length - 1].half;
     const shelfCenter = (shelfLeft + shelfRight) / 2;
-    const viewW = mobile
-      ? mix(5.2, 3.3, play)
-      : mix(
-          mix(Math.max(12.8, shelfRight - shelfLeft + 2.4), 12.6, op),
-          5.6,
-          play,
-        );
-    const fitY = mobile
-      ? mix(mix(4.3, 4.8, op), 2.95, play)
-      : mix(mix(4.0, 5.0, op), 2.95, play);
-    this.camera.fov = mix(20, 32, op);
+    // Frame full objects, not just the CRT. Stable endpoint envelopes avoid
+    // chasing the console during its entrance and shrinking the entire scene.
+    const model =
+      this.consoleBounds ??
+      new THREE.Box3(
+        new THREE.Vector3(-1.9, -1.55, -1.2),
+        new THREE.Vector3(1.9, 1.55, 1.3),
+      );
+    const scale = mobile ? 0.89 : 1;
+    const radius =
+      Math.max(Math.abs(model.min.x), Math.abs(model.max.x)) +
+      Math.max(Math.abs(model.min.z), Math.abs(model.max.z)) *
+        mix(0.28, 0.08, hero);
+    const boxX = mobile ? -2.25 : -2.9;
+    const left = mix(
+      Math.min(boxX - 0.9, 0.4 - radius * scale),
+      0.4 - radius * scale,
+      hero,
+    );
+    const right = 0.4 + radius * scale;
+    const bottom = Math.min(-1.5, model.min.y * scale - 0.05);
+    const top = Math.max(2.38 - play * 0.58, model.max.y * scale - 0.05);
+    const framing = smooth(0.23, 0.85, op);
+    // Track the selected box while it travels, before tightening the lens.
+    const focusX = mix(
+      mobile ? 0 : shelfCenter,
+      (left + right) / 2,
+      smooth(0.23, 0.52, op),
+    );
+    const focusY = mix(-0.04, (top + bottom) / 2, framing);
+    const viewW = mix(
+      mobile ? 5.2 : Math.max(12.8, shelfRight - shelfLeft + 2.4),
+      (right - left) * mix(1.22, 1.02, hero),
+      framing,
+    );
+    const fitY = mix(
+      mobile ? 4.3 : 4,
+      (top - bottom) * mix(1.22, mobile ? 0.88 : 1.01, hero),
+      framing,
+    );
+    this.camera.fov = mix(20, 26, framing);
     this.camera.updateProjectionMatrix();
+    // Add front-most depth to the perspective fit.
+    const depth = Math.max(1.4, model.max.z * scale) * framing;
     const distance =
       Math.max(viewW / this.camera.aspect, fitY) /
-      2 /
-      Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2));
-    const focusX = mobile
-      ? mix(0, 0.1, play)
-      : mix(shelfCenter, mix(1.6, 0.4, play), op);
-    this.camera.position.set(focusX, mix(2.7, 0.65, play), distance);
-    this.camera.lookAt(focusX, mix(mix(-0.04, 0.25, op), 0.04, play), 0);
+        2 /
+        Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2)) +
+      depth;
+    this.camera.position.set(
+      focusX,
+      mix(2.7, focusY + distance * 0.075, framing),
+      distance,
+    );
+    this.camera.lookAt(focusX, focusY, 0);
     this.camera.updateMatrixWorld();
+    const departure =
+      Math.max(viewW, fitY * this.camera.aspect) +
+      Math.abs(shelfLeft) +
+      Math.abs(shelfRight) +
+      4;
     // Opening groups share one progress. Reverse traversal naturally extracts before packing.
     if (this.inspectPose.value > 0.001 && this.lastTime)
       this.inspectAngle += Math.min(0.05, (time - this.lastTime) / 1000) * 0.7;
@@ -871,17 +938,19 @@ export class SaveScene {
       let x = poses[i].x;
       if (sel) {
         const travel = smooth(0.24, 0.52, op);
-        x = mix(x, mobile ? -1.85 : -3.65, travel);
+        x = mix(x, mobile ? -2.25 : -2.9, travel);
         b.group.position.set(x, mix(y, -0.08, travel), mix(z, 0.12, travel));
         b.group.rotation.set(
           0,
           mix(ry, -0.15, travel),
           mix(-0.035 * openAmount, 0, travel),
         );
-        b.group.scale.setScalar(mix(1, mobile ? 0.68 : 0.85, travel));
-        b.flap.rotation.x = -1.95 * smooth(0.5, 0.67, op);
+        b.group.scale.setScalar(
+          mix(1, mobile ? 0.68 : 0.85, travel) * mix(1, 0.94, boxRetire),
+        );
+        b.flap.rotation.x = -1.95 * smooth(0.5, 0.67, op) * (1 - boxRetire);
         b.cart.visible = p > 0.66;
-        const boxX = mobile ? -1.85 : -3.65;
+        const boxX = mobile ? -2.25 : -2.9;
         const top = 1.36 * (mobile ? 0.68 : 0.85);
         const cartClear = top + 0.61;
         const lift = smooth(0.66, 0.84, op),
@@ -908,7 +977,7 @@ export class SaveScene {
       } else {
         const spread = smooth(0, 0.23, op);
         b.group.position.set(
-          x + (i < this.openingIndex ? -1 : 1) * spread * 12,
+          x + (i < this.openingIndex ? -1 : 1) * spread * departure,
           y - spread * 0.15,
           z,
         );
@@ -917,14 +986,57 @@ export class SaveScene {
         b.cart.visible = false;
         b.flap.rotation.x = 0;
       }
-      b.group.visible = Math.abs(b.group.position.x) < 18;
+      // Neighbors cannot leak back at very wide aspect ratios.
+      b.group.visible = (sel && boxRetire < 1) || op < 0.23;
+      const alpha = sel ? 1 - boxRetire : 1;
+      b.group.traverse((object) => {
+        if (!(object as THREE.Mesh).isMesh) return;
+        const mesh = object as THREE.Mesh;
+        for (const material of Array.isArray(mesh.material)
+          ? mesh.material
+          : [mesh.material]) {
+          if (material.userData.boxOpacity === undefined) {
+            material.userData.boxOpacity = material.opacity;
+            material.userData.boxTransparent = material.transparent;
+            material.userData.boxDepthWrite = material.depthWrite;
+          }
+          const transparent = material.userData.boxTransparent || alpha < 1;
+          if (material.transparent !== transparent) {
+            material.transparent = transparent;
+            material.needsUpdate = true;
+          }
+          material.opacity = material.userData.boxOpacity * alpha;
+          material.depthWrite = material.userData.boxDepthWrite && alpha > 0.98;
+        }
+      });
     });
     this.shelf.position.y = -smooth(0.24, 0.7, op) * 5;
-    const cp = smooth(0.25, 0.64, op);
+    const cp = smooth(0.36, 0.74, op);
     this.console.visible = cp > 0 && this.ready;
-    this.console.position.set(mobile ? 0.33 : 0.4, mix(-5, -0.05, cp), -0.1);
+    this.console.position.set(mobile ? 0.33 : 0.4, mix(-0.18, -0.05, cp), -0.1);
     this.console.rotation.y = mix(-0.28, -0.08, ins);
-    this.console.scale.setScalar(mobile ? 0.89 : 1.0);
+    this.console.scale.setScalar((mobile ? 0.89 : 1.0) * mix(0.92, 1, cp));
+    // Reveal in place rather than slicing the body through the canvas floor.
+    this.console.traverse((object) => {
+      if (!(object as THREE.Mesh).isMesh) return;
+      const mesh = object as THREE.Mesh;
+      for (const material of Array.isArray(mesh.material)
+        ? mesh.material
+        : [mesh.material]) {
+        if (material.userData.revealOpacity === undefined) {
+          material.userData.revealOpacity = material.opacity;
+          material.userData.revealTransparent = material.transparent;
+          material.userData.revealDepthWrite = material.depthWrite;
+        }
+        const transparent = material.userData.revealTransparent || cp < 1;
+        if (material.transparent !== transparent) {
+          material.transparent = transparent;
+          material.needsUpdate = true;
+        }
+        material.opacity = material.userData.revealOpacity * cp;
+        material.depthWrite = material.userData.revealDepthWrite && cp > 0.98;
+      }
+    });
     // Hide work-in-progress silhouette until actual model has loaded; fallback is handled by HTML.
     if (this.led)
       (this.led.material as THREE.MeshBasicMaterial).color.set(

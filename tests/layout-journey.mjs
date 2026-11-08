@@ -154,8 +154,16 @@ try {
       }
       const screen = await p.locator(".game-region").boundingBox();
       ok(
-        screen && screen.height >= (width < 701 ? 130 : 300),
-        label + ": normal game screen enlarged",
+        screen && screen.height >= (width < 701 ? 130 : 220),
+        label + ": playable screen within full-console composition",
+      );
+      const visualStage = await p.locator(".scene-wrap").boundingBox();
+      ok(
+        screen.x >= visualStage.x &&
+          screen.y >= visualStage.y &&
+          screen.x + screen.width <= visualStage.x + visualStage.width &&
+          screen.y + screen.height <= visualStage.y + visualStage.height,
+        label + ": full game display stays inside visual stage",
       );
       report.metrics.push({ label, normalGameScreen: screen });
       await p.screenshot({

@@ -19,3 +19,5 @@ No purchases, top-ups, subscriptions, paid assets or paid hosting were used for 
 8 November motion/loading and six-mini-game iteration: **0 additional credits**. Reused all supplied artwork and the existing cleaned console. No paid API, purchase, new asset generation or hosting change.
 
 8 November layout/controls follow-up: **0 additional credits**. Responsive layout, procedural TIDEBOUND atmosphere and local verification only; no generation or paid hosting changes.
+
+8 November three-composition/transition pass: **0 additional credits**. Reused all existing models/art and current game mechanics; no paid generation or hosting changes.

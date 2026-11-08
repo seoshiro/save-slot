@@ -2795,3 +2795,243 @@ figcaption {
     padding-top: 8px;
   }
 }
+
+/* Three composed views. All geometry follows the scene progress in both directions. */
+.app .main {
+  --compose-open: 0;
+  --panel-reveal: 0;
+  --shelf-reveal: 1;
+  --open-stage-height: 520px;
+  --visual-reserve: 394px;
+  --panel-width: 370px;
+  --stage-top: calc(
+    var(--shelf-top) + (var(--stage-open-top) - var(--shelf-top)) *
+      var(--compose-open)
+  );
+  --stage-height: calc(
+    var(--shelf-stage-height) +
+      (var(--open-stage-height) - var(--shelf-stage-height)) *
+      var(--compose-open) +
+      (var(--game-stage-height) - var(--open-stage-height)) *
+      var(--scene-play, 0)
+  );
+  --composition-height: calc(
+    var(--shelf-total, 620px) +
+      (var(--open-total, 620px) - var(--shelf-total, 620px)) *
+      var(--compose-open) +
+      (var(--game-total, 620px) - var(--open-total, 620px)) *
+      var(--scene-play, 0)
+  );
+}
+.app:not(.large-mode) .main,
+.app.opened:not(.large-mode) .main,
+.app.returning:not(.large-mode) .main,
+.app.light-mode.playing:not(.large-mode) .main {
+  height: auto;
+  padding-top: 0;
+  min-height: var(--composition-height);
+}
+.app:not(.large-mode) .main > .scene-wrap,
+.app.light-mode.opened:not(.large-mode) .main > .scene-wrap {
+  top: var(--stage-top);
+  left: 0;
+  right: calc(var(--visual-reserve) * var(--compose-open));
+  bottom: auto;
+  width: auto;
+  height: var(--stage-height);
+  transform: none;
+  transition: none;
+}
+.app .hero-copy,
+.app.opened .hero-copy {
+  position: absolute;
+  inset: 0 0 auto;
+  opacity: var(--shelf-reveal);
+  transform: none;
+  transition: none;
+}
+.app .shelf-actions,
+.app .world-picks {
+  opacity: var(--shelf-reveal);
+  animation: none;
+  transition: none;
+}
+.app .world-info,
+.app.playing .world-info {
+  position: absolute;
+  top: 24px;
+  left: calc(100% - var(--panel-width));
+  width: var(--panel-width);
+  margin: 0;
+  min-height: 0;
+  padding: 8px 0 24px 22px;
+  transition: none;
+  background: none;
+}
+.app:not(.light-mode) .world-info {
+  opacity: var(--panel-reveal);
+}
+.app .world-info > .world-heading {
+  animation: none;
+}
+.app.light-mode.opened .main {
+  --compose-open: 1;
+  --panel-reveal: 1;
+  --shelf-reveal: 0;
+}
+.app.light-mode.playing .main {
+  --scene-play: 1;
+}
+.app.returning .backbar {
+  opacity: var(--panel-reveal);
+}
+.app .world-detail-preview img {
+  max-height: 210px;
+  object-fit: cover;
+}
+@media (max-width: 700px) {
+  /* A mode change must not move the canvas by changing the header's height. */
+  .app .header,
+  .app.playing .header {
+    min-height: 68px;
+    padding-block: 12px;
+  }
+  .app:not(.large-mode) .world-info,
+  .app.playing:not(.large-mode) .world-info {
+    top: calc(var(--stage-top) + var(--stage-height) + 8px);
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 12px 0;
+  }
+  .app .world-detail-preview img {
+    max-height: 240px;
+  }
+}
+/* The explicit enlarged row retains its own accessible navigation reservation. */
+.app.large-mode .world-info {
+  top: 72px;
+}
+@media (max-width: 700px) {
+  .app.large-mode .world-info {
+    top: calc(var(--large-height) + var(--large-top, 64px) + 12px);
+    left: 0;
+    width: 100%;
+  }
+  .app.opened.large-mode .main {
+    padding-top: 0;
+    min-height: calc(
+      var(--large-height) + var(--large-top, 64px) + var(--panel-height) + 24px
+    );
+  }
+}
+@media (max-width: 700px) {
+  .app.opened:not(.playing) .world-heading h1 {
+    font-size: clamp(20px, 5.6vw, 24px);
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .app.opened:not(.playing) .world-heading .eyebrow {
+    margin-bottom: 9px;
+  }
+  .app.opened:not(.playing) .tagline {
+    font-size: 15px;
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+  .app.opened:not(.playing) .type-label {
+    margin-bottom: 12px;
+  }
+}
+/* Real touch controls use the otherwise empty column beside the directional pad. */
+@media (max-width: 700px) {
+  .app.playing .world-info {
+    grid-template-columns: minmax(132px, 1fr) minmax(148px, 1fr);
+  }
+  .app.playing .touch-controls {
+    display: contents;
+  }
+  .app.playing .dpad {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: center;
+    justify-self: center;
+  }
+  .app.playing .activate {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: start;
+    min-height: 44px;
+    min-width: 0;
+    width: 100%;
+    padding: 8px 5px;
+    margin: 0 0 100px;
+  }
+  .app.playing .game-actions {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: end;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    width: 100%;
+    margin: 0;
+  }
+  .app.playing .game-actions > .secondary:first-child {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 4px;
+    gap: 3px;
+    min-height: 44px;
+    font-size: 9px;
+  }
+  .app.playing .game-actions > .secondary:nth-child(2) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-height: 44px;
+    padding: 5px;
+  }
+  .app.playing .game-actions > .text-button {
+    grid-column: 2;
+    grid-row: 1;
+    white-space: normal;
+  }
+  .app.playing .game-hint {
+    font-size: 11px;
+    line-height: 1.4;
+    margin: 6px 0 8px;
+  }
+}
+/* Error recovery and explicit light mode have no active 3D timeline. */
+.app.light-mode.opened .main {
+  --compose-open: 1 !important;
+  --panel-reveal: 1 !important;
+  --shelf-reveal: 0 !important;
+}
+.app.light-mode.playing .main {
+  --scene-play: 1 !important;
+}
+.app.light-mode:not(.playing) .main {
+  --scene-play: 0 !important;
+}
+.app.light-mode.shelved .main {
+  --compose-open: 0 !important;
+  --panel-reveal: 0 !important;
+  --shelf-reveal: 1 !important;
+}
+@media (max-width: 700px) {
+  .app .header,
+  .app.playing .header {
+    min-height: 62px;
+    padding-block: 9px;
+  }
+  .app:not(.large-mode) .main > .scene-wrap,
+  .app.light-mode.opened:not(.large-mode) .main > .scene-wrap {
+    left: -12px;
+    right: -12px;
+  }
+  .app.playing:not(.large-mode) .world-info {
+    top: calc(var(--stage-top) + var(--stage-height) + 4px);
+    padding-top: 8px;
+  }
+}
