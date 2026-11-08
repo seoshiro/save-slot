@@ -18,7 +18,7 @@ const ffmpeg =
 const output = path.resolve(manifest.output),
   width = manifest.width || 1366,
   height = manifest.height || 900,
-  fps = 25;
+  fps = manifest.fps || 25;
 fs.mkdirSync(path.dirname(output), { recursive: true });
 const encoder = spawn(
   ffmpeg,
@@ -102,6 +102,8 @@ try {
         filter,
         "-r",
         String(fps),
+        "-frames:v",
+        String(Math.round(clip.duration * fps)),
         "-c:v",
         "png",
         "-f",
@@ -156,7 +158,7 @@ try {
     encodedDurationSeconds: frames / fps,
     requestedExcerptSeconds: total,
     method:
-      "Explicitly edited excerpts from actual browser recordings, original speed. Letterboxed only; no interpolated gameplay, synthetic victories or state substitution.",
+      "Explicitly edited excerpts from actual browser recordings, original speed. Letterboxed only; frame holds preserve timing. Output fps is an encoding timebase, not measured rendering fps. No interpolated gameplay, synthetic victories or state substitution.",
   };
   fs.writeFileSync(output + ".manifest.json", JSON.stringify(proof, null, 2));
   console.log(

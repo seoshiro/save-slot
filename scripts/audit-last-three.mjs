@@ -212,13 +212,26 @@ const interact = async (x, y) => {
   await sleep(1100);
 };
 const phase = async (kind, row) => {
+  let previous = (await state()).elapsed;
   for (let i = 0; i < 250; i++) {
     const s = await state();
     const v =
       kind === "tide"
         ? (s.elapsed + row * 0.65) % 10
         : (s.elapsed + row * 0.9) % 4.5;
-    if (kind === "tide" ? v >= 6 && v < 6.9 : v >= 2.1 && v < 2.7) return;
+    // A fresh ~1s save sample must not be aliased by a sub-second phase window.
+    // Water ends at 8.5 + row*7. At the staging point, exiting takes 3/1.2=2.5s.
+    // Reserve 0.35s for the 80ms sampling interval and dispatch before high tide.
+    if (s.elapsed !== previous) {
+      previous = s.elapsed;
+      const tideExitSeconds = Math.max(0, (8.5 + row * 7 - s.x) / 1.2);
+      if (
+        kind === "tide"
+          ? v >= 6 && 10 - v >= tideExitSeconds + 0.35
+          : v >= 2.1 && v < 2.7
+      )
+        return;
+    }
     await sleep(80);
   }
   throw Error(`Automation safe-phase timeout ${kind}`);
@@ -337,6 +350,7 @@ try {
           { timeout: 300000 },
         )
         .then(() => {
+          if (currentResult.passed === false) return;
           currentResult.victoryOverlayAt = new Date().toISOString();
           currentResult.victoryVideoSeconds =
             (Date.now() - recordingBegan) / 1000;

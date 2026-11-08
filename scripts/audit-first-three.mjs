@@ -46,8 +46,12 @@ try {
     const touchLog = [];
     let currentRun = null;
     await page.exposeFunction("auditPointer", (e) => touchLog.push(e));
-    await page.exposeFunction("auditVictory", () => {
-      if (currentRun && currentRun.videoWinSeconds === undefined) {
+    await page.exposeFunction("auditVictory", (gameId) => {
+      if (
+        currentRun &&
+        currentRun.id === gameId &&
+        currentRun.videoWinSeconds === undefined
+      ) {
         currentRun.videoWinSeconds = (Date.now() - videoBegan) / 1000;
         persist();
       }
@@ -76,7 +80,9 @@ try {
       new MutationObserver(() => {
         const title = document.querySelector(".game-overlay h3")?.textContent;
         if (title && /ROUTE COMPLETE|МАРШРУТ ПРОЙДЕН/.test(title))
-          window.auditVictory();
+          window.auditVictory(
+            document.querySelector(".app")?.getAttribute("data-game"),
+          );
       }).observe(document, {
         childList: true,
         subtree: true,
@@ -166,8 +172,20 @@ try {
         touchPoints: [],
       });
     };
-    const action = async () =>
-      mobile ? press(page.locator(".activate")) : page.keyboard.press("e");
+    const action = async () => {
+      if (!mobile) return page.keyboard.press("e");
+      // A real finger can land as victory disables BRAKE. Use the physical
+      // coordinate input rather than waiting for a now-unnecessary enabled
+      // button. A disabled button remains a normal UI no-op, not a forced action.
+      const button = page.locator(".activate");
+      await button.scrollIntoViewIfNeeded();
+      const box = await button.boundingBox();
+      assert.ok(
+        box && box.width && box.height,
+        "Touch action has visible bounds",
+      );
+      await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    };
     const pause = async () => {
       await press(page.locator(".game-actions > button").first());
       await sleep(100);

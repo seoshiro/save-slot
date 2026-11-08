@@ -33,7 +33,30 @@ Ordinary progress uses per-cartridge sessionStorage in the current browser tab/s
 - On public baseline 4b6f8e8 all six full keyboard playthroughs passed victory, partial/completed restoration and cancelled/confirmed restart.
 - All six baseline touch routes reached real victory. ORBIT's post-victory touch checks initially stopped because the harness tapped an already-disabled brake; the guard was corrected for the final run. The separately reproduced two-finger MOSS defect was fixed and retested rather than being counted as a baseline pass.
 
-Final public playthrough results are recorded below after deployment.
+## Final public playthroughs
+
+Published application commit: 4234d5d2a668e5e85364704c1e5fcad894d1c82f. GitHub Pages run 42520267478 passed build and deploy. The public JS index-e1zKRcfX.js and CSS index-CTkSRD13.css matched the local Pages build byte-for-byte.
+
+All rows below are fresh full routes on https://seoshiro.github.io/save-slot/ using trusted emulated touch. Every row passed partial reload/reentry, completed reload/reentry, cancelled/confirmed restart, continued input after reset and independent cartridge progress.
+
+| Game          | Actual win                        | Game elapsed | Setbacks | Language / viewport |
+| ------------- | --------------------------------- | ------------ | -------- | ------------------- |
+| DUSK DELIVERY | Three deliveries and depot        | 69.26 s      | 0        | EN, 390 x 844       |
+| ORBIT ZERO    | Three cells and slowed docking    | 54.65 s      | 0        | EN, 390 x 844       |
+| MOSS SIGNAL   | Three beacons and portal          | 57.64 s      | 0        | RU, 375 x 812       |
+| TIDEBOUND     | Three safe islands and lighthouse | 41.99 s      | 0        | EN, 390 x 844       |
+| EMBER VAULT   | Key, two seals and vault          | 57.28 s      | 0        | EN, 390 x 844       |
+| SNOWBYTE      | Three flags and cable-car station | 47.17 s      | 0        | EN, 390 x 844       |
+
+Game elapsed is the saved game clock, not a performance benchmark or total test wall time. DUSK also passed a separate local production route after a real 120-second wait (victory at 189.63 game seconds); the late traffic remained on the road. MOSS additionally passed trusted two-finger direction/action, touchCancel and release-outside checks.
+
+The full keyboard routes were verified on the preceding public baseline. The new published version was then fully exercised with touch as listed above; keyboard/mouse action handling was separately checked on the final code.
+
+Test-harness failures are retained, not relabeled as app passes. A local TIDE waiting helper could miss its too-short sampling window; it now uses a fresh sample and a calculated safe-crossing margin. A public ORBIT run won, then the test waited on a BRAKE button disabled by victory; a new complete successful run replaced that incomplete acceptance attempt. Victory timestamps were checked against decoded video frames, including a corrected observer that previously noticed another cartridge during an isolation check. No app state was injected in any selected full-route result.
+
+The approximately 61-second delivery video is an edited original-speed selection: first enlarged-screen entry, then the actual DUSK, ORBIT, MOSS, TIDEBOUND, EMBER and SNOWBYTE victories listed above. It is not a continuous six-game playthrough. Full uncut sources and their timing manifests are retained locally. Physical phones and other browser engines remain untested.
+
+For first enlarged-screen entry, a fresh-page serialized screenshot capture confirmed genuine intermediate browser pixels, without a warm-up or app/style/time changes. Two captures fell within the transition, including one acquired 125-202 ms after the real click. The capture averaged 56.2 ms per screenshot (maximum 102 ms); timestamps bound acquisition and preserve real-time frame holds. This proves intermediate pixels, not physical display smoothness or a rendering FPS. The initial screencast omitted that interval, so it was not used as evidence of a smooth first entry. Output video frame rate is an encoding timebase, not a performance measurement.
 
 ## Reproduce
 
