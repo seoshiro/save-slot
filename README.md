@@ -64,6 +64,32 @@ This is an independent portfolio concept built with AI assistance. The console s
 - [Model inspection](art/source/console-report.json)
 - [Asset provenance](docs/ASSET-CREDITS.md)
 
+## Architecture
+
+One long-lived WebGL scene, HTML for everything a user reads or presses, and six small Canvas2D games that render into the console screen.
+
+```mermaid
+flowchart LR
+  UI["main.tsx<br/>React shell: shelf UI, HUD, i18n, history"] -->|commands| Scene
+  subgraph Scene ["scene.ts — one persistent Three.js renderer"]
+    Shelf["shelf + boxes<br/>shared procedural geometry"]
+    Console["console.glb<br/>cleaned model"]
+    Tween["GSAP timelines<br/>open / insert / reverse"]
+  end
+  Game["game.ts<br/>6 Canvas2D mini-games"] -->|CanvasTexture| Console
+  UI -->|keyboard / touch| Game
+  Game <-->|per-cartridge progress| Store[("game-storage.ts<br/>sessionStorage + memory fallback")]
+  UI -. WebGL or model failure .-> Light["light view<br/>Canvas only"]
+```
+
+### Key decisions
+
+**ADR-1. One persistent Three.js scene instead of remounting per screen.** Shelf, box, insertion and play are stages of one scene driven by interruptible GSAP timelines, so the renderer, textures and model load once and every transition can be reversed mid-flight. Trade-off: scene state is managed imperatively in `scene.ts` and must be kept in sync with React through explicit commands.
+
+**ADR-2. Canvas2D games behind a CanvasTexture instead of a game engine.** Each game is a small update/draw loop with its own objectives, hazards and finish state. Drawing to a 2D canvas keeps games testable without WebGL and lets the same canvas appear either on the 3D console screen or enlarged as plain HTML. Trade-off: no physics engine, so movement and collisions are hand-written per game.
+
+**ADR-3. Text and controls stay in HTML.** Labels, instructions, pause and restart are real DOM elements, so screen readers, keyboard focus, EN/RU switching and browser history work normally, and the site still works in a light Canvas-only view when WebGL or the model fails to load. Trade-off: the UI layer and the 3D layer are two systems that must stay aligned on every viewport.
+
 No backend, accounts, tracking, payments or external AI calls run in the published site. This is not a commercial game release or client commission. No sales, user metrics or awards are claimed. Project-specific art and models do not imply a general licence grant. Self-hosted fonts retain their upstream OFL licences.
 
 ## Run locally
@@ -83,15 +109,15 @@ npm run build
 npm run preview
 ```
 
-The GitHub Pages workflow builds with `/save-slot/` as the base. Hash links select cartridges directly, for example [MOSS SIGNAL](https://seoshiro.github.io/save-slot/#moss-signal). Browser suites use Playwright with installed Chrome; set `TEST_URL` to the preview or public URL. See the audit for the focused gameplay, storage and touch commands.
+The GitHub Pages workflow builds with `/save-slot/` as the base. Hash links select cartridges directly, for example [MOSS SIGNAL](https://seoshiro.github.io/save-slot/#moss-signal). Browser suites use Playwright with installed Chrome; set `TEST_URL` to the preview or public URL. See [docs/QA.md](docs/QA.md) for the focused gameplay, storage and touch checks.
 
 ## Verification and limits
 
-[The six-game audit](docs/ITERATION-2026-11-08-GAMES.md) records all six actual victories, independent saves, partial/completed reload and reentry, restart cancellation/confirmation, and touch input checks. It distinguishes full keyboard routes on the preceding public baseline from fresh full touch routes on application commit `4234d5d`.
+Browser checks record all six actual victories, independent saves, partial/completed reload and reentry, restart cancellation/confirmation, and touch input checks. It distinguishes full keyboard routes on the preceding public baseline from fresh full touch routes on application commit `4234d5d`.
 
-The audit reports 60 passing unit tests plus a passing TypeScript/Vite build. Browser evidence uses headless Chrome on Windows, DPR 1, with emulated mobile touch. Physical iOS/Android phones, Safari, Firefox and Edge have not been verified. No universal frame-rate or device-compatibility claim is made.
+The suite has 60 passing unit tests plus a passing TypeScript/Vite build. Browser evidence uses headless Chrome on Windows, DPR 1, with emulated mobile touch. Physical iOS/Android phones, Safari, Firefox and Edge have not been verified. No universal frame-rate or device-compatibility claim is made.
 
-[QA history](docs/QA.md) · [Current gameplay audit](docs/ITERATION-2026-11-08-GAMES.md) · [Transition and enlarged-return audit](docs/ITERATION-2026-11-08-POLISH.md)
+[QA history](docs/QA.md)
 
 ## Русский
 
@@ -106,6 +132,6 @@ The audit reports 60 passing unit tests plus a passing TypeScript/Vite build. Br
 
 В основе React, TypeScript, Vite, Three.js, GSAP и Canvas2D. Исходная модель консоли сгенерирована Meshy 7 Ultra через Higgsfield и доработана в Blender. Коробки и картриджи собраны процедурно; анимация и игровая логика работают в браузере.
 
-Все шесть игр пройдены в проверках. Мобильные кадры и проверки выполнены в эмуляции Chromium; физические телефоны и другие браузерные движки не проверялись. Подробности и ограничения приведены в [отчёте](docs/ITERATION-2026-11-08-GAMES.md).
+Все шесть игр пройдены в проверках. Мобильные кадры и проверки выполнены в эмуляции Chromium; физические телефоны и другие браузерные движки не проверялись. Подробности и ограничения приведены в [журнале проверок](docs/QA.md).
 
 **[Открыть SAVE SLOT ↗](https://seoshiro.github.io/save-slot/) · [Портфолио ↗](https://seoshiro.github.io/)**

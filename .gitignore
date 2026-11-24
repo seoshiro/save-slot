@@ -26,3 +26,6 @@ evidence/transition-polish-review/
 
 # Private six-cartridge playthrough recordings
 evidence/six-game-audit/
+
+# Local QA and audit output
+evidence/
